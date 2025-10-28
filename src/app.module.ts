@@ -28,6 +28,7 @@ import { CylinderModule } from './cylinder/cylinder.module';
 import { ShipRushModule } from './ship-rush/ship-rush.module';
 import { PartCqauntModule } from './part-cqaunt/part-cqaunt.module';
 import { CompanyModule } from './company/company.module';
+import { UserCompanyModule } from './user-company/user-company.module';
 
 @Module({
   imports: [
@@ -48,7 +49,7 @@ import { CompanyModule } from './company/company.module';
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'), //'compulockOrders',
         options: {
-          encrypt: true,
+          //encrypt: true,
           //trustedConnection: true,
           //trustServerCertificate: true,
         },
@@ -78,6 +79,7 @@ import { CompanyModule } from './company/company.module';
     ShipRushModule,
     PartCqauntModule,
     CompanyModule,
+    UserCompanyModule,
   ],
   controllers: [],
   providers: [

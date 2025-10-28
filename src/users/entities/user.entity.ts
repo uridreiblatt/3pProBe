@@ -6,6 +6,8 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { UsersRoles } from './user-role.entity';
+import { Company } from 'src/company/entities/company.entity';
+import { UserCompany } from 'src/user-company/entities/user-company.entity';
 @Entity('user')
 export class User {
   @PrimaryGeneratedColumn()
@@ -24,10 +26,18 @@ export class User {
   color: string;
   @Column({ select: false })
   userPasswordEnc: string;
+  
   @OneToMany(() => UsersRoles, (userRole) => userRole.users)
   usersRoles: UsersRoles[];
   @JoinColumn()
   UserId: number;
+
+  @OneToMany(() => UserCompany, (userCompany) => userCompany.users)
+  userCompany: UserCompany[];
+  // @JoinColumn()
+  // UserCompanyId: number;
+
+  
 
   // @ManyToOne(() => UserRole, (userRole) => userRole.id)
   // userRole: UserRole[];

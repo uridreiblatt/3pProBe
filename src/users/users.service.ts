@@ -3,12 +3,14 @@ import { InjectRepository, getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateAuthDto } from 'src/auth/dto/create-auth.dto';
+import { UsersRoles } from './entities/user-role.entity';
 
 @Injectable()
 @Dependencies(getRepositoryToken(User))
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+     @InjectRepository(UsersRoles) private userRoleRepository: Repository<UsersRoles>,
   ) {}
 
   async findAll(): Promise<any> {
@@ -18,8 +20,18 @@ export class UsersService {
       },
       relations: {
         usersRoles: true,
+  
       },
       select: ['id', 'userName', 'usermail', 'usersRoles', 'color'],
+    });
+  }
+  async findAllRoles(): Promise<any> {
+    return await this.userRoleRepository.find({
+      
+      relations: {
+        users: true,       
+      },
+      //select: ['id', 'userName', 'usermail', 'usersRoles', 'color'],
     });
   }
 
