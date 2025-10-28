@@ -1,0 +1,28 @@
+ {
+	"ROOT": {
+		"PERMISSION": {
+			"USERNAME": "*********",
+			"PASSWORD": "**********"
+		},
+		"FILTERS": {
+			"ACTIVE_WORKER": "0",
+			"TID": "034572073"
+		},
+		"CARD_TYPE": "",
+		"CARD_TYPE_FILTER": "worker",
+		"FIELDS": {
+			"F_N": "",
+			"P_N": "",
+			"TID": "",
+			"ACTIVE_WORKER": "",
+			"MAIL": "",
+			"CELL": "",
+			"USER_ROLE": "",
+			"LIMITED_PERMISSION": "",
+			"YOM_HULEDET": "",
+			"MAHOZ_SAB": "",
+			"MAHOZ_SABAR": "",
+			"MISPAR_OVED": ""
+		}
+	}
+}
