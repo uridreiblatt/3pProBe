@@ -19,4 +19,6 @@ export class CreateUserDto {
   userPasswordEnc: string;
   @ApiProperty()
   otp: string;
+ @ApiProperty() 
+  isActive: boolean;
 }

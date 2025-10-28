@@ -5,9 +5,8 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { UsersRoles } from './user-role.entity';
-import { Company } from 'src/company/entities/company.entity';
 import { UserCompany } from 'src/user-company/entities/user-company.entity';
+import { UsersRoles } from 'src/user-role/entities/user-role.entity';
 @Entity('user')
 export class User {
   @PrimaryGeneratedColumn()
@@ -45,4 +44,6 @@ export class User {
   // userRole: UserRole;
   @Column()
   otp: string;
+  @Column()
+  isActive: boolean;
 }

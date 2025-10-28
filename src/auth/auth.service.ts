@@ -13,7 +13,7 @@ export class AuthService {
   ) {}
 
   async signIn(signInDto: CreateAuthDto): Promise<User> {
-    return await this.usersService.findOne(signInDto);
+    return await this.usersService.findOneByMail(signInDto);
   }
 
   async signAsyncCookie(data: JwtDetails): Promise<{ access_token: string }> {

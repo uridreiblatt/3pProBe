@@ -4,7 +4,7 @@ import { UpdatePriorityProductsLocationDto } from './dto/update-priority-product
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PriorityProductsLocation } from './entities/priority-products-location.entity';
-import { Zone } from './entities/zone.entity';
+import { Zone } from '../zone/entities/zone.entity';
 
 @Injectable()
 export class PriorityProductsLocationsService {

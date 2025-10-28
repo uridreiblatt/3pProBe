@@ -10,3 +10,9 @@
 
 // INSERT INTO `p3pro`.`user_company` (`usersId`, `companyId`) VALUES ('1', '1');
 // INSERT INTO `p3pro`.`user_company` (`usersId`, `companyId`) VALUES ('1', '2');
+
+// INSERT INTO `p3pro`.`role` (`role`, `roleDisplayName`, `color`) VALUES ('Qa', 'Qa', 'pink');
+// INSERT INTO `p3pro`.`role` (`role`, `roleDisplayName`, `color`) VALUES ('Shipper', 'Shipper', 'Shipper');
+// INSERT INTO `p3pro`.`role` (`role`, `roleDisplayName`, `color`) VALUES ('Administrator', 'Administrator', 'Administrator');
+// INSERT INTO `p3pro`.`role` (`role`, `roleDisplayName`, `color`) VALUES ('SysAdmin', 'SysAdmin', 'SysAdmin');
+

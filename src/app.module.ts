@@ -29,6 +29,9 @@ import { ShipRushModule } from './ship-rush/ship-rush.module';
 import { PartCqauntModule } from './part-cqaunt/part-cqaunt.module';
 import { CompanyModule } from './company/company.module';
 import { UserCompanyModule } from './user-company/user-company.module';
+import { ZoneModule } from './zone/zone.module';
+import { RoleModule } from './role/role.module';
+import { UserRoleModule } from './user-role/user-role.module';
 
 @Module({
   imports: [
@@ -58,6 +61,16 @@ import { UserCompanyModule } from './user-company/user-company.module';
       }),
       inject: [ConfigService],
     }),
+
+
+    CompanyModule,
+    UserCompanyModule,
+    BoxesModule,
+    ZoneModule,
+    RoleModule,
+    UserRoleModule,
+
+
     OrderModule,
     SmsModule,
     EsModule,
@@ -66,7 +79,7 @@ import { UserCompanyModule } from './user-company/user-company.module';
     OrderLinesModule,
     ReportViewModule,
     GetOrderInfoModule,
-    BoxesModule,
+    
     OrderBoxesModule,
     ShipmentPriorityModule,
     DbLogModule,
@@ -78,8 +91,10 @@ import { UserCompanyModule } from './user-company/user-company.module';
     CylinderModule,
     ShipRushModule,
     PartCqauntModule,
-    CompanyModule,
-    UserCompanyModule,
+    
+    
+   
+    
   ],
   controllers: [],
   providers: [

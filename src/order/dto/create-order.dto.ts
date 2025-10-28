@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { OrderBoxes } from 'src/order-boxes/entities/order-box.entity';
 import { OrderLine } from 'src/order-lines/entities/order-line.entity';
 import { TaskStatus } from 'src/task-status/entities/task-status.entity';
-import { Role } from 'src/users/entities/role.entity';
+import { Role } from 'src/role/entities/role.entity';
 import { User } from 'src/users/entities/user.entity';
 
 export class CreateOrderDto {

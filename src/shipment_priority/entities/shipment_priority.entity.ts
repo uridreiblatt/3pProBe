@@ -1,4 +1,5 @@
-import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
+import { Company } from "src/company/entities/company.entity";
+import { PrimaryGeneratedColumn, Column, Entity, ManyToOne } from "typeorm";
 @Entity()
 export class ShipmentPriority {
   @PrimaryGeneratedColumn()
@@ -13,4 +14,6 @@ export class ShipmentPriority {
   shipRushCode: string;
   @Column()
   shipRushAcountNumber: string;
+  @ManyToOne(() => Company, (company) => company.boxsizes)
+  company: Company;
 }

@@ -730,7 +730,7 @@ export class GetOrderInfoService {
       `/DOCUMENTS_D`;
     const credentials = btoa(this.username + ':' + this.pwd);
     const basicAuth = 'Basic ' + credentials;
-    const CqauntData = await this._PartCqauntService.findAll();
+    const CqauntData = await this._PartCqauntService.findAll(1);
     const dt = {
       DOCNO: ExisitingOrdName.DOCNO, // order.ORDNAME,
       DOC: ExisitingOrdName.DOC, //order.DOCUMENT_DOCNO,
@@ -886,7 +886,7 @@ export class GetOrderInfoService {
     order: Order,
     shipmentPriority: ShipmentPriority,
   ): Promise<string> {
-    const shipRushConfigs = await this._shipRushService.findOne(this.comapny);
+    const shipRushConfigs = await this._shipRushService.findOneBySite(this.comapny);
     let shipRushConfig = null;
     if (shipRushConfigs) {
       shipRushConfig = shipRushConfigs[0];

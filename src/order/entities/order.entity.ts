@@ -12,7 +12,7 @@ import {
 import { User } from 'src/users/entities/user.entity';
 import { TaskStatus } from 'src/task-status/entities/task-status.entity';
 import { OrderLine } from 'src/order-lines/entities/order-line.entity';
-import { Role } from 'src/users/entities/role.entity';
+import { Role } from 'src/role/entities/role.entity';
 import { OrderBoxes } from 'src/order-boxes/entities/order-box.entity';
 import { OrderBasket } from 'src/order-basket/entities/order-basket.entity';
 

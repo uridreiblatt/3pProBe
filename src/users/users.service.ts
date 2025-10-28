@@ -1,44 +1,44 @@
-import { Injectable, Dependencies } from '@nestjs/common';
-import { InjectRepository, getRepositoryToken } from '@nestjs/typeorm';
-import { User } from '../users/entities/user.entity';
-import { Repository } from 'typeorm';
-import { CreateAuthDto } from 'src/auth/dto/create-auth.dto';
-import { UsersRoles } from './entities/user-role.entity';
+import { Injectable, Dependencies } from "@nestjs/common";
+import { InjectRepository, getRepositoryToken } from "@nestjs/typeorm";
+import { User } from "../users/entities/user.entity";
+import { Repository } from "typeorm";
+import { CreateAuthDto } from "src/auth/dto/create-auth.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { CreateUserDto } from "./dto/create-user.dto";
 
 @Injectable()
 @Dependencies(getRepositoryToken(User))
 export class UsersService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
-     @InjectRepository(UsersRoles) private userRoleRepository: Repository<UsersRoles>,
+    @InjectRepository(User) 
+    private userRepository: Repository<User>,   
   ) {}
+  async create(createUserDto: CreateUserDto) {
+    const ins = new User();
+    ins.userName = createUserDto.userName;
+    ins.usermail = createUserDto.usermail;
+    ins.userMobile = createUserDto.userMobile;
+    return await this.userRepository.save(ins);
+  }
 
   async findAll(): Promise<any> {
     return await this.userRepository.find({
       where: {
-        otp: '1',
+        otp: "1",
       },
       relations: {
         usersRoles: true,
+        userCompany: true,
+      },
+      select: ["id", "userName", "usermail", "usersRoles", "color"],
+    });
+  }
   
-      },
-      select: ['id', 'userName', 'usermail', 'usersRoles', 'color'],
-    });
-  }
-  async findAllRoles(): Promise<any> {
-    return await this.userRoleRepository.find({
-      
-      relations: {
-        users: true,       
-      },
-      //select: ['id', 'userName', 'usermail', 'usersRoles', 'color'],
-    });
-  }
 
   findAllWithDbProc() {
-    return this.userRepository.query('ggg @param1=1 ');
+    return this.userRepository.query("ggg @param1=1 ");
   }
-  async findOne(createAuthDto: CreateAuthDto): Promise<any> {
+  async findOneByMail(createAuthDto: CreateAuthDto): Promise<any> {
     return await this.userRepository.findOne({
       where: {
         usermail: createAuthDto.usermail,
@@ -48,7 +48,25 @@ export class UsersService {
         usersRoles: {
           role: true,
         },
+        userCompany: true,
       },
     });
+  }
+
+  async findOne(id: number) {
+    return await this.userRepository.findOne({
+      where: { id: id },
+    });
+  }
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const ins = new User();
+    ins.userName = updateUserDto.userName;
+    ins.usermail = updateUserDto.usermail;
+    ins.userMobile = updateUserDto.userMobile;
+    return await this.userRepository.update(id, ins);
+  }
+
+  async remove(id: number) {
+    return await this.userRepository.delete(id);
   }
 }

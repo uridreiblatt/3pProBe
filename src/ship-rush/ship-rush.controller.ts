@@ -1,10 +1,12 @@
-import { Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
 import { IncomingMessage } from 'http';
 import { ShipRushService } from './ship-rush.service';
 //import { CreateShipRushDto } from './dto/create-ship-rush.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { XMLParser } from 'fast-xml-parser';
-import { CreateShipRushDto } from './dto/create-ship-rush.dto';
+import { CreateShipRushDto, ShipRushDto } from './dto/create-ship-rush.dto';
+import { CreatePartCqauntDto } from 'src/part-cqaunt/dto/create-part-cqaunt.dto';
+import { UpdateRoleDto } from 'src/role/dto/update-role.dto';
 @ApiTags('shiprush')
 @Controller('ship-rush')
 export class ShipRushController {
@@ -13,37 +15,66 @@ export class ShipRushController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return await this.shipRushService.findOne(id);
+    return await this.shipRushService.findOne(+id);
   }
-  @Post()
-  async handleXml(@Req() req: Request) {
-    //console.log('handleXml', req);
-    const xml = await this.getRawBody(req); // read stream
+  // @Post()
+  // async handleXml(@Req() req: Request) {
+  //   //console.log('handleXml', req);
+  //   const xml = await this.getRawBody(req); // read stream
 
-    const parsed = await this.parser.parse(xml);
-    console.log('handleXml-Shipment', parsed.Request.ShipTransaction.Shipment);
-    console.log('handleXml-Order', parsed.Request.ShipTransaction.Order);
-    const createShipRushDto: CreateShipRushDto = {
-      shipmentId: parsed.Request.ShipTransaction.Order.OrderId,
-      trackingNumber: parsed.Request.ShipTransaction.Shipment.ShipmentNumber,
-      status: '',
-      carrier: '',
-    };
-    console.log('createShipRushDto', createShipRushDto);
-    await this.shipRushService.create(createShipRushDto);
-    return;
-  }
+  //   const parsed = await this.parser.parse(xml);
+  //   console.log('handleXml-Shipment', parsed.Request.ShipTransaction.Shipment);
+  //   console.log('handleXml-Order', parsed.Request.ShipTransaction.Order);
+  //   const createShipRushDto: CreateShipRushDto = {
+  //     shipmentId: parsed.Request.ShipTransaction.Order.OrderId,
+  //     trackingNumber: parsed.Request.ShipTransaction.Shipment.ShipmentNumber,
+  //     status: '',
+  //     carrier: '',
+  //   };
+  //   console.log('createShipRushDto', createShipRushDto);
+  //   await this.shipRushService.createShipRus(createShipRushDto);
+  //   return;
+  // }
 
-  private async getRawBody(req: Request): Promise<string> {
-    const stream = req as unknown as IncomingMessage;
+  // private async getRawBody(req: Request): Promise<string> {
+  //   const stream = req as unknown as IncomingMessage;
 
-    return new Promise((resolve, reject) => {
-      let data = '';
-      stream.setEncoding('utf8');
+  //   return new Promise((resolve, reject) => {
+  //     let data = '';
+  //     stream.setEncoding('utf8');
 
-      stream.on('data', (chunk) => (data += chunk));
-      stream.on('end', () => resolve(data));
-      stream.on('error', (err) => reject(err));
-    });
-  }
+  //     stream.on('data', (chunk) => (data += chunk));
+  //     stream.on('end', () => resolve(data));
+  //     stream.on('error', (err) => reject(err));
+  //   });
+  // }
+
+
+  @Get()
+    findAll() {
+      return this.shipRushService.findAll(1);
+    }
+  
+    @Post()
+      create(@Body() shipRushDto: ShipRushDto) {
+        return this.shipRushService.create(shipRushDto);
+      }
+    
+      
+    
+      // @Get(':id')
+      // findOne(@Param('id') id: string) {
+      //   return this.shipRushService.findOne(+id);
+      // }
+    
+      @Patch(':id')
+      update(@Param('id') id: string, @Body() shipRushDto: ShipRushDto) {
+        return this.shipRushService.update(+id, shipRushDto);
+      }
+    
+      @Delete(':id')
+      remove(@Param('id') id: string) {
+        return this.shipRushService.remove(+id);
+      }
+
 }

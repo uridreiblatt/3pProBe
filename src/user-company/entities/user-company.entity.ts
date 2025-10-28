@@ -1,5 +1,5 @@
 import { Company } from "src/company/entities/company.entity";
-import { Role } from "src/users/entities/role.entity";
+import { Role } from "src/role/entities/role.entity";
 import { User } from "src/users/entities/user.entity";
 import { PrimaryGeneratedColumn, ManyToOne, JoinColumn, Entity } from "typeorm";
 

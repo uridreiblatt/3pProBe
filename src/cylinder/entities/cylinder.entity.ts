@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Company } from "src/company/entities/company.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Cylinder {
@@ -8,4 +9,7 @@ export class Cylinder {
   partName: string;
   @Column()
   description: string;
+
+  @ManyToOne(() => Company, (company) => company.boxsizes)
+  company: Company;
 }

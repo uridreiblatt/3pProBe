@@ -1,9 +1,17 @@
-import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
+import { Company } from 'src/company/entities/company.entity';
+import { UserCompany } from 'src/user-company/entities/user-company.entity';
+import { PrimaryGeneratedColumn, Column, Entity, JoinColumn, OneToMany, ManyToOne } from 'typeorm';
 @Entity()
 export class Boxsize {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ default: "1-1-1" })
   sizeDesc: string;
+
+
+
+  @ManyToOne(() => Company, (company) => company.boxsizes)
+    company: Company;  
+  
 }

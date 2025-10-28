@@ -11,7 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { TaskStatus } from 'src/task-status/entities/task-status.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Role } from 'src/users/entities/role.entity';
+import { Role } from 'src/role/entities/role.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderLinesService } from 'src/order-lines/order-lines.service';

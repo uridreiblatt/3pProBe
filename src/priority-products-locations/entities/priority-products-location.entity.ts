@@ -6,7 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Zone } from './zone.entity';
+import { Zone } from '../../zone/entities/zone.entity';
 import { IsDate } from 'class-validator';
 
 @Entity('priorityProductsLocation')

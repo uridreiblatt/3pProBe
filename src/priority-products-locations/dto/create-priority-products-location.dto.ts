@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Zone } from '../entities/zone.entity';
+import { Zone } from '../../zone/entities/zone.entity';
 import { PriorityProducts } from 'src/priorityProducts/entities/priorityProducts.entity';
 
 export class CreatePriorityProductsLocationDto {
