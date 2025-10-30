@@ -20,7 +20,7 @@ async function bootstrap() {
 
   app.enableCors({
     allowedHeaders: ['Content-Type', 'Authorization'],
-    origin: ['http://localhost:3010', 'http://127.0.0.1:3010'],
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
     credentials: true,
   });
   //app.useGlobalFilters(new HttpExceptionFilter());
@@ -40,8 +40,8 @@ async function bootstrap() {
     },
   });
 
-  await app.listen(port);
-  console.log('runnig on http://localhost:' + port + '/api');
+  await app.listen(process.env.PORT);
+  console.log('runnig on http://localhost:' + process.env.PORT + '/api');
   console.log(process.env.PORT);
 }
 bootstrap();

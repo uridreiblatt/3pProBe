@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards,Request } from '@nestjs/common';
 import { ZoneService } from './zone.service';
 import { CreateZoneDto } from './dto/create-zone.dto';
 import { UpdateZoneDto } from './dto/update-zone.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('zone')
 export class ZoneController {
@@ -11,10 +12,11 @@ export class ZoneController {
   create(@Body() createZoneDto: CreateZoneDto) {
     return this.zoneService.create(createZoneDto);
   }
-
+  @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.zoneService.findAll();
+  findAll(@Request() req  ) {
+    console.log(req.user)
+    return this.zoneService.findAll(req.user.selectCompany);
   }
 
   @Get(':id')

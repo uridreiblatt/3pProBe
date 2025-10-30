@@ -28,9 +28,10 @@ export class ZoneService {
       return await this.zoneRepository.save(ins);
   }
 
-  async findAll() {
+  async findAll(selectCompany: number) {
+    console.log(selectCompany);
     return await this.zoneRepository.find({
-      where: {company: {id: 1}}
+      where: {company: {id: selectCompany}}
     });
   }
 

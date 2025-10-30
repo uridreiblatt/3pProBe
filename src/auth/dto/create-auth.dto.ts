@@ -8,6 +8,17 @@ export class CreateAuthDto {
   })
   userPasswordEnc: string;
 }
+export class SwitchCompanyDto {
+  @ApiProperty()
+  companyId: number;  
+}
+
+export class CreateAuthSwitchCompanyDto {
+  @ApiProperty()
+  companyId: number; 
+  @ApiProperty()
+  UserUuid: string;  
+}
 export class AuthOtp {
   @ApiProperty()
   uuid: string;
@@ -22,4 +33,6 @@ export class JwtDetails {
   userName: string;
   @ApiProperty()
   userRole: string;
+  @ApiProperty()
+  userComapny: number;
 }

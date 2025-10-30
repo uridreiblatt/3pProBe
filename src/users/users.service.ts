@@ -38,7 +38,7 @@ export class UsersService {
   findAllWithDbProc() {
     return this.userRepository.query("ggg @param1=1 ");
   }
-  async findOneByMail(createAuthDto: CreateAuthDto): Promise<any> {
+  async signIn(createAuthDto: CreateAuthDto): Promise<User> {
     return await this.userRepository.findOne({
       where: {
         usermail: createAuthDto.usermail,
@@ -48,7 +48,20 @@ export class UsersService {
         usersRoles: {
           role: true,
         },
-        userCompany: true,
+        userCompany: {company: true},
+      },
+    });
+  }
+  async switchCompany(userUuid: string): Promise<User> {
+    return await this.userRepository.findOne({
+      where: {
+        userUuid: userUuid,       
+      },
+      relations: {
+        usersRoles: {
+          role: true,
+        },
+        userCompany: {company: true},
       },
     });
   }
@@ -56,6 +69,9 @@ export class UsersService {
   async findOne(id: number) {
     return await this.userRepository.findOne({
       where: { id: id },
+      relations:{
+        userCompany:true,
+      },
     });
   }
   async update(id: number, updateUserDto: UpdateUserDto) {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAuthDto, JwtDetails } from './dto/create-auth.dto';
+import { CreateAuthDto, CreateAuthSwitchCompanyDto, JwtDetails } from './dto/create-auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/users/entities/user.entity';
@@ -13,7 +13,10 @@ export class AuthService {
   ) {}
 
   async signIn(signInDto: CreateAuthDto): Promise<User> {
-    return await this.usersService.findOneByMail(signInDto);
+    return await this.usersService.signIn(signInDto);
+  }
+  async SwitchCompany(switchCompanyDto: CreateAuthSwitchCompanyDto): Promise<User> {
+    return await this.usersService.switchCompany(switchCompanyDto.UserUuid);
   }
 
   async signAsyncCookie(data: JwtDetails): Promise<{ access_token: string }> {
@@ -21,6 +24,7 @@ export class AuthService {
       userName: data.userName,
       userUuid: data.uuid,
       role: data.userRole,
+      selectCompany: data.userComapny
     };
     return {
       access_token: await this.jwtService.signAsync(payload),
