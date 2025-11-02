@@ -5,4 +5,12 @@ export class CreateDbLogDto {
   subject: string;
   @ApiProperty()
   message: string;
+  @ApiProperty()
+    level: string;
+    @ApiProperty()
+    context: string;
+    @ApiProperty()
+    metadata: string;
+    @ApiProperty()
+    companyId: number;
 }

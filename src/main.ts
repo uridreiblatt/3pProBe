@@ -3,18 +3,18 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { AllExceptionsFilter } from './core/http-exception.filter';
+import { ErrorLogService } from './core/error-log.service';
 //import { rawBodyMiddleware } from './middleware/xml-body.middleware';
 
 async function bootstrap() {
   const port = process.env.PORT || 3000;
-  const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn', 'log'],
-  });
+  const app = await NestFactory.create(AppModule);
 
   // Apply only for routes that need raw XML (like /xml-endpoint)
   //app.use('/xml-endpoint', rawBodyMiddleware);
 
   // Enable XML parsing
+ 
 
   app.use(cookieParser());
 
@@ -24,8 +24,12 @@ async function bootstrap() {
     credentials: true,
   });
   //app.useGlobalFilters(new HttpExceptionFilter());
-  const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+  const errorLogService = app.get(ErrorLogService);
+  const httpAdapterHost = app.get(HttpAdapterHost);
+
+  // Create filter with injected service
+  const filter = new AllExceptionsFilter(httpAdapterHost, errorLogService);
+  app.useGlobalFilters(filter);
 
   const config = new DocumentBuilder()
     .setTitle('P3 ')

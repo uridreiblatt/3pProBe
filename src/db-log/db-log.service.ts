@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CreateDbLogDto } from './dto/create-db-log.dto';
-import { DbLog } from './entities/db-log.entity';
+import { Log } from './entities/db-log.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -8,8 +8,8 @@ import { Repository } from 'typeorm';
 export class DbLogService {
   private readonly logger = new Logger(DbLogService.name);
   constructor(
-    @InjectRepository(DbLog)
-    private DbLogRepository: Repository<DbLog>,
+    @InjectRepository(Log)
+    private DbLogRepository: Repository<Log>,
   ) {}
 
   async create(createDbLogDto: CreateDbLogDto): Promise<any> {

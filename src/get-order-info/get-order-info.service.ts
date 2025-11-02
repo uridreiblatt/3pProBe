@@ -26,6 +26,7 @@ import { ShipRushService } from 'src/ship-rush/ship-rush.service';
 import { ShipmentPriority } from 'src/shipment_priority/entities/shipment_priority.entity';
 import { PartCqauntService } from 'src/part-cqaunt/part-cqaunt.service';
 import { PartCqaunt } from 'src/part-cqaunt/entities/part-cqaunt.entity';
+import { CreateDbLogDto } from 'src/db-log/dto/create-db-log.dto';
 
 @Injectable()
 export class GetOrderInfoService {
@@ -105,6 +106,10 @@ export class GetOrderInfoService {
     this._DbLogService.create({
       subject: 'priority orders',
       message: 'start import orders ' + orderInfo.value.length.toString(),
+      level: '',
+      context: '',
+      metadata: '',
+      companyId: 0
     });
     let LinesInserted = 0;
 
@@ -173,11 +178,14 @@ export class GetOrderInfoService {
               LinesInserted += 1;
             } catch (error) {
               await this._DbLogService.create({
-                subject:
-                  'priority orders - create Error ' + createOrderDto.ORDNAME,
+                subject: 'priority orders - create Error ' + createOrderDto.ORDNAME,
                 message: JSON.stringify(error).substring(
-                  JSON.stringify(error).lastIndexOf('originalError'),
+                  JSON.stringify(error).lastIndexOf('originalError')
                 ),
+                level: '',
+                context: '',
+                metadata: '',
+                companyId: 0
               });
             }
           } else {
@@ -226,8 +234,12 @@ export class GetOrderInfoService {
                 await this._DbLogService.create({
                   subject: 'priority orders - create ' + createOrderDto.ORDNAME,
                   message: JSON.stringify(error).substring(
-                    JSON.stringify(error).lastIndexOf('originalError'),
+                    JSON.stringify(error).lastIndexOf('originalError')
                   ),
+                  level: '',
+                  context: '',
+                  metadata: '',
+                  companyId: 0
                 });
               }
             }
@@ -267,12 +279,15 @@ export class GetOrderInfoService {
                     await this._orderLinesService.create(createOrderLineDto);
                   } catch (error) {
                     await this._DbLogService.create({
-                      subject:
-                        'priority orders - Line create ' +
+                      subject: 'priority orders - Line create ' +
                         createOrderDto.ORDNAME,
                       message: JSON.stringify(error).substring(
-                        JSON.stringify(error).lastIndexOf('originalError'),
+                        JSON.stringify(error).lastIndexOf('originalError')
                       ),
+                      level: '',
+                      context: '',
+                      metadata: '',
+                      companyId: 0
                     });
                   }
               }
@@ -290,12 +305,15 @@ export class GetOrderInfoService {
                     );
                   } catch (error) {
                     this._DbLogService.create({
-                      subject:
-                        'priority orders - Line create ' +
+                      subject: 'priority orders - Line create ' +
                         createOrderDto.ORDNAME,
                       message: JSON.stringify(error).substring(
-                        JSON.stringify(error).lastIndexOf('originalError'),
+                        JSON.stringify(error).lastIndexOf('originalError')
                       ),
+                      level: '',
+                      context: '',
+                      metadata: '',
+                      companyId: 0
                     });
                   }
                 }
@@ -309,6 +327,10 @@ export class GetOrderInfoService {
     await this._DbLogService.create({
       subject: 'priority orders',
       message: 'end import orders orders: ' + LinesInserted.toString(),
+      level: '',
+      context: '',
+      metadata: '',
+      companyId: 0
     });
     this.isLocked = false;
     return true;
@@ -334,6 +356,10 @@ export class GetOrderInfoService {
       await this._DbLogService.create({
         subject: 'shipRush Create ',
         message: 'orderId ' + Id,
+        level: '',
+        context: '',
+        metadata: '',
+        companyId: 0
       });
       const order = await this._orderService.findOne(Id);
       if (!order) {
@@ -420,9 +446,13 @@ export class GetOrderInfoService {
         };
         await this._orderService.updateData(Id, upd);
 
-        const errLog = {
+        const errLog: CreateDbLogDto  = {
           subject: 'shipRush Create Error - ' + order.ORDNAME,
           message: 'failed to create shiprush order',
+          level: '',
+          context: '',
+          metadata: '',
+          companyId: 0
         };
         await this._DbLogService.create(errLog);
 
@@ -558,6 +588,10 @@ export class GetOrderInfoService {
       await this._DbLogService.create({
         subject: 'priority sh Create ',
         message: 'orderId ' + Id,
+        level: '',
+        context: '',
+        metadata: '',
+        companyId: 0
       });
       const order = await this._orderService.findOne(Id);
       if (!order) {

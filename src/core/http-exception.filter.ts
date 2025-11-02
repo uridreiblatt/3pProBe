@@ -1,11 +1,20 @@
 import { Catch, ArgumentsHost, Logger } from '@nestjs/common';
-import { BaseExceptionFilter } from '@nestjs/core';
+import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import { HttpException } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { ErrorLogService } from './error-log.service';
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
+
+  constructor(
+    httpAdapterHost: HttpAdapterHost, // This is correct
+    private readonly errorLogService: ErrorLogService,
+  ) {
+    super(httpAdapterHost.httpAdapter); // ✅ Use .httpAdapter to get HttpServer
+  }
+
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest<Request>();
@@ -31,6 +40,9 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
         error: exception,
       }),
     );
+
+    // Save error to database
+    this.errorLogService.logError(exception, request);
 
     // Send structured response
     response.status(status).json({

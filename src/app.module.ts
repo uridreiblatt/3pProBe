@@ -32,6 +32,8 @@ import { UserCompanyModule } from './user-company/user-company.module';
 import { ZoneModule } from './zone/zone.module';
 import { RoleModule } from './role/role.module';
 import { UserRoleModule } from './user-role/user-role.module';
+import { ErrorLogService } from './core/error-log.service';
+import { Log } from './db-log/entities/db-log.entity';
 
 @Module({
   imports: [
@@ -56,11 +58,12 @@ import { UserRoleModule } from './user-role/user-role.module';
           //trustedConnection: true,
           //trustServerCertificate: true,
         },
-        entities: [__dirname + '/**/**/*.entity{.ts,.js}'],
+        entities: [ __dirname + '/**/**/*.entity{.ts,.js}'],
         synchronize: false,
       }),
       inject: [ConfigService],
     }),
+    TypeOrmModule.forFeature([Log]), // ✅ Required
     CompanyModule,
     UserCompanyModule,
     BoxesModule,
@@ -90,6 +93,7 @@ import { UserRoleModule } from './user-role/user-role.module';
   controllers: [],
   providers: [
     AppService,
+    ErrorLogService,
     {
       provide: APP_GUARD,
       useClass: RolesGuard,

@@ -6,7 +6,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class DbLog {
+export class Log {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
@@ -15,4 +15,16 @@ export class DbLog {
   message: string;
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
+  @Column()
+  level: string;
+  @Column({ nullable: true })
+  context: string;
+  @Column({ nullable: true })
+  metadata: string;
+  @Column()
+  companyId: number;
 }
+
+
+
+
