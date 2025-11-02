@@ -41,7 +41,6 @@ async function bootstrap() {
   });
 
   await app.listen(process.env.PORT);
-  console.log('runnig on http://localhost:' + process.env.PORT + '/api');
-  console.log(process.env.PORT);
+  console.log('runnig on http://localhost:' + process.env.PORT + '/api');  
 }
 bootstrap();

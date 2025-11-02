@@ -9,6 +9,6 @@ export class CreateZoneDto {
       priority: number;
       @ApiProperty()
       companyId: number;
-      @ApiProperty()      
-      zoneId: number;      
+      // @ApiProperty()      
+      // zoneId: number;      
 }

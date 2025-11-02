@@ -61,16 +61,12 @@ import { UserRoleModule } from './user-role/user-role.module';
       }),
       inject: [ConfigService],
     }),
-
-
     CompanyModule,
     UserCompanyModule,
     BoxesModule,
     ZoneModule,
     RoleModule,
     UserRoleModule,
-
-
     OrderModule,
     SmsModule,
     EsModule,
@@ -79,7 +75,6 @@ import { UserRoleModule } from './user-role/user-role.module';
     OrderLinesModule,
     ReportViewModule,
     GetOrderInfoModule,
-    
     OrderBoxesModule,
     ShipmentPriorityModule,
     DbLogModule,
@@ -91,10 +86,6 @@ import { UserRoleModule } from './user-role/user-role.module';
     CylinderModule,
     ShipRushModule,
     PartCqauntModule,
-    
-    
-   
-    
   ],
   controllers: [],
   providers: [

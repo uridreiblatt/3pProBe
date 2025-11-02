@@ -22,7 +22,7 @@ export class ZoneService {
       ins.zoneName = createZoneDto.zoneName;
       ins.color = createZoneDto.color;
       ins.priority = createZoneDto.priority;
-      ins.zoneId = createZoneDto.zoneId;
+      //ins.zoneId = createZoneDto.zoneId;
       ins.company = new Company() ;
       ins.company.id =createZoneDto.companyId;
       return await this.zoneRepository.save(ins);
@@ -49,7 +49,7 @@ export class ZoneService {
       ins.zoneName = updateZoneDto.zoneName;
       ins.color = updateZoneDto.color;
       ins.priority = updateZoneDto.priority;
-      ins.zoneId = updateZoneDto.zoneId;
+      //ins.zoneId = updateZoneDto.zoneId;
       ins.company = new Company() ;
       ins.company.id =updateZoneDto.companyId;
       return await this.zoneRepository.update(id, ins);
