@@ -23,4 +23,11 @@ export class DbLogService {
   async findAll() {
     return await this.DbLogRepository.find();
   }
+  async findOne(id: number) {
+    return this.DbLogRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
 }

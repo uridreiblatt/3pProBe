@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { DbLogService } from './db-log.service';
 import { CreateDbLogDto } from './dto/create-db-log.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -16,4 +16,8 @@ export class DbLogController {
   findAll() {
     return this.dbLogService.findAll();
   }
+  @Get(':id')
+    async findOne(@Param('id') id: string) {
+      return await this.dbLogService.findOne(+id);
+    }
 }
