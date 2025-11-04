@@ -20,9 +20,13 @@ export class DbLogService {
     }
   }
 
-  async findAll() {
-    return await this.DbLogRepository.find();
+  async findAll(selectCompanyId: number) {
+     return await this.DbLogRepository.find({
+      where: {companyId:  selectCompanyId}
+    });
   }
+
+
   async findOne(id: number) {
     return this.DbLogRepository.findOne({
       where: {

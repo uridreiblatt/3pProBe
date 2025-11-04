@@ -17,7 +17,7 @@ export class ZoneController {
               status: HttpStatus.BAD_REQUEST,
               error: 'BAD_REQUEST',
             }, HttpStatus.BAD_REQUEST, {
-              cause: 'invalid company one'
+              cause: 'invalid company id: ' + createZoneDto.companyId
             });
     }
     return await this.zoneService.create(createZoneDto);
