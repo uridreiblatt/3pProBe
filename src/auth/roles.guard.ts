@@ -42,8 +42,7 @@ export class RolesGuard implements CanActivate {
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
-      });
-       console.log('dddddddddddd',requiredRoles , payload)
+      });      
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
       return requiredRoles.some((role) => payload.role.includes(role));

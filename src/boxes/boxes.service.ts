@@ -15,10 +15,10 @@ export class BoxesService {
     private boxRepository: Repository<Boxsize>,
   ) {}
   async create(createBoxDto: CreateBoxDto) {
+    console.log('createBoxDto',createBoxDto);
     const ins = new  Boxsize();
     ins.sizeDesc = createBoxDto.sizeDesc;
-    ins.company = new Company() ;
-    ins.company.id =createBoxDto.companyId;
+    ins.company = { id:  createBoxDto.companyId} as any;
     return await this.boxRepository.save(ins);
   }
 

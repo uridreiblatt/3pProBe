@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { AllExceptionsFilter } from './core/http-exception.filter';
 import { ErrorLogService } from './core/error-log.service';
+import { ValidationPipe } from '@nestjs/common';
 //import { rawBodyMiddleware } from './middleware/xml-body.middleware';
 
 async function bootstrap() {
@@ -23,13 +24,19 @@ async function bootstrap() {
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
     credentials: true,
   });
-  //app.useGlobalFilters(new HttpExceptionFilter());
   const errorLogService = app.get(ErrorLogService);
   const httpAdapterHost = app.get(HttpAdapterHost);
 
   // Create filter with injected service
   const filter = new AllExceptionsFilter(httpAdapterHost, errorLogService);
   app.useGlobalFilters(filter);
+
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+    transformOptions: { enableImplicitConversion: true },
+  }));
 
   const config = new DocumentBuilder()
     .setTitle('P3 ')

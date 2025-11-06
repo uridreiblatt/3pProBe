@@ -24,7 +24,7 @@ export class ErrorLogService {
         //query: request.query,
         //params: request.params,
         stack: error.stack,
-      }).substring(0,300);    
+      }).substring(0,1500);    
 
       await this.logRepository.save(errorLog);
     } catch (dbError) {

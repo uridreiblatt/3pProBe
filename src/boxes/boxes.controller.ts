@@ -17,28 +17,17 @@ import { ApiTags } from "@nestjs/swagger";
 import { CreateBoxDto } from "./dto/create-box.dto";
 import { UpdateBoxDto } from "./dto/update-box.dto";
 import { AuthGuard } from "src/auth/auth.guard";
+import { SkipCookieMatch } from "src/auth/entities/skip-cookie-match.decorator";
 @ApiTags("boxes")
 @Controller("boxes")
-@UseGuards(AuthGuard)
+//@UseGuards(AuthGuard)
 export class BoxesController {
   constructor(private readonly boxesService: BoxesService) {}
-
   @Post()
-  create(@Request() req, @Body() createBoxDto: CreateBoxDto) {
-    try {
-      if (req.user.selectCompany !== createBoxDto.companyId) {
-        console.error("invalid company");
-        throw new HttpException(
-          {
-            status: HttpStatus.BAD_REQUEST,
-            error: "BAD_REQUEST",
-          },
-          HttpStatus.BAD_REQUEST,
-          {
-            cause: "invalid company id: " + createBoxDto.companyId,
-          }
-        );
-      }
+  create( @Body() createBoxDto: CreateBoxDto, @Request() req){
+    try {     
+       console.log('raw req.body', req.body);  // Should show full payload
+       console.log('validated dto', createBoxDto);  
       return this.boxesService.create(createBoxDto);
     } catch (error) {
       throw new HttpException(
@@ -67,23 +56,23 @@ export class BoxesController {
 
   @Patch(":id")
   update(
-    @Request() req,
+    //@Request() req,
     @Param("id") id: string,
     @Body() updateBoxDto: UpdateBoxDto
   ) {
-    if (req.user.selectCompany !== updateBoxDto.companyId) {
-      console.error("invalid company");
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: "BAD_REQUEST",
-        },
-        HttpStatus.BAD_REQUEST,
-        {
-          cause: "invalid company id: " + updateBoxDto.companyId,
-        }
-      );
-    }
+    // if (req.user.selectCompany !== updateBoxDto.companyId) {
+    //   console.error("invalid company");
+    //   throw new HttpException(
+    //     {
+    //       status: HttpStatus.BAD_REQUEST,
+    //       error: "BAD_REQUEST",
+    //     },
+    //     HttpStatus.BAD_REQUEST,
+    //     {
+    //       cause: "invalid company id: " + updateBoxDto.companyId,
+    //     }
+    //   );
+    // }
     return this.boxesService.update(+id, updateBoxDto);
   }
 

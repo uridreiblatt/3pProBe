@@ -11,7 +11,10 @@ export class Boxsize {
 
 
 
-  @ManyToOne(() => Company, (company) => company.boxsizes)
-    company: Company;  
-  
+  // @ManyToOne(() => Company, (company) => company.boxsizes)
+  // company: Company;
+    
+  @ManyToOne(() => Company, (company) => company.boxsizes, { nullable: false })
+  @JoinColumn({ name: 'companyId' }) // <-- owns the FK column
+  company: Company;
 }

@@ -14,17 +14,19 @@ import { AuthService } from './auth.service';
 import { CreateAuthDto, CreateAuthSwitchCompanyDto, JwtDetails, SwitchCompanyDto } from './dto/create-auth.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from './auth.guard';
+import { SkipCookieMatch } from "src/auth/entities/skip-cookie-match.decorator";
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-
+  @SkipCookieMatch()
   @Post('login')
   async signIn(
     @Body() signInDto: CreateAuthDto,
     @Res({ passthrough: true }) response: Response,
   ) {
+    console.log()
     const resUser = await this.authService.signIn(signInDto);
     
     if (resUser === undefined || resUser === null) {
