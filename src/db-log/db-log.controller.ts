@@ -8,6 +8,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class DbLogController {
   constructor(private readonly dbLogService: DbLogService) {}
 
+  @UseGuards(AuthGuard)
   @Post()
   async create(@Request() req ,@Body() createDbLogDto: CreateDbLogDto) {
     if (req.user.selectCompany !== createDbLogDto.companyId)
@@ -28,6 +29,7 @@ export class DbLogController {
   findAll(@Request() req) {
     return this.dbLogService.findAll(req.user.selectCompany);
   }
+  @UseGuards(AuthGuard)
   @Get(':id')
     async findOne(@Request() req, @Param('id') id: string) {
       const res = await this.dbLogService.findOne(+id);

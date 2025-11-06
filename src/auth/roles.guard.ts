@@ -9,6 +9,7 @@ import { Role } from './entities/role.enum';
 import { ROLES_KEY } from './entities/roles.decorator';
 import { jwtConstants } from './constants';
 import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -24,13 +25,16 @@ export class RolesGuard implements CanActivate {
       context.getClass(),
     ]);
 
+    
     if (!requiredRoles) {
       return true;
     }
 
     const request = context.switchToHttp().getRequest();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    // const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    const ck = this.extractJWTFromCookie(request);
+    const token = ck;
     if (!token) {
       return false;
     }
@@ -39,6 +43,7 @@ export class RolesGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });
+       console.log('dddddddddddd',requiredRoles , payload)
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
       return requiredRoles.some((role) => payload.role.includes(role));
@@ -46,6 +51,17 @@ export class RolesGuard implements CanActivate {
       this.logger.error(error);
     }
     return false;
+  }
+  // private extractTokenFromHeader(request: Request): string | undefined {
+  //   const [type, token] = request.headers.authorization?.split(' ') ?? [];
+  //   return type === 'Bearer' ? token : undefined;
+  // }
+
+  private extractJWTFromCookie(req: Request): string | null {
+    if (req.cookies && req.cookies.access_token) {
+      return req.cookies.access_token;
+    }
+    return null;
   }
 }
 

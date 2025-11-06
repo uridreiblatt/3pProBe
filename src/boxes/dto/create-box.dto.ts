@@ -5,5 +5,5 @@ export class CreateBoxDto {
   sizeDesc: string;
 
   @ApiProperty({default:0})
-  CompanyId: number;
+  companyId: number;
 }

@@ -18,14 +18,27 @@ export class BoxesService {
     const ins = new  Boxsize();
     ins.sizeDesc = createBoxDto.sizeDesc;
     ins.company = new Company() ;
-    ins.company.id =createBoxDto.CompanyId;
+    ins.company.id =createBoxDto.companyId;
     return await this.boxRepository.save(ins);
   }
 
-  async findAll(): Promise<Boxsize[]> {
+  async findAll(companyId: number): Promise<Boxsize[]> {
     return await this.boxRepository.find({
       where: {
-        company:{ id: 1} ,
+        company:{ id: companyId} ,
+      },
+      relations:{
+        company: true,
+      },
+      order: {
+        sizeDesc: 'ASC',
+      },
+    });
+  }
+  async findOne(companyId: number): Promise<Boxsize> {
+    return await this.boxRepository.findOne({
+      where: {
+        company:{ id: companyId} ,
       },
       relations:{
         company: true,
@@ -36,10 +49,10 @@ export class BoxesService {
     });
   }
 
-  async findOne(id: string): Promise<any> {
+  async findOneByBarcode(barcodeId: string): Promise<any> {
     const sqlQuery =
       " SELECT [PARTNAME] FROM [dbo].[v_priorityProducts] WHERE [BARCODE]='" +
-      id +
+      barcodeId +
       "'";
     const res = await this.boxRepository.query(sqlQuery);
     return res[0];
@@ -49,7 +62,7 @@ export class BoxesService {
     const ins = new  Boxsize();
     ins.sizeDesc = updateBoxDto.sizeDesc;
     ins.company = new Company() ;
-    ins.company.id =updateBoxDto.CompanyId;
+    ins.company.id =updateBoxDto.companyId;
     return await this.boxRepository.update(id, ins);
   }
 
