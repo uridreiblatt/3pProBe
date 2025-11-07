@@ -73,7 +73,7 @@ export class CookieMatchGuard implements CanActivate {
           );
         if (String(payload.selectCompany) !== String(bodyVal)) {
           throw new ForbiddenException(
-            `Cookie "${this.opts.cookieName}" must match body "${this.opts.bodyFieldPath}".`
+            `Cookie "${this.opts.cookieName}" must match body "${this.opts.bodyFieldPath}". comapny: "${payload.selectCompany}" destination company: "${String(bodyVal)}"`
           );
         }
       }

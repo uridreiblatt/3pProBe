@@ -109,7 +109,7 @@ const cookieMatchOpts: CookieMatchOptions = {
     ErrorLogService,
     { provide: COOKIE_MATCH_OPTS, useValue: cookieMatchOpts },
     { provide: APP_GUARD, useClass: CookieMatchGuard }, // run this first
-    //{ provide: APP_GUARD, useClass: RolesGuard }, // then roles
+    { provide: APP_GUARD, useClass: RolesGuard }, // then roles
   ],
 })
 export class AppModule {}

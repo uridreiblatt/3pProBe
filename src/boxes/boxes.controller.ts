@@ -18,30 +18,16 @@ import { CreateBoxDto } from "./dto/create-box.dto";
 import { UpdateBoxDto } from "./dto/update-box.dto";
 import { AuthGuard } from "src/auth/auth.guard";
 import { SkipCookieMatch } from "src/auth/entities/skip-cookie-match.decorator";
+import { validateCompany } from "src/util/validateCompany.util";
 @ApiTags("boxes")
 @Controller("boxes")
-//@UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 export class BoxesController {
   constructor(private readonly boxesService: BoxesService) {}
   @Post()
-  create( @Body() createBoxDto: CreateBoxDto, @Request() req){
-    try {     
-       console.log('raw req.body', req.body);  // Should show full payload
-       console.log('validated dto', createBoxDto);  
+  create( @Body() createBoxDto: CreateBoxDto, @Request() req){        
       return this.boxesService.create(createBoxDto);
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.FORBIDDEN,
-          error: "This is a custom message",
-        },
-        HttpStatus.FORBIDDEN,
-        {
-          cause: error,
-        }
-      );
     }
-  }
 
   @Get()
   async findAll(@Request() req) {
@@ -50,7 +36,7 @@ export class BoxesController {
   @Get(":id")
   async findOne(@Request() req, @Param("id") id: string) {
     const res = await this.boxesService.findOne(+id);
-    if (req.user.selectCompany !== res.company.id) throw BadRequestException;
+    validateCompany (req.user.selectCompany , res.company.id);
     return res;
   }
 
@@ -59,25 +45,14 @@ export class BoxesController {
     //@Request() req,
     @Param("id") id: string,
     @Body() updateBoxDto: UpdateBoxDto
-  ) {
-    // if (req.user.selectCompany !== updateBoxDto.companyId) {
-    //   console.error("invalid company");
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.BAD_REQUEST,
-    //       error: "BAD_REQUEST",
-    //     },
-    //     HttpStatus.BAD_REQUEST,
-    //     {
-    //       cause: "invalid company id: " + updateBoxDto.companyId,
-    //     }
-    //   );
-    // }
+  ) {   
     return this.boxesService.update(+id, updateBoxDto);
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
+  async remove(@Request() req, @Param("id") id: string) {
+    const res = await this.boxesService.findOne(+id);
+    validateCompany (req.user.selectCompany , res.company.id);
     return this.boxesService.remove(+id);
   }
 }

@@ -18,6 +18,8 @@ export class BoxesService {
     console.log('createBoxDto',createBoxDto);
     const ins = new  Boxsize();
     ins.sizeDesc = createBoxDto.sizeDesc;
+    ins.userId= 1;
+    ins.createdAt= new Date();
     ins.company = { id:  createBoxDto.companyId} as any;
     return await this.boxRepository.save(ins);
   }
@@ -35,10 +37,10 @@ export class BoxesService {
       },
     });
   }
-  async findOne(companyId: number): Promise<Boxsize> {
+  async findOne(id: number): Promise<Boxsize> {
     return await this.boxRepository.findOne({
       where: {
-        company:{ id: companyId} ,
+         id: id ,
       },
       relations:{
         company: true,

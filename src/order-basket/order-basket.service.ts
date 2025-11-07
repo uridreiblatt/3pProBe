@@ -33,8 +33,9 @@ export class OrderBasketService {
     return await this.OrderBasketsRepository.save(createOrderBasketDto);
   }
 
-  async findAll() {
-    return await this.OrderBasketsRepository.find();
+  async findAll(companyId:  number) {
+    return await this.OrderBasketsRepository.find({
+    });
   }
 
   async findOne(id: string) {

@@ -1,8 +1,9 @@
 import { Company } from 'src/company/entities/company.entity';
 import { UserCompany } from 'src/user-company/entities/user-company.entity';
 import { PrimaryGeneratedColumn, Column, Entity, JoinColumn, OneToMany, ManyToOne } from 'typeorm';
+import { Tablestamp } from './tablestamp.embed';
 @Entity()
-export class Boxsize {
+export class Boxsize extends Tablestamp{
   @PrimaryGeneratedColumn()
   id: number;
 

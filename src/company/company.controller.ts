@@ -6,10 +6,10 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/auth/entities/roles.decorator';
 import { Role } from 'src/auth/entities/role.enum';
 import { RolesGuard } from 'src/auth/roles.guard';
-
-@Controller('company')
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(Role.SysAdmin)
+@Controller('company')
+
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
