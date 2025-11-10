@@ -1,0 +1,23 @@
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { PriorityProductsLocation } from '../../../products/priority-products-locations/entities/priority-products-location.entity';
+import { Company } from 'src/usersCompanies/company/entities/company.entity';
+
+@Entity('zone')
+export class Zone {
+  @PrimaryGeneratedColumn()
+  id: number;
+  @Column()
+  zoneName: string;
+  @Column()
+  color: string;
+  @Column()
+  priority: number;
+  @OneToMany(
+    () => PriorityProductsLocation,
+    (priorityProductsLocation) => priorityProductsLocation.zone,
+  )
+  PriorityProductsLocation: PriorityProductsLocation[];
+  zoneId: number;
+  @ManyToOne(() => Company, (company) => company.zone)
+      company: Company;
+}
