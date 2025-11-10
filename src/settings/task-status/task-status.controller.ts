@@ -6,12 +6,19 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { TaskStatusService } from './task-status.service';
 import { CreateTaskStatusDto } from './dto/create-task-status.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { ApiTags } from '@nestjs/swagger';
-@ApiTags('task-status')
+import { AuthGuard } from 'src/auth/auth.guard';
+import { Role } from 'src/auth/entities/role.enum';
+import { Roles } from 'src/auth/entities/roles.decorator';
+import { RolesGuard } from 'src/auth/roles.guard';
+@ApiTags('task-status-ok')
+@UseGuards(AuthGuard, RolesGuard)
+@Roles(Role.SysAdmin)
 @Controller('task-status')
 export class TaskStatusController {
   constructor(private readonly taskStatusService: TaskStatusService) {}

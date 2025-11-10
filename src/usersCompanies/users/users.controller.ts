@@ -1,11 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, Request } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateCompanyDto } from 'src/usersCompanies/company/dto/create-company.dto';
 import { UpdateCompanyDto } from 'src/usersCompanies/company/dto/update-company.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-
-@ApiTags('users')
+import { AuthGuard } from 'src/auth/auth.guard';
+import { Role } from 'src/auth/entities/role.enum';
+import { Roles } from 'src/auth/entities/roles.decorator';
+@UseGuards(AuthGuard)
+@Roles(Role.SysAdmin)
+@ApiTags('users-ok')
 @Controller('users')
 export class UsersController {
   companyService: any;
@@ -17,13 +21,13 @@ export class UsersController {
   //   }
 
     @Post()
-      create(@Body() createUserDto: CreateUserDto) {
+      create( @Body() createUserDto: CreateUserDto) {
         return this.usersService.create(createUserDto);
       }
     
       @Get()
-      async findAll() {
-         return await this.usersService.findAll();
+      async findAll(@Request() req,) {
+         return await this.usersService.findAll(req.user.selectCompany);
       }
     
       @Get(':id')
@@ -37,8 +41,10 @@ export class UsersController {
       }
     
       @Delete(':id')
-      async remove(@Param('id') id: string) {
-        return this.usersService.remove(+id);
+      async remove(@Request() req,@Param('id') id: string) {
+         const res = await this.usersService.findOne(+id);
+            //validateCompany (req.user.selectCompany , res.userCompany.id);
+            return this.usersService.remove(+id);
       }
 
 }

@@ -1,5 +1,5 @@
 import { Company } from 'src/usersCompanies/company/entities/company.entity';
-import { PrimaryGeneratedColumn, Column, Entity, ManyToOne } from 'typeorm';
+import { PrimaryGeneratedColumn, Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
 @Entity('PartCqaunt')
 export class PartCqaunt {
   @PrimaryGeneratedColumn()
@@ -7,6 +7,7 @@ export class PartCqaunt {
 
   @Column()
   partName: string;
-  @ManyToOne(() => Company, (company) => company.boxsizes)
+  @ManyToOne(() => Company, (company) => company.partCqaunt)
+  @JoinColumn({ name: 'companyId' }) // <-- owns the FK column
   company: Company;  
 }

@@ -1,38 +1,46 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards,Request } from '@nestjs/common';
 import { PartCqauntService } from './part-cqaunt.service';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateRoleDto } from 'src/usersCompanies/role/dto/create-role.dto';
-import { UpdateRoleDto } from 'src/usersCompanies/role/dto/update-role.dto';
 import { CreatePartCqauntDto } from './dto/create-part-cqaunt.dto';
-@ApiTags('part-cqaunt')
+import { AuthGuard } from 'src/auth/auth.guard';
+import { validateCompany } from 'src/util/validateCompany.util';
+import { UpdateCompanyDto } from 'src/usersCompanies/company/dto/update-company.dto';
+import { UpdatePartCqauntDto } from './dto/update-part-cqaunt.dto';
+@ApiTags('part-cqaunt-ok')
+@UseGuards(AuthGuard)
 @Controller('part-cqaunt')
 export class PartCqauntController {
   constructor(private readonly partCqauntService: PartCqauntService) {}
 
-  @Get()
-  findAll() {
-    return this.partCqauntService.findAll(1);
-  }
-
   @Post()
-    create(@Body() createPartCqauntDto: CreatePartCqauntDto) {
-      return this.partCqauntService.create(createPartCqauntDto);
+    create( @Body() createPartCqauntDto: CreatePartCqauntDto, @Request() req){        
+        return this.partCqauntService.create(createPartCqauntDto);
+      }
+  
+    @Get()
+    async findAll(@Request() req) {
+      return await this.partCqauntService.findAll(req.user.selectCompany);
+    }
+    @Get(":id")
+    async findOne(@Request() req, @Param("id") id: string) {
+      const res = await this.partCqauntService.findOne(+id);
+      validateCompany (req.user.selectCompany , res.company.id);
+      return res;
     }
   
-    
-  
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-      return this.partCqauntService.findOne(+id);
+    @Patch(":id")
+    update(
+      //@Request() req,
+      @Param("id") id: string,
+      @Body() updatePartCqauntDto: UpdatePartCqauntDto
+    ) {   
+      return this.partCqauntService.update(+id, updatePartCqauntDto);
     }
   
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-      return this.partCqauntService.update(+id, updateRoleDto);
-    }
-  
-    @Delete(':id')
-    remove(@Param('id') id: string) {
+    @Delete(":id")
+    async remove(@Request() req, @Param("id") id: string) {
+      const res = await this.partCqauntService.findOne(+id);
+      validateCompany (req.user.selectCompany , res.company.id);
       return this.partCqauntService.remove(+id);
     }
 }

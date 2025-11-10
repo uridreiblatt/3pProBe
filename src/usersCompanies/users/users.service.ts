@@ -21,9 +21,10 @@ export class UsersService {
     return await this.userRepository.save(ins);
   }
 
-  async findAll(): Promise<any> {
+  async findAll(companyId: number): Promise<any> {
     return await this.userRepository.find({
       where: {
+        userCompany: {id: companyId},
         otp: "1",
       },
       relations: {

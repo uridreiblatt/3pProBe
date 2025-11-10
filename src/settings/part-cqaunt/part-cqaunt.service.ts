@@ -35,7 +35,7 @@ export class PartCqauntService {
     const ins =  new PartCqaunt();
     ins.partName = updatePartCqauntDto.partName;
     ins.company =  new Company();
-    ins.company.id = updatePartCqauntDto.companyid;
+    ins.company.id = updatePartCqauntDto.companyId;
     return await this.PartCQuantRepository.update(id,ins);
   }
 
@@ -43,7 +43,7 @@ export class PartCqauntService {
     const ins =  new PartCqaunt();
     ins.partName = createPartCqauntDto.partName;
     ins.company =  new Company();
-    ins.company.id = createPartCqauntDto.companyid;
+    ins.company.id = createPartCqauntDto.companyId;
     return await this.PartCQuantRepository.save(ins);
   }
   async remove(id: number) {

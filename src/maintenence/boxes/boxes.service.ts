@@ -18,7 +18,7 @@ export class BoxesService {
     console.log('createBoxDto',createBoxDto);
     const ins = new  Boxsize();
     ins.sizeDesc = createBoxDto.sizeDesc;
-    ins.userId= 1;
+    ins.userId= userId;
     ins.createdAt= new Date();
     ins.company = { id:  createBoxDto.companyId} as any;
     return await this.boxRepository.save(ins);

@@ -1,9 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Company } from "src/usersCompanies/company/entities/company.entity";
+import { Type } from "class-transformer";
+import { IsInt, IsString } from "class-validator";
 
 export class CreatePartCqauntDto {
-    @ApiProperty()
-      partName: string;
-      @ApiProperty()
-      companyid: number;  
+  @ApiProperty()
+  @IsString()
+  partName: string;
+  @ApiProperty()
+  @Type(() => Number) // "1" -> 1
+  @IsInt()
+  companyId: number;
 }

@@ -6,8 +6,10 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/auth/entities/roles.decorator';
 import { Role } from 'src/auth/entities/role.enum';
 import { RolesGuard } from 'src/auth/roles.guard';
+import { ApiTags } from '@nestjs/swagger';
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(Role.SysAdmin)
+@ApiTags('company-ok')
 @Controller('company')
 
 export class CompanyController {
