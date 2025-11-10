@@ -6,6 +6,7 @@ import { Repository } from "typeorm";
 import { UsersRoles } from "./entities/user-role.entity";
 import { Role } from "src/usersCompanies/role/entities/role.entity";
 import { User } from "src/usersCompanies/users/entities/user.entity";
+import { Company } from "../company/entities/company.entity";
 
 @Injectable()
 export class UserRoleService {
@@ -27,8 +28,9 @@ export class UserRoleService {
     return await this.userRoleRepository.save(ins);
   }
 
-  async findAll(): Promise<any> {
+  async findAll(companyId:  number): Promise<any> {
     return await this.userRoleRepository.find({
+      where : {users: {userCompany: {id: companyId}}},
       relations: {
         users: {userCompany: true,},
       },
@@ -40,7 +42,7 @@ export class UserRoleService {
     return await this.userRoleRepository.findOne({
       where:{
         id:id,
-        users: {userCompany:{ id: 1 }},
+        //users: {userCompany:{ id: 1 }},
       },
       relations: {
         users: {userCompany: true,},

@@ -4,6 +4,9 @@ import { TaskUser } from './entities/task-user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Equal, Not, Repository } from 'typeorm';
 import { OrderService } from 'src/orders/order/order.service';
+import { User } from 'src/usersCompanies/users/entities/user.entity';
+import { TaskType } from 'src/settings/task-type/entities/task-type.entity';
+import { TaskStatus } from 'src/settings/task-status/entities/task-status.entity';
 
 @Injectable()
 export class TaskUserService {
@@ -17,28 +20,31 @@ export class TaskUserService {
     this._orderService = orderService;
   }
 
-  async findAll() {
+  async findAll(companyId: number) {
     return await this.taskUsersRepository.find({
-      relations: {
-        taskStatus: true,
-        user: true,
-        taskType: true,
-      },
+      
       where: {
+        user:{ userCompany : { company: {id: companyId}}},
         taskStatus: { id: Not(5) },
+      },
+      relations: {
+        taskStatus: true,        
+        taskType: true,
+        user: {userCompany : true},
       },
       order: { taskPriority: 'DESC', updatedAt: 'ASC' },
     });
   }
 
   async findOne(id: string) {
+    console.log(id)
     return await this.taskUsersRepository.findOne({
       where: {
         id: id,
       },
       relations: {
         taskStatus: true,
-        user: true,
+        user: {userCompany: true},
       },
     });
   }
@@ -69,13 +75,20 @@ export class TaskUserService {
     });
   }
 
-  async create(createTaskUserDto: any) {
-    //const taskUser = await this.TaskUserToDto(0, createTaskUserDto);
-    return await this.taskUsersRepository.save(createTaskUserDto);
+  async create(createTaskUserDto: any) {   
+    let taskUser = new  TaskUser();
+    taskUser = createTaskUserDto;
+    taskUser.user =  new User();
+    taskUser.user.id = createTaskUserDto.userId;
+    taskUser.taskType =  new TaskType();
+    taskUser.taskType.id = createTaskUserDto.taskTypeId;
+    taskUser.taskStatus =  new TaskStatus();
+    taskUser.taskStatus.id = createTaskUserDto.taskStatusId;
+
+    return await this.taskUsersRepository.save(taskUser);
   }
 
-  async update(id: string, updateTaskUserDto: UpdateTaskUserDto) {
-    //const taskUser = await this.TaskUserToDto(id, updateTaskUserDto);
+  async update(id: string, updateTaskUserDto: UpdateTaskUserDto) { 
     const res = await this.taskUsersRepository.update(id, updateTaskUserDto);
     await this.updateorderStatus(id);
     return res;

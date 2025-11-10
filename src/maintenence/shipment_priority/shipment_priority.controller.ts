@@ -1,10 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { ShipmentPriorityService } from './shipment_priority.service';
 import { CreateShipmentPriorityDto } from './dto/create-shipment_priority.dto';
 import { UpdateShipmentPriorityDto } from './dto/update-shipment_priority.dto';
 import { validateCompany } from 'src/util/validateCompany.util';
-
-@Controller('shipment-priority-ok')
+import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/auth.guard';
+@ApiTags('shipment-priority-ok')
+@UseGuards(AuthGuard)
+@Controller('shipment-priority')
 export class ShipmentPriorityController {
   constructor(
     private readonly shipmentPriorityService: ShipmentPriorityService,

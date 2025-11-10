@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -12,7 +13,9 @@ export abstract  class Tablestamp {
   userId: number;
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
-  @Column({ name: 'is_active' })
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
+  @Column({ name: 'is_active' , default: 1})
   @IsBoolean()
   isActive: boolean;
 }

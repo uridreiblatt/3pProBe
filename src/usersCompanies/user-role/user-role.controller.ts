@@ -1,25 +1,34 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { UserRoleService } from './user-role.service';
 import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { ApiTags } from '@nestjs/swagger';
+import { validateCompany } from 'src/util/validateCompany.util';
 
+
+@ApiTags('user-role-ok')
+@UseGuards(AuthGuard)
 @Controller('user-role')
 export class UserRoleController {
   constructor(private readonly userRoleService: UserRoleService) {}
 
+//
   @Post()
-  create(@Body() createUserRoleDto: CreateUserRoleDto) {
+  create( @Request() req, @Body() createUserRoleDto: CreateUserRoleDto) {
     return this.userRoleService.create(createUserRoleDto);
   }
 
   @Get()
-  findAll() {
-    return this.userRoleService.findAll();
+  findAll(@Request() req,) {
+    return this.userRoleService.findAll(req.user.userID);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userRoleService.findOne(+id);
+  async findOne(@Request() req,@Param('id') id: string) {    
+    const res = await this.userRoleService.findOne(+id);
+        validateCompany (req.user.selectCompany , res.users.userCompany[0].CompanyId); // add find in loop
+        return res;
   }
 
   @Patch(':id')
@@ -28,7 +37,9 @@ export class UserRoleController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Request() req,@Param('id') id: string) {    
+    const res = await this.userRoleService.findOne(+id);
+    validateCompany (req.user.selectCompany , res.users.userCompany[0].CompanyId);
     return this.userRoleService.remove(+id);
   }
 }

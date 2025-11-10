@@ -67,6 +67,8 @@ export class TaskUser {
   @ManyToOne(() => TaskStatus, (taskStatus) => taskStatus.id)
   //@JoinColumn({ name: 'taskStatusId' })
   taskStatus: TaskStatus;
+  @JoinColumn()
+  taskStatusId: number;
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
