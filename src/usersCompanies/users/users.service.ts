@@ -21,7 +21,7 @@ export class UsersService {
     return await this.userRepository.save(ins);
   }
 
-  async findAll(companyId: number): Promise<any> {
+  async findAll(companyId: string): Promise<any> {
     return await this.userRepository.find({
       where: {
         userCompany: {id: companyId},
@@ -67,7 +67,7 @@ export class UsersService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.userRepository.findOne({
       where: { id: id },
       relations:{

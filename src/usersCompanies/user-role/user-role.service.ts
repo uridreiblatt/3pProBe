@@ -28,7 +28,7 @@ export class UserRoleService {
     return await this.userRoleRepository.save(ins);
   }
 
-  async findAll(companyId:  number): Promise<any> {
+  async findAll(companyId:  string): Promise<any> {
     return await this.userRoleRepository.find({
       where : {users: {userCompany: {id: companyId}}},
       relations: {
@@ -38,7 +38,7 @@ export class UserRoleService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.userRoleRepository.findOne({
       where:{
         id:id,
@@ -67,7 +67,7 @@ export class UserRoleService {
     return await this.userRoleRepository.update(id, ins);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return await this.userRoleRepository.delete(id);
   }
 }

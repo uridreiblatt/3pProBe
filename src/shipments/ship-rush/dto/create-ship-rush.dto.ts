@@ -45,7 +45,7 @@ export class ShipRushDto {
   @ApiProperty()
   Phone: string;
   @ApiProperty()
-  companyId: number;  
+  companyId: string;  
 
 
 

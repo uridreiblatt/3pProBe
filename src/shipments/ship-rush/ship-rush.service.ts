@@ -104,7 +104,7 @@ export class ShipRushService {
     return data;
   }
 
-  async findAll(companyId: number) {
+  async findAll(companyId: string) {
 
     return await this.ShipRushRepository.find({
       where: {company: {id:companyId}},

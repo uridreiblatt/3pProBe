@@ -32,7 +32,7 @@ export class UsersController {
     
       @Get(':id')
       async findOne(@Param('id') id: string) {
-        return this.usersService.findOne(+id);
+        return this.usersService.findOne(id);
       }
     
       @Patch(':id')
@@ -42,7 +42,7 @@ export class UsersController {
     
       @Delete(':id')
       async remove(@Request() req,@Param('id') id: string) {
-         const res = await this.usersService.findOne(+id);
+         const res = await this.usersService.findOne(id);
             //validateCompany (req.user.selectCompany , res.userCompany.id);
             return this.usersService.remove(+id);
       }

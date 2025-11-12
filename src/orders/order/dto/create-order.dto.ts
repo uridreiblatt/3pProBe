@@ -55,7 +55,7 @@ export class CreateOrderDto {
   @ApiProperty({})
   ordertext: string;
   @ApiProperty({ default: 1 })
-  userId: number;
+  userId: string;
   @ApiProperty({ default: 1 })
   taskStatusId: number;
   @ApiProperty()

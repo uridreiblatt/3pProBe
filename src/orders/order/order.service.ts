@@ -214,7 +214,7 @@ export class OrderService {
       },
     });
     if (Currentorder.role.id === newRole) {
-      if (Currentorder.user.id !== 1 && Currentorder.user.id !== userInOrder) {
+      if (Currentorder.user.id !== '1' && Currentorder.user.id !== userInOrder) {
         throw new BadRequestException('Order assigned to another user', {
           cause: new Error(),
           description: 'Order assigned to another user',
@@ -236,7 +236,7 @@ export class OrderService {
       if (newRole < 4) {
         newRole = newRole + 1;
         orderStatus = 1;
-        userInOrder = 1; // unassgined
+        userInOrder = '1'; // unassgined
       }
     }
     if (newRole === 4) {

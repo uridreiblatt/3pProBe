@@ -6,7 +6,7 @@ import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
 @Entity()
 export class UsersRoles extends Tablestamp {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
   // @ManyToMany(() => User)
   // @JoinTable()
   // users: User[];

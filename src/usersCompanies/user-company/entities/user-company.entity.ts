@@ -6,8 +6,8 @@ import { PrimaryGeneratedColumn, ManyToOne, JoinColumn, Entity } from "typeorm";
 
 @Entity()
 export class UserCompany extends Tablestamp {
-    @PrimaryGeneratedColumn()
-      id: number;
+    @PrimaryGeneratedColumn('uuid')
+      id: string;
       // @ManyToMany(() => User)
       // @JoinTable()
       // users: User[];
@@ -19,5 +19,5 @@ export class UserCompany extends Tablestamp {
       @ManyToOne(() => Company, (company) => company.id)
       company: Company;
       @JoinColumn()
-      CompanyId: number;
+      CompanyId: string;
 }

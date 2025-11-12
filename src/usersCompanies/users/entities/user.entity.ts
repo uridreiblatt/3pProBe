@@ -11,7 +11,7 @@ import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
 @Entity('user')
 export class User extends Tablestamp{
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
   @Column()
   userName: string;
   @Column()
@@ -30,7 +30,7 @@ export class User extends Tablestamp{
   @OneToMany(() => UsersRoles, (userRole) => userRole.users)
   usersRoles: UsersRoles[];
   @JoinColumn()
-  UserId: number;
+  UserId: string;
 
   @OneToMany(() => UserCompany, (userCompany) => userCompany.users)
   userCompany: UserCompany[];

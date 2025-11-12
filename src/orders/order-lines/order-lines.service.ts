@@ -101,7 +101,7 @@ export class OrderLinesService {
       createAssemblyTask.PartNumber = orderLine.PARTNAME;
       createAssemblyTask.QTYtoassemble = orderLine.TBALANCE;
       createAssemblyTask.user = new User();
-      createAssemblyTask.user.id = 1000;
+      createAssemblyTask.user.id = '1000';
       createAssemblyTask.taskType = new TaskType();
       createAssemblyTask.taskType.id = 8; //Picking
       createAssemblyTask.taskType.role = 'Picking'; //Picking
@@ -133,7 +133,7 @@ export class OrderLinesService {
       createAssemblyTask.PartNumber = orderLine.PARTNAME;
       createAssemblyTask.QTYtoassemble = updateOrderLineDto.assemblyQty;
       createAssemblyTask.user = new User();
-      createAssemblyTask.user.id = 1000;
+      createAssemblyTask.user.id = '1000';
       createAssemblyTask.taskType = new TaskType();
       createAssemblyTask.taskType.id = 1; //assembly
       createAssemblyTask.taskType.role = 'Assembly'; //assembly
@@ -167,7 +167,7 @@ export class OrderLinesService {
       createAssemblyTask.PartNumber = orderLine.PARTNAME;
       createAssemblyTask.QTYtoassemble = orderLine.TBALANCE;
       createAssemblyTask.user = new User();
-      createAssemblyTask.user.id = 1000;
+      createAssemblyTask.user.id = '1000';
       createAssemblyTask.taskType = new TaskType();
       createAssemblyTask.taskType.id = 1; //assembly
       createAssemblyTask.taskType.role = 'Assembly'; //assembly

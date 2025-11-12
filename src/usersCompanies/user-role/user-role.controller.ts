@@ -26,7 +26,7 @@ export class UserRoleController {
 
   @Get(':id')
   async findOne(@Request() req,@Param('id') id: string) {    
-    const res = await this.userRoleService.findOne(+id);
+    const res = await this.userRoleService.findOne(id);
         validateCompanies (req.user.selectCompany , res.users.userCompany); // add find in loop
         return res;
   }
@@ -38,8 +38,8 @@ export class UserRoleController {
 
   @Delete(':id')
   async remove(@Request() req,@Param('id') id: string) {    
-    const res = await this.userRoleService.findOne(+id);
+    const res = await this.userRoleService.findOne(id);
     validateCompanies (req.user.selectCompany , res.users.userCompany);
-    return this.userRoleService.remove(+id);
+    return this.userRoleService.remove(id);
   }
 }

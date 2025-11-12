@@ -16,7 +16,7 @@ export function validateCompany(cookieCompany: string, selectCompany: string): v
     }
 }
 
-export function validateCompanies(cookieCompany: number, userCompanies: UserCompany[]): void {
+export function validateCompanies(cookieCompany: string, userCompanies: UserCompany[]): void {
   const companyFound =userCompanies.find((comp)=>{
     comp.id === cookieCompany
   })

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Request } from '@nestjs/common';
 import { IncomingMessage } from 'http';
 import { ShipRushService } from './ship-rush.service';
 //import { CreateShipRushDto } from './dto/create-ship-rush.dto';
@@ -51,8 +51,8 @@ export class ShipRushController {
 
 
   @Get()
-    findAll() {
-      return this.shipRushService.findAll(1);
+    findAll(@Request() req) {
+      return this.shipRushService.findAll(req.user.selectCompany);
     }
   
     @Post()

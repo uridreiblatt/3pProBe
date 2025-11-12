@@ -26,9 +26,9 @@ export class AuthController {
     @Body() signInDto: CreateAuthDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    console.log()
-    const resUser = await this.authService.signIn(signInDto);
     
+    const resUser = await this.authService.signIn(signInDto);
+    console.log('resUser', resUser)
     if (resUser === undefined || resUser === null) {
       throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);
     }
@@ -91,7 +91,7 @@ export class AuthController {
       throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);
     }
     const companyExists = resUser.userCompany.find((cpm)=>{
-      if (cpm.id===switchCompanyDto.companyId ) return true;
+      if (cpm.id.toString()===switchCompanyDto.companyId ) return true;
     })
     if(companyExists=== undefined)
       throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);

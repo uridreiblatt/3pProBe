@@ -160,8 +160,8 @@ export class GetOrderInfoService {
         }
         createOrderDto.ordertext = tmpText;
         createOrderDto.CURDATE = element.CURDATE;
-        createOrderDto.userId = EOrderUser.unAssigned;
-        createOrderDto.taskStatusId = EOrderUser.unAssigned;
+        createOrderDto.userId = '1' //EOrderUser.unAssigned;
+        createOrderDto.taskStatusId = 1;//EOrderUser.unAssigned;
         const checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {
           if (ln.TBALANCE > 0 && ln.ORDISTATUSDES === 'In progress')
             return true;
@@ -191,7 +191,7 @@ export class GetOrderInfoService {
           } else {
             const NewOrder = orders.find((or) => {
               if (
-                or.user.id === EOrderUser.unAssigned &&
+                or.user.id === '1' && //EOrderUser.unAssigned &&
                 or.role.id === EOrderRole.Picker &&
                 or.taskStatus.id === EOrderStatus.New
               )
@@ -213,7 +213,7 @@ export class GetOrderInfoService {
               )
                 return false;
               if (
-                or.user.id === EOrderUser.unAssigned &&
+                or.user.id === '1' && //EOrderUser.unAssigned &&
                 or.role.id === EOrderRole.Picker &&
                 or.taskStatus.id === EOrderStatus.New
               )
@@ -255,7 +255,7 @@ export class GetOrderInfoService {
               );
             if (
               orderLineExixts === null &&
-              order.user.id === EOrderUser.unAssigned
+              order.user.id === '1' //EOrderUser.unAssigned
             ) {
               if (
                 subForm.TBALANCE > 0 &&
@@ -292,7 +292,8 @@ export class GetOrderInfoService {
                   }
               }
             } else {
-              if (order.user.UserId === EOrderUser.unAssigned) {
+              if (order.user.UserId === '1') //EOrderUser.unAssigned) 
+                {
                 if (orderLineExixts.TBALANCE !== subForm.TBALANCE) {
                   const c_Tbalance = {
                     TBALANCE: subForm.TBALANCE,
@@ -754,17 +755,24 @@ export class GetOrderInfoService {
     return data;
   }
   async UpdatePriorityShippingDoc(
+
     order: Order,
     ExisitingOrdName: any,
-    trackingNumber: any,
+    trackingNumber: any,  
   ) {
+    console.log('check company id !!!!!!!!!!!!!!!');
+    console.log('check company id!!!!!!!!!!!!!!!');
+    console.log('check company id!!!!!!!!!!!!!!!');
+    console.log('check company id!!!!!!!!!!!!!!!');
+    console.log('check company idv');
+
     const url =
       `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
       this.comapny +
       `/DOCUMENTS_D`;
     const credentials = btoa(this.username + ':' + this.pwd);
     const basicAuth = 'Basic ' + credentials;
-    const CqauntData = await this._PartCqauntService.findAll(1);
+    const CqauntData = await this._PartCqauntService.findAll('1');
     const dt = {
       DOCNO: ExisitingOrdName.DOCNO, // order.ORDNAME,
       DOC: ExisitingOrdName.DOC, //order.DOCUMENT_DOCNO,
