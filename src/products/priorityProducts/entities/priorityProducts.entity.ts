@@ -9,8 +9,8 @@ import {
 
 @Entity('priorityProducts')
 export class PriorityProducts {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
   @Column()
   PARTNAME: string;
   @Column()

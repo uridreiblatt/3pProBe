@@ -16,33 +16,33 @@ export class TaskInventoryCount extends Tablestamp {
   @Column()
   PartNumber: string;
 
-  @Column()
+  @Column({default: 0})
   NoOfBoxes: number;
-  @Column()
+  @Column({default: 0})
   NoOfItems: number;
-  @Column()
+  @Column({default: 0})
   NoOfBoxes_1: number;
-  @Column()
+  @Column({default: 0})
   NoOfItems_1: number;
-  @Column()
+  @Column({default: 0})
   NoOfBoxes_2: number;
-  @Column()
+  @Column({default: 0})
   NoOfItems_2: number;
-  @Column()
+  @Column({default: 0})
   NoOfBoxes_3: number;
-  @Column()
+  @Column({default: 0})
   NoOfItems_3: number;
-  @Column()
+  @Column({default: 0})
   NoOfBoxes_4: number;
-  @Column()
+  @Column({default: 0})
   NoOfItems_4: number;
-  @Column()
+  @Column({default: 0})
   NoOfBoxes_5: number;
-  @Column()
+  @Column({default: 0})
   NoOfItems_5: number;
-  @Column()
+  @Column({default: 0})
   bulkQauntity: number;
-  @Column()
+  @Column({default: 0})
   Total: number;
   @ManyToOne(() => TaskUser, (taskUser) => taskUser.id)
   taskUser: TaskUser;

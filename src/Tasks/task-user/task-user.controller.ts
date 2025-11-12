@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Header,
   Logger,
   Request,
   UseGuards,
@@ -15,7 +14,7 @@ import { TaskUserService } from './task-user.service';
 import { CreateTaskUserDto } from './dto/create-task-user.dto';
 import { UpdateTaskUserDto } from './dto/update-task-user.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { validateCompany } from 'src/util/validateCompany.util';
+import { validateCompany, validateCompanies } from 'src/util/validateCompany.util';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 @ApiTags('task-user-ok')
@@ -30,17 +29,15 @@ export class TaskUserController {
     return await this.taskUserService.create(createTaskUserDto);
   }
 
-  @Get()
-  @Header('Cache-Control', 'max-age=0')
+  @Get()  
   async findAll(@Request() req,) {
     return await this.taskUserService.findAll(req.user.selectCompany);
   }
 
   @Get(':id')
-  @Header('Cache-Control', 'max-age=0')
   async findOne(@Request() req,@Param('id') id: string) {
     const res = await this.taskUserService.findOne(id);
-    validateCompany (req.user.selectCompany , res.user.userCompany[0].id);
+    validateCompanies (req.user.selectCompany , res.user.userCompany);    
     return res;
   }
 
@@ -55,7 +52,7 @@ export class TaskUserController {
   @Delete(':id')
   async remove(@Request() req, @Param('id') id: string) {
     const res = await this.taskUserService.findOne(id);
-    validateCompany (req.user.selectCompany , res.user.userCompany[0].id);    
+    validateCompanies (req.user.selectCompany , res.user.userCompany);    
     return await this.taskUserService.remove(id);
   }
 }

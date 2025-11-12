@@ -20,7 +20,7 @@ export class TaskUserService {
     this._orderService = orderService;
   }
 
-  async findAll(companyId: number) {
+  async findAll(companyId: string) {
     return await this.taskUsersRepository.find({
       
       where: {

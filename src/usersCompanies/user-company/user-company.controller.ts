@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete,Request } from '@nestjs/common';
 import { UserCompanyService } from './user-company.service';
 import { CreateUserCompanyDto } from './dto/create-user-company.dto';
 import { UpdateUserCompanyDto } from './dto/update-user-company.dto';
@@ -13,8 +13,8 @@ export class UserCompanyController {
   }
 
   @Get()
-  findAll() {
-    return this.userCompanyService.findAll();
+  findAll(@Request() req ) {
+    return this.userCompanyService.findAll(req.user.selectCompany);
   }
 
   @Get(':id')

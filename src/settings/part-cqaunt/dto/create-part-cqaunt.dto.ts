@@ -8,6 +8,6 @@ export class CreatePartCqauntDto {
   partName: string;
   @ApiProperty()
   @Type(() => Number) // "1" -> 1
-  @IsInt()
-  companyId: number;
+  @IsString()
+  companyId: string;
 }

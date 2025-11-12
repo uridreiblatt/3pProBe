@@ -14,16 +14,16 @@ export class TaskInventoryCountService {
   ) {   
   }
 
-  async findAll(taskUserId: string) {
+  async findAll(taskUserId: string, id: string) {
     return await this.taskInventoryCountServiceRepository.find({
       
       where: {
-        taskUser: {id: taskUserId}
+        taskUser: {id: id}
        
       },
-      relations: {        
-        taskUser:  true,
-      },
+      // relations: {        
+      //   taskUser:  true,
+      // },
       
     });
   }

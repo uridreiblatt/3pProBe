@@ -38,3 +38,20 @@
 // UPDATE `p3pro`.`task_status` SET `id` = '6' WHERE (`id` = '4');
 // UPDATE `p3pro`.`task_status` SET `id` = '5' WHERE (`id` = '3');
 
+
+
+
+// -- drop any old trigger with the same name
+// DROP TRIGGER IF EXISTS `p3pro`.`task_inventory_count_before_insert`;
+
+// DELIMITER //
+
+// CREATE TRIGGER `task_inventory_count_before_insert`
+// BEFORE INSERT ON `p3pro`.`task_inventory_count`
+// FOR EACH ROW
+// BEGIN
+//   IF NEW.`id` IS NULL OR NEW.`id` = '' THEN
+//     SET NEW.`id` = UUID();
+//   END IF;
+// END//
+// DELIMITER ;

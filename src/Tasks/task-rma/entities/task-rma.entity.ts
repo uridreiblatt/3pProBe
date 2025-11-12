@@ -19,7 +19,7 @@ export class TaskRma extends Tablestamp{
   rmaNumber: string;
   @Column()
   trackingNumber: string;
-  @Column()
+  @Column({default: 0})
   statusRma: number;
   @Column()
   customerName: string;
@@ -27,9 +27,9 @@ export class TaskRma extends Tablestamp{
   PartNumber: string;
   @Column()
   partQount: number;
-  @Column()
+  @Column({default: false})
   backToInventory: boolean;
-  @Column()
+  @Column({default: false})
   productStatus: boolean;
 
   @Column()

@@ -4,7 +4,7 @@ import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiTags } from '@nestjs/swagger';
-import { validateCompany } from 'src/util/validateCompany.util';
+import { validateCompanies } from 'src/util/validateCompany.util';
 
 
 @ApiTags('user-role-ok')
@@ -27,7 +27,7 @@ export class UserRoleController {
   @Get(':id')
   async findOne(@Request() req,@Param('id') id: string) {    
     const res = await this.userRoleService.findOne(+id);
-        validateCompany (req.user.selectCompany , res.users.userCompany[0].CompanyId); // add find in loop
+        validateCompanies (req.user.selectCompany , res.users.userCompany); // add find in loop
         return res;
   }
 
@@ -39,7 +39,7 @@ export class UserRoleController {
   @Delete(':id')
   async remove(@Request() req,@Param('id') id: string) {    
     const res = await this.userRoleService.findOne(+id);
-    validateCompany (req.user.selectCompany , res.users.userCompany[0].CompanyId);
+    validateCompanies (req.user.selectCompany , res.users.userCompany);
     return this.userRoleService.remove(+id);
   }
 }

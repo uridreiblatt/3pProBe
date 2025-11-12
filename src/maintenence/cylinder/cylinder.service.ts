@@ -13,7 +13,7 @@ export class CylinderService {
     private cylinderRepository: Repository<Cylinder>,
   ) {}
 
-  async findAll(companyId: number) {
+  async findAll(companyId: string) {
     return await this.cylinderRepository.find({
       where: {
         company: {id:companyId},
@@ -23,7 +23,7 @@ export class CylinderService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.cylinderRepository.findOne({
       where: {
         id: id,

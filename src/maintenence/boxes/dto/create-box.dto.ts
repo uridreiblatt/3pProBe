@@ -10,5 +10,5 @@ export class CreateBoxDto {
   @ApiProperty({default:0})
   @Type(() => Number)   // "1" -> 1
   @IsInt()
-  companyId!: number;   // required if you expect it in the body
+  companyId!: string;   // required if you expect it in the body
 }

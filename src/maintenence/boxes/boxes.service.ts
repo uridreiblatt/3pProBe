@@ -24,7 +24,7 @@ export class BoxesService {
     return await this.boxRepository.save(ins);
   }
 
-  async findAll(companyId: number): Promise<Boxsize[]> {
+  async findAll(companyId: string): Promise<Boxsize[]> {
     return await this.boxRepository.find({
       where: {
         company:{ id: companyId} ,
@@ -37,7 +37,7 @@ export class BoxesService {
       },
     });
   }
-  async findOne(id: number): Promise<Boxsize> {
+  async findOne(id: string): Promise<Boxsize> {
     return await this.boxRepository.findOne({
       where: {
          id: id ,

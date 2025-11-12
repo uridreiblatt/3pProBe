@@ -23,7 +23,7 @@ export class PartCqauntController {
     }
     @Get(":id")
     async findOne(@Request() req, @Param("id") id: string) {
-      const res = await this.partCqauntService.findOne(+id);
+      const res = await this.partCqauntService.findOne(id);
       validateCompany (req.user.selectCompany , res.company.id);
       return res;
     }
@@ -39,7 +39,7 @@ export class PartCqauntController {
   
     @Delete(":id")
     async remove(@Request() req, @Param("id") id: string) {
-      const res = await this.partCqauntService.findOne(+id);
+      const res = await this.partCqauntService.findOne(id);
       validateCompany (req.user.selectCompany , res.company.id);
       return this.partCqauntService.remove(+id);
     }

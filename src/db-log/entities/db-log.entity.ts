@@ -11,7 +11,7 @@ export class Log {
   id: number;
   @Column()
   subject: string;
-  @Column()
+  @Column({ nullable: true, length: 2000 })
   message: string;
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
@@ -19,7 +19,7 @@ export class Log {
   level: string;
   @Column({ nullable: true })
   context: string;
-  @Column({ nullable: true })
+  @Column({ nullable: true, length: 2000 })
   metadata: string;
   @Column()
   companyId: number;

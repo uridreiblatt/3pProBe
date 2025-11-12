@@ -18,7 +18,7 @@ export class PriorityProductsController {
 
   @Get('findOne/:id')
   findOne(@Param('id') id: string) {
-    return this.partsService.findOne(+id);
+    return this.partsService.findOne(id);
   }
 
   @Get('findChildByParentPart/:id')

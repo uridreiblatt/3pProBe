@@ -29,7 +29,7 @@ export class ShipmentPriorityService {
 
       return await this.shipmentPriorityRepository.save(ins);
     }
-  async findAll(idComapny: number) {
+  async findAll(idComapny: string) {
     return await this.shipmentPriorityRepository.find({
       where:{
         company :{id: idComapny}
@@ -40,7 +40,7 @@ export class ShipmentPriorityService {
     });
   }
 
-  async findOne(id: number) {    
+  async findOne(id: string) {    
     return await this.shipmentPriorityRepository.findOne({
       where: {
         id: id,

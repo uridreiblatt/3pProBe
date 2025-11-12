@@ -24,18 +24,18 @@ export class ShipmentPriorityController {
     }
   
     @Get(':id')
-    async findOne(@Request() req ,@Param('id') id: number) {
+    async findOne(@Request() req ,@Param('id') id: string) {
       
-      const res = await this.shipmentPriorityService.findOne(+id);
+      const res = await this.shipmentPriorityService.findOne(id);
       console.log(id, res)
       validateCompany (req.user.selectCompany , res.company.id);
       return res;
     }
 
     @Get('findOneByStCode:id')
-    async findOneByStCode(@Request() req ,@Param('id') id: number) {
+    async findOneByStCode(@Request() req ,@Param('id') id: string ) {
       
-      const res = await this.shipmentPriorityService.findOne(+id);
+      const res = await this.shipmentPriorityService.findOne(id);
       validateCompany (req.user.selectCompany , res.company.id);
       return res;
     }
@@ -46,7 +46,7 @@ export class ShipmentPriorityController {
     }
   
     @Delete(':id')
-    async remove(@Request() req, @Param('id') id: number) {
+    async remove(@Request() req, @Param('id') id: string) {
       const res = await  this.shipmentPriorityService.findOne(id);    
       validateCompany (req.user.selectCompany , res.company.id);
       return this.shipmentPriorityService.remove(+id);

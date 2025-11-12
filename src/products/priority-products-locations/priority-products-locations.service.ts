@@ -33,7 +33,7 @@ export class PriorityProductsLocationsService {
     return await this.priorityProductsLocationsRepo.find();
   }
 
-  async findAllByProduct(id: number) {
+  async findAllByProduct(id: string) {
     return await this.priorityProductsLocationsRepo.find({
       where: {
         priorityProducts: { id: id },
@@ -62,7 +62,7 @@ export class PriorityProductsLocationsService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.priorityProductsLocationsRepo.findOne({
       where: {
         id: id,

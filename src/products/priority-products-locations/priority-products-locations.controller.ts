@@ -39,12 +39,12 @@ export class PriorityProductsLocationsController {
 
   @Get('findOne/:id')
   findOne(@Param('id') id: string) {
-    return this.priorityProductsLocationsService.findOne(+id);
+    return this.priorityProductsLocationsService.findOne(id);
   }
 
   @Get('findAllByProduct/:id')
   findAllByProduct(@Param('id') id: string) {
-    return this.priorityProductsLocationsService.findAllByProduct(+id);
+    return this.priorityProductsLocationsService.findAllByProduct(id);
   }
   @Get('findAllByProductName/:partName')
   findAllByProductName(@Param('partName') partName: string) {

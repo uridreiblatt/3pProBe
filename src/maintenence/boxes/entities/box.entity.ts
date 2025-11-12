@@ -4,8 +4,8 @@ import { PrimaryGeneratedColumn, Column, Entity, JoinColumn, OneToMany, ManyToOn
 import { Tablestamp } from './tablestamp.embed';
 @Entity()
 export class Boxsize extends Tablestamp{
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column({ default: "1-1-1" })
   sizeDesc: string;

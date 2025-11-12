@@ -11,6 +11,6 @@ export class CreateCylinderDto {
   description: string;
   @ApiProperty({ default: 0 })
   @Type(() => Number) // "1" -> 1
-  @IsInt()
-  companyId: number;
+  @IsString()
+  companyId: string;
 }

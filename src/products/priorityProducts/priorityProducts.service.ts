@@ -23,7 +23,7 @@ export class priorityProductsService {
     return res;
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.PartRepository.findOne({
       where: {
         id: id,

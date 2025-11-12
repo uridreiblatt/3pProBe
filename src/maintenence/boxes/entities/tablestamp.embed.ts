@@ -9,13 +9,13 @@ import {
 
 @Entity()
 export abstract  class Tablestamp {
-  @Column()
+  @Column({default: 0, nullable: false})
   userId: number;
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
-  @Column({ name: 'is_active' , default: true})
+  @Column({ name: 'is_active' , default: true, nullable: false})
   @IsBoolean()
   isActive: boolean;
 }

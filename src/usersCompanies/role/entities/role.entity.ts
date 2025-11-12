@@ -1,6 +1,7 @@
+import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
 import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
 @Entity()
-export class Role {
+export class Role extends Tablestamp{
   @PrimaryGeneratedColumn()
   id: number;
 

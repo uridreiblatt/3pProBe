@@ -20,7 +20,7 @@ export class CompanyService {
     return "This action adds a new company";
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return this.companyRepository.findOne({
       where: {
         id: id,
@@ -32,7 +32,7 @@ export class CompanyService {
     return `This action updates a #${id} company`;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return this.companyRepository.delete(id);
   }
 }

@@ -36,7 +36,7 @@ export class TaskInventoryCountController {
   @Get()
   @Header("Cache-Control", "max-age=0")
   async findAll(@Request() req,  @Param("id") id: string) {
-    return await this.taskInventoryCountService.findAll(req.user.selectCompany);
+    return await this.taskInventoryCountService.findAll(req.user.selectCompany, id);
   }
 
   @Get(":id")

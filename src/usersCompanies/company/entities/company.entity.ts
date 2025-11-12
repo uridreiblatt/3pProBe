@@ -6,11 +6,13 @@ import { ShipmentPriority } from 'src/maintenence/shipment_priority/entities/shi
 import { UserCompany } from 'src/usersCompanies/user-company/entities/user-company.entity';
 import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, OneToMany } from 'typeorm';
 import { Zone } from 'src/maintenence/zone/entities/zone.entity';
+import { TaskUser } from 'src/Tasks/task-user/entities/task-user.entity';
+import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
 
 @Entity()
-export class Company {
-  @PrimaryGeneratedColumn()
-  id: number; // The primary key will be a UUID string
+export class Company extends Tablestamp {
+  @PrimaryGeneratedColumn('uuid')
+  id: string; // The primary key will be a UUID string
 
   @Column({ length: 500 })
   name: string;
@@ -21,9 +23,6 @@ export class Company {
   @Column()
   Ssn: string;
 
-  
-  @Column()
-  isActive: boolean;
   @OneToMany(() => UserCompany, (userCompany) => userCompany.company)
   userCompany: UserCompany[];
   @JoinColumn()
@@ -41,6 +40,8 @@ export class Company {
     shipRush: ShipRush[]
     @OneToMany(() => Zone, (zone) => zone)
     zone: Zone[]
+    @OneToMany(() => TaskUser, (taskUser) => taskUser)
+    taskUser: TaskUser[]
     
     
     

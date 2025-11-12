@@ -20,7 +20,7 @@ export class PriorityProductsHierarchyService {
     return await this.priorityProductsHierarchy.find();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.priorityProductsHierarchy.findOne({
       where: {
         id: id,

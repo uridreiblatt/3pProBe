@@ -12,14 +12,14 @@ export class PartCqauntService {
     @InjectRepository(PartCqaunt)
     private PartCQuantRepository: Repository<PartCqaunt>,
   ) {}
-  async findAll(companyId: number) {
+  async findAll(companyId: string) {
     return await this.PartCQuantRepository.find({
       where: {company: {id:companyId}},
       relations:{ company: true,        
       },
   });
   }
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.PartCQuantRepository.findOne(
       {
         where: {

@@ -14,12 +14,12 @@ export class CreateAuthDto {
 }
 export class SwitchCompanyDto {
   @ApiProperty()
-  companyId: number;  
+  companyId: string;  
 }
 
 export class CreateAuthSwitchCompanyDto {
   @ApiProperty()
-  companyId: number; 
+  companyId: string; 
   @ApiProperty()
   UserUuid: string;  
 }
@@ -38,5 +38,5 @@ export class JwtDetails {
   @ApiProperty()
   userRole: string;
   @ApiProperty()
-  userComapny: number;
+  userComapny: string;
 }

@@ -11,8 +11,8 @@ import { IsDate } from 'class-validator';
 
 @Entity('priorityProductsLocation')
 export class PriorityProductsLocation {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
   @Column()
   location: string;
   @Column({ nullable: true, type: 'date' })

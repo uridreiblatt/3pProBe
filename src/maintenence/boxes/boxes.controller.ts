@@ -35,7 +35,7 @@ export class BoxesController {
   }
   @Get(":id")
   async findOne(@Request() req, @Param("id") id: string) {
-    const res = await this.boxesService.findOne(+id);
+    const res = await this.boxesService.findOne(id);
     validateCompany (req.user.selectCompany , res.company.id);
     return res;
   }
@@ -51,7 +51,7 @@ export class BoxesController {
 
   @Delete(":id")
   async remove(@Request() req, @Param("id") id: string) {
-    const res = await this.boxesService.findOne(+id);
+    const res = await this.boxesService.findOne(id);
     validateCompany (req.user.selectCompany , res.company.id);
     return this.boxesService.remove(+id);
   }

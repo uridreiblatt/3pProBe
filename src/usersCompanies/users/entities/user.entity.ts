@@ -7,8 +7,9 @@ import {
 } from 'typeorm';
 import { UserCompany } from 'src/usersCompanies/user-company/entities/user-company.entity';
 import { UsersRoles } from 'src/usersCompanies/user-role/entities/user-role.entity';
+import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
 @Entity('user')
-export class User {
+export class User extends Tablestamp{
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
@@ -44,6 +45,4 @@ export class User {
   // userRole: UserRole;
   @Column()
   otp: string;
-  @Column()
-  isActive: boolean;
 }

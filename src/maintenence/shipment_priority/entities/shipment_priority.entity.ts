@@ -1,9 +1,10 @@
+import { Tablestamp } from "src/maintenence/boxes/entities/tablestamp.embed";
 import { Company } from "src/usersCompanies/company/entities/company.entity";
 import { PrimaryGeneratedColumn, Column, Entity, ManyToOne, JoinColumn } from "typeorm";
 @Entity()
-export class ShipmentPriority {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class ShipmentPriority extends Tablestamp{
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
   @Column()
   ShipmentCode: string;
   @Column()

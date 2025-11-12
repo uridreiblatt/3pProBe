@@ -23,7 +23,7 @@ export class ZoneController {
   @Get(':id')
   async findOne(@Request() req ,@Param('id') id: string) {
     
-    const res = await this.zoneService.findOne(+id);
+    const res = await this.zoneService.findOne(id);
     validateCompany (req.user.selectCompany , res.company.id);
     return res;
   }
@@ -35,7 +35,7 @@ export class ZoneController {
 
   @Delete(':id')
   async remove(@Request() req, @Param('id') id: string) {
-    const res = await  this.zoneService.findOne(+id);    
+    const res = await  this.zoneService.findOne(id);    
     validateCompany (req.user.selectCompany , res.company.id);
     return this.zoneService.remove(+id);
   }

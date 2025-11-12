@@ -15,11 +15,11 @@ export class UserCompanyService {
     return 'This action adds a new userCompany';
   }
 
-  async findAll() {
+  async findAll(companyId: string) {
     return await this.userComapnyRepository.find(
       {
         where: {
-        company: {id :1 }
+        company: {id :companyId }
       },
       
       relations: {
