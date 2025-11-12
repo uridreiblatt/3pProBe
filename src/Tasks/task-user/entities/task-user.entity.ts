@@ -11,9 +11,10 @@ import {
 import { User } from 'src/usersCompanies/users/entities/user.entity';
 import { TaskStatus } from 'src/settings/task-status/entities/task-status.entity';
 import { TaskType } from '../../../settings/task-type/entities/task-type.entity';
+import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
 
 @Entity()
-export class TaskUser {
+export class TaskUser extends Tablestamp {
   @PrimaryGeneratedColumn('uuid')
   id: string;
   @ManyToOne(() => TaskType, (taskType) => taskType.id)
@@ -69,11 +70,6 @@ export class TaskUser {
   taskStatus: TaskStatus;
   @JoinColumn()
   taskStatusId: number;
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
   @Column()
   orderid: string;
   @Column()

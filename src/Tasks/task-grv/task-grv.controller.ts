@@ -13,22 +13,22 @@ export class TaskGrvController {
   }
 
   @Get()
-  findAll() {
-    return this.taskGrvService.findAll();
+  findAll(taskUserId: string) {
+    return this.taskGrvService.findAll(taskUserId);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.taskGrvService.findOne(+id);
+    return this.taskGrvService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTaskGrvDto: UpdateTaskGrvDto) {
-    return this.taskGrvService.update(+id, updateTaskGrvDto);
+    return this.taskGrvService.update(id, updateTaskGrvDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.taskGrvService.remove(+id);
+    return this.taskGrvService.remove(id);
   }
 }

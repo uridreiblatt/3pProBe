@@ -15,7 +15,7 @@ export abstract  class Tablestamp {
   createdAt: Date;
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
-  @Column({ name: 'is_active' , default: 1})
+  @Column({ name: 'is_active' , default: true})
   @IsBoolean()
   isActive: boolean;
 }

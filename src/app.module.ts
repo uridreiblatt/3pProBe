@@ -40,8 +40,8 @@ import {
   CookieMatchOptions,
 } from "src/auth/cookie-body-match.guard"; // 'src/auth/cookie-body-match.guard';
 import { TaskInventoryCountModule } from "./Tasks/task-inventory-count/task-inventory-count.module";
-import { TaskRmaModule } from './task-rma/task-rma.module';
-import { TaskGrvModule } from './task-grv/task-grv.module';
+import { TaskRmaModule } from './Tasks/task-rma/task-rma.module';
+import { TaskGrvModule } from './Tasks/task-grv/task-grv.module';
 
 const cookieMatchOpts: CookieMatchOptions = {
   cookieName: "companyId",

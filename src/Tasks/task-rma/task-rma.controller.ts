@@ -13,22 +13,22 @@ export class TaskRmaController {
   }
 
   @Get()
-  findAll() {
-    return this.taskRmaService.findAll();
+  findAll(@Param('taskTypeId') taskTypeId: string) {
+    return this.taskRmaService.findAll(taskTypeId);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.taskRmaService.findOne(+id);
+    return this.taskRmaService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTaskRmaDto: UpdateTaskRmaDto) {
-    return this.taskRmaService.update(+id, updateTaskRmaDto);
+    return this.taskRmaService.update(id, updateTaskRmaDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.taskRmaService.remove(+id);
+    return this.taskRmaService.remove(id);
   }
 }
