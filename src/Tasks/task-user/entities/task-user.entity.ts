@@ -65,7 +65,7 @@ export class TaskUser extends Tablestamp {
   @ManyToOne(() => User, (user) => user.id)
   user: User;
   @JoinColumn()
-  userId: number;
+  userId: string;
   @ManyToOne(() => TaskStatus, (taskStatus) => taskStatus.id)
   //@JoinColumn({ name: 'taskStatusId' })
   taskStatus: TaskStatus;

@@ -14,7 +14,7 @@ export class UserCompany extends Tablestamp {
       @ManyToOne(() => User, (user) => user.id)
       users: User[];
       @JoinColumn()
-      UserId: number;
+      UserId: string;
 
       @ManyToOne(() => Company, (company) => company.id)
       company: Company;

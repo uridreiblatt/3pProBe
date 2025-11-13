@@ -14,11 +14,11 @@ export class BoxesService {
     @InjectRepository(Boxsize)
     private boxRepository: Repository<Boxsize>,
   ) {}
-  async create(createBoxDto: CreateBoxDto, userId: number) {
+  async create(createBoxDto: CreateBoxDto, userId: string) {
     console.log('createBoxDto',createBoxDto);
     const ins = new  Boxsize();
     ins.sizeDesc = createBoxDto.sizeDesc;
-    ins.userId= userId;
+    ins.updatedBy= userId;
     ins.createdAt= new Date();
     ins.company = { id:  createBoxDto.companyId} as any;
     return await this.boxRepository.save(ins);

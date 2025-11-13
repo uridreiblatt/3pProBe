@@ -5,10 +5,11 @@ import { CreateCompanyDto } from 'src/usersCompanies/company/dto/create-company.
 import { UpdateCompanyDto } from 'src/usersCompanies/company/dto/update-company.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { Role } from 'src/auth/entities/role.enum';
+import { rolesEnum } from 'src/auth/entities/role.enum';
 import { Roles } from 'src/auth/entities/roles.decorator';
+import { UpdateUserDto } from './dto/update-user.dto';
 @UseGuards(AuthGuard)
-@Roles(Role.SysAdmin)
+@Roles(rolesEnum.SysAdmin)
 @ApiTags('users-ok')
 @Controller('users')
 export class UsersController {
@@ -36,8 +37,8 @@ export class UsersController {
       }
     
       @Patch(':id')
-      async update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
-        return this.usersService.update(+id, updateCompanyDto);
+      async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+        return this.usersService.update(+id, updateUserDto);
       }
     
       @Delete(':id')

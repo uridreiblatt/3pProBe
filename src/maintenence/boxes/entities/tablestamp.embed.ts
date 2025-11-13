@@ -10,7 +10,7 @@ import {
 @Entity()
 export abstract  class Tablestamp {
   @Column({default: 0, nullable: false})
-  userId: number;
+  updatedBy: string;
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
   @UpdateDateColumn({ name: 'updated_at' })

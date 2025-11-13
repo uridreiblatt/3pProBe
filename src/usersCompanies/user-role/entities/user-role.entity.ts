@@ -5,13 +5,15 @@ import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
 
 @Entity()
 export class UsersRoles extends Tablestamp {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
   // @ManyToMany(() => User)
   // @JoinTable()
   // users: User[];
   @ManyToOne(() => User, (user) => user.id)
   users: User;
+  // @JoinColumn()
+  // CompanyId: number;
   @ManyToOne(() => Role, (role) => role.id)
   role: Role;
 

@@ -14,13 +14,14 @@ import {
 import { Zone } from "src/maintenence/zone/entities/zone.entity";
 import { TaskUser } from "src/Tasks/task-user/entities/task-user.entity";
 import { Tablestamp } from "src/maintenence/boxes/entities/tablestamp.embed";
+import { AllRma } from "src/Tasks/all-rma/entities/all-rma.entity";
 
 @Entity()
 export class Company extends Tablestamp {
   @PrimaryGeneratedColumn("uuid")
   id: string; // The primary key will be a UUID string
 
-  @Column({ length: 500 })
+  @Column()
   name: string;
 
   @Column("text")
@@ -48,4 +49,6 @@ export class Company extends Tablestamp {
   zone: Zone[];
   @OneToMany(() => TaskUser, (taskUser) => taskUser)
   taskUser: TaskUser[];
+  @OneToMany(() => AllRma, (allRma) => allRma)
+  allRma: AllRma[];
 }

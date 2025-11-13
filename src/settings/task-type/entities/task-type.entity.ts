@@ -21,5 +21,5 @@ export enum TaskTypesEnum
     Inventory_count_Poland=6,
     Inventory_count_US =7,
     Picking = 8,
-    RMA = 1001,
+    RMA = 9,
   }

@@ -32,7 +32,8 @@ export class UserRoleService {
     return await this.userRoleRepository.find({
       where : {users: {userCompany: {id: companyId}}},
       relations: {
-        users: {userCompany: true,},
+        users: true,
+        role: true,
       },
       //select: ['id', 'userName', 'usermail', 'usersRoles', 'color'],
     });

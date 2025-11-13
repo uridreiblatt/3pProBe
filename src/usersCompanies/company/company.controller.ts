@@ -4,11 +4,13 @@ import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/auth/entities/roles.decorator';
-import { Role } from 'src/auth/entities/role.enum';
+import { rolesEnum } from 'src/auth/entities/role.enum';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { ApiTags } from '@nestjs/swagger';
+import { SkipCookieMatch } from 'src/auth/entities/skip-cookie-match.decorator';
+@SkipCookieMatch()
 @UseGuards(AuthGuard, RolesGuard)
-@Roles(Role.SysAdmin)
+@Roles(rolesEnum.SysAdmin)
 @ApiTags('company-ok')
 @Controller('company')
 

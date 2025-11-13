@@ -42,6 +42,7 @@ import {
 import { TaskInventoryCountModule } from "./Tasks/task-inventory-count/task-inventory-count.module";
 import { TaskRmaModule } from './Tasks/task-rma/task-rma.module';
 import { TaskGrvModule } from './Tasks/task-grv/task-grv.module';
+import { AllRmaModule } from './Tasks/all-rma/all-rma.module';
 
 const cookieMatchOpts: CookieMatchOptions = {
   cookieName: "companyId",
@@ -75,7 +76,7 @@ const cookieMatchOpts: CookieMatchOptions = {
           //trustServerCertificate: true,
         },
         entities: [__dirname + "/**/**/*.entity{.ts,.js}"],
-        synchronize: false,
+        synchronize: true,
       }),
       inject: [ConfigService],
     }),
@@ -108,6 +109,7 @@ const cookieMatchOpts: CookieMatchOptions = {
     TaskInventoryCountModule,
     TaskRmaModule,
     TaskGrvModule,
+    AllRmaModule,
   ],
   controllers: [],
   providers: [

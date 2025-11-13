@@ -1,8 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsInt, IsString } from "class-validator";
 
 export class CreateUserRoleDto {
     @ApiProperty()
+    @IsString()
     userId : string;
     @ApiProperty()
-    roleId : number;    
+    @IsInt()
+    roleId : number; 
+    @ApiProperty()
+    @IsString()
+    companyId : string;
+       
 }

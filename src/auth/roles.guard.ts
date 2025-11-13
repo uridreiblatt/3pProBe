@@ -5,7 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role } from './entities/role.enum';
+import { rolesEnum } from './entities/role.enum';
 import { ROLES_KEY } from './entities/roles.decorator';
 import { jwtConstants } from './constants';
 import { JwtService } from '@nestjs/jwt';
@@ -20,12 +20,12 @@ export class RolesGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
+    const requiredRoles = this.reflector.getAllAndOverride<rolesEnum[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
 
-    
+    console.log('requiredRoles',requiredRoles)
     if (!requiredRoles) {
       return true;
     }
@@ -43,6 +43,7 @@ export class RolesGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });      
+      console.log('payload',payload)
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
       return requiredRoles.some((role) => payload.role.includes(role));

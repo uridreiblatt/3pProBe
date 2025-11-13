@@ -7,6 +7,7 @@ import { OrderService } from 'src/orders/order/order.service';
 import { User } from 'src/usersCompanies/users/entities/user.entity';
 import { TaskType } from 'src/settings/task-type/entities/task-type.entity';
 import { TaskStatus } from 'src/settings/task-status/entities/task-status.entity';
+import { Company } from 'src/usersCompanies/company/entities/company.entity';
 
 @Injectable()
 export class TaskUserService {
@@ -84,6 +85,8 @@ export class TaskUserService {
     taskUser.taskType.id = createTaskUserDto.taskTypeId;
     taskUser.taskStatus =  new TaskStatus();
     taskUser.taskStatus.id = createTaskUserDto.taskStatusId;
+    taskUser.company = new Company();
+    taskUser.company.id = createTaskUserDto.companyId;
 
     return await this.taskUsersRepository.save(taskUser);
   }
