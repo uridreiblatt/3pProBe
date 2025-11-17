@@ -13,5 +13,5 @@ export enum EOrderStatus {
 }
 
 export enum EOrderUser {
-  unAssigned = 1,
+  unAssigned = '1',
 }

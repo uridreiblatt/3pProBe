@@ -24,43 +24,43 @@ export class TaskUser extends Tablestamp {
   DataInfo: string;
   @Column()
   PartNumber: string;
-  @Column()
+  @Column({default: 0})
   QTYtoassemble: number;
-  @Column()
+  @Column({default: 0})
   QTYassembled: number;
-  @Column()
+  @Column({default: 0})
   Total: number;
-  @Column()
+  @Column({nullable: true})
   BIN: string;
-  @Column()
+  @Column({default: 0})
   QTY: number;
-  @Column()
+  @Column({nullable: true})
   BIN_1: string;
-  @Column()
+  @Column({default: 0})
   QTY_1: number;
-  @Column()
+  @Column({nullable: true})
   BIN_2: string;
-  @Column()
+  @Column({default: 0})
   QTY_2: number;
-  @Column()
+  @Column({nullable: true})
   Supplier: string;
-  @Column()
+  @Column({nullable: true})
   PalletNumber: string;
-  @Column()
+  @Column({nullable: true})
   PO: string;
-  @Column()
+  @Column({nullable: true})
   taskInfo: string;
-  @Column()
+  @Column({nullable: true})
   Location: string;
-  @Column()
+  @Column({default: 0})
   NoOfBoxes: number;
-  @Column()
+  @Column({default: 0})
   NoOfItems: number;
-  @Column()
+  @Column({nullable: true})
   orderName: string;
-  @Column()
+  @Column({nullable: true})
   Color: string;
-  @Column()
+  @Column({default: 0})
   bulkQauntity: number;
   @ManyToOne(() => User, (user) => user.id)
   user: User;
@@ -71,27 +71,27 @@ export class TaskUser extends Tablestamp {
   taskStatus: TaskStatus;
   @JoinColumn()
   taskStatusId: number;
-  @Column()
+  @Column({nullable: true})
   orderid: string;
-  @Column()
+  @Column({nullable: true})
   orderlineId: string;
-  @Column()
+  @Column({default: 0})
   taskPriority: number;
-  @Column()
+  @Column({nullable: true})
   rmaNumber: string;
-  @Column()
+  @Column({nullable: true})
   trackingNumber: string;
-  @Column()
+  @Column({nullable: true})
   pictureOne: string;
-  @Column()
+  @Column({nullable: true})
   pictureTwo: string;
-  @Column()
+  @Column({default: 0})
   statusRma: number;
-  @Column()
+  @Column({nullable: true})
   customerName: string;
-  @Column()
+  @Column({nullable: true})
   cylinder: string;
-  @Column()
+  @Column({default: 0})
   backToInventory: number;
   @ManyToOne(() => Company, (company) => company.taskUser, { nullable: false })
     @JoinColumn({ name: 'companyId' }) // <-- owns the FK column

@@ -191,7 +191,7 @@ export class GetOrderInfoService {
           } else {
             const NewOrder = orders.find((or) => {
               if (
-                or.user.id === '1' && //EOrderUser.unAssigned &&
+                or.user.id === EOrderUser.unAssigned &&
                 or.role.id === EOrderRole.Picker &&
                 or.taskStatus.id === EOrderStatus.New
               )

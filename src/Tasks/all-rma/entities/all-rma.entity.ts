@@ -6,19 +6,32 @@ import { PrimaryGeneratedColumn, ManyToOne, Column, JoinColumn, Entity } from "t
 @Entity()
 export class AllRma extends Tablestamp{
     @PrimaryGeneratedColumn('uuid')
-      id: string;      
+      id: string;
       @Column()
-      DataInfo: string;
+      CUSTNAME: string;      
       @Column()
-      Title: string;
+      CUSTDES: string;      
       @Column()
-      PO: string;    
+      CURDATE: string;      
+      @Column()
+      DOCNO: string;      
+      @Column()
+      DETAILS: string;      
+      @Column()
+      STATDES: string;   
+      @Column()
+      FBCM_RETREASONCODE: string;   
+      @Column()
+      FBCM_RETREASONDES: string;      
+      
+      
+      // @Column()
+      // DataInfo: string;
+      // @Column()
+      // Title: string;         
       @ManyToOne(() => User, (user) => user.id)
       user: User;  
-      // @JoinColumn()
-      // userId: string;    
       @ManyToOne(() => TaskStatus, (taskStatus) => taskStatus.id)
-      //@JoinColumn({ name: 'taskStatusId' })
       taskStatus: TaskStatus;
       @Column()
       orderid: string;
@@ -26,14 +39,6 @@ export class AllRma extends Tablestamp{
       orderlineId: string;
       @Column()
       taskPriority: number;
-      @Column()
-      rmaNumber: string;
-      @Column()
-      trackingNumber: string;
-      @Column()
-      statusRma: number;
-      @Column()
-      customerName: string;
       @Column()
       cylinder: string;
       @Column()

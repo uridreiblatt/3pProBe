@@ -1,8 +1,9 @@
-import { Catch, ArgumentsHost, Logger } from '@nestjs/common';
+import { Catch, ArgumentsHost, Logger, HttpStatus, BadRequestException } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import { HttpException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ErrorLogService } from './error-log.service';
+import { QueryFailedError } from 'typeorm';
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
@@ -32,6 +33,14 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     } else if (exception instanceof Error) {
       message = exception.message;
     }
+    else if (exception instanceof QueryFailedError) {
+      const drv: any = (exception as any).driverError || {};      
+      status = 401;
+      message = (exception as any).driverError;
+      errorDetails = drv.code || drv.errno || drv.name;;
+        
+      }
+
 
     this.logger.error(
       `Request failed: ${request.method} ${request.url}`,

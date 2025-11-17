@@ -15,6 +15,13 @@ export class AllRmaController {
     return await this.allRmaService.create(createAllRmaDto);
   }
 
+@Get('getAllNewRmaFromPriority')
+  async getAllNewRmaFromPriority(@Request() req) {
+    return await this.allRmaService.getAllNewRmaFromPriority();
+  }
+
+
+
   @Get()
   async findAll(@Request() req) {
     return await this.allRmaService.findAll(req.user.selectCompany);

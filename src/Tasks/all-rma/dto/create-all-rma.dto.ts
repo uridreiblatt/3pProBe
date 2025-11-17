@@ -48,3 +48,22 @@ export class CreateAllRmaDto {
           @IsString()
           companyId: string;
 }
+
+
+
+export interface RootRmaPriority {
+  '@odata.context': string;
+  value: Value[];
+}
+export interface Value {
+  CUSTNAME: string;
+  CUSTDES: string;
+  CURDATE: string;
+  DOCNO: string;
+  DETAILS: string;
+  STATDES: string;
+  FBCM_RETREASONCODE: string;
+  FBCM_RETREASONDES: string;
+  
+  
+}

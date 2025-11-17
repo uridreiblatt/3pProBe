@@ -1,12 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsInt, IsString } from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { IsInt, IsString } from "class-validator";
 
 export class CreateTaskUserDto {
   @ApiProperty({ default: 1 })
   @IsInt()
   taskTypeId: number;
-  @ApiProperty({ default: 'DataInfo' })
+  @ApiProperty({ default: "DataInfo" })
   @IsString()
   DataInfo: string;
   @ApiProperty()
@@ -66,7 +66,7 @@ export class CreateTaskUserDto {
   @ApiProperty()
   @IsString()
   Color: string;
-@ApiProperty()
+  @ApiProperty()
   @IsString()
   orderName: string;
   @ApiProperty({ default: 1 })
@@ -108,7 +108,30 @@ export class CreateTaskUserDto {
   @ApiProperty()
   @IsInt()
   backToInventory: number;
-  @ApiProperty({ default: '1' })
+  @ApiProperty({ default: "1" })
   @IsString()
-  companyId: string;   // required if you expect it in the body
+  companyId: string; // required if you expect it in the body
 }
+
+export interface RootPoPriority {
+  "@odata.context": string;
+  value: Value[];
+}
+export interface Value {
+  SUPNAME: string;
+  CDES: string;
+  ORDNAME: string;
+  DETAILS: string;
+  PORDERITEMS: PORDERITEMSLines[];
+}
+
+export interface PORDERITEMSLines {
+  PARTNAME: string;
+  CDES: string;
+  PDES: string;
+  TQUANT: string;
+}
+
+
+
+

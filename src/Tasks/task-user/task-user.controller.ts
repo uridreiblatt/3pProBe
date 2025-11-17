@@ -24,6 +24,12 @@ export class TaskUserController {
   private readonly logger = new Logger(TaskUserController.name);
   constructor(private readonly taskUserService: TaskUserService) {}
 
+
+  @Get('getAllNewPoFromPriority')
+  async getAllNewPoFromPriority(@Request() req) {
+    return await this.taskUserService.getAllNewPoFromPriority();
+  }
+
   @Post()
   async create(@Body() createTaskUserDto: CreateTaskUserDto) {
     return await this.taskUserService.create(createTaskUserDto);
