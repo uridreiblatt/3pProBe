@@ -43,6 +43,7 @@ import { TaskInventoryCountModule } from "./Tasks/task-inventory-count/task-inve
 import { TaskRmaModule } from './Tasks/task-rma/task-rma.module';
 import { TaskGrvModule } from './Tasks/task-grv/task-grv.module';
 import { AllRmaModule } from './Tasks/all-rma/all-rma.module';
+import { CompanySettingsModule } from "./settings/company-settings/company-settings.module";
 
 const cookieMatchOpts: CookieMatchOptions = {
   cookieName: "companyId",
@@ -110,6 +111,7 @@ const cookieMatchOpts: CookieMatchOptions = {
     TaskRmaModule,
     TaskGrvModule,
     AllRmaModule,
+    CompanySettingsModule,
   ],
   controllers: [],
   providers: [

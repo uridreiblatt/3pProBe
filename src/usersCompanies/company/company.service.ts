@@ -13,7 +13,9 @@ export class CompanyService {
   ) {}
 
   async findAll(): Promise<Company[]> {
-    return this.companyRepository.find();
+    return this.companyRepository.find({
+      
+    });
   }
 
   create(createCompanyDto: CreateCompanyDto) {

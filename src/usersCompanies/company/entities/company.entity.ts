@@ -10,11 +10,13 @@ import {
   PrimaryGeneratedColumn,
   JoinColumn,
   OneToMany,
+  OneToOne,
 } from "typeorm";
 import { Zone } from "src/maintenence/zone/entities/zone.entity";
 import { TaskUser } from "src/Tasks/task-user/entities/task-user.entity";
 import { Tablestamp } from "src/maintenence/boxes/entities/tablestamp.embed";
 import { AllRma } from "src/Tasks/all-rma/entities/all-rma.entity";
+import { CompanySetting } from "src/settings/company-settings/entities/company-setting.entity";
 
 @Entity()
 export class Company extends Tablestamp {
@@ -29,6 +31,13 @@ export class Company extends Tablestamp {
 
   @Column()
   Ssn: string;
+
+  @OneToOne(() => CompanySetting, (companySetting) => companySetting.company, {
+    cascade: true,   // optional: auto-save profile when saving user
+    eager: true,     // optional: always load profile with user
+  })
+  @JoinColumn()      // FK column lives on User table
+  companySetting: CompanySetting;
 
   @OneToMany(() => UserCompany, (userCompany) => userCompany.company)
   userCompany: UserCompany[];

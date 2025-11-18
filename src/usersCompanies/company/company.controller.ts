@@ -10,7 +10,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { SkipCookieMatch } from 'src/auth/entities/skip-cookie-match.decorator';
 @SkipCookieMatch()
 @UseGuards(AuthGuard, RolesGuard)
-@Roles(rolesEnum.SysAdmin)
+@Roles(rolesEnum.SysAdmin, rolesEnum.Administrator)
 @ApiTags('company-ok')
 @Controller('company')
 
