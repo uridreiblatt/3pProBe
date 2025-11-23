@@ -15,7 +15,6 @@ export class BoxesService {
     private boxRepository: Repository<Boxsize>,
   ) {}
   async create(createBoxDto: CreateBoxDto, userId: string) {
-    console.log('createBoxDto',createBoxDto);
     const ins = new  Boxsize();
     ins.sizeDesc = createBoxDto.sizeDesc;
     ins.updatedBy= userId;

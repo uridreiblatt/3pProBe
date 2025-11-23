@@ -12,12 +12,12 @@ export class UserCompany extends Tablestamp {
       // @JoinTable()
       // users: User[];
       @ManyToOne(() => User, (user) => user.id)
-      users: User[];
+      users: User;
       @JoinColumn()
-      UserId: string;
+      usersId: string;
 
       @ManyToOne(() => Company, (company) => company.id)
       company: Company;
       @JoinColumn()
-      CompanyId: string;
+      companyId: string;
 }

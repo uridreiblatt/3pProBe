@@ -16,10 +16,11 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const ck = this.extractJWTFromCookie(request);
     let token = ck;
-    console.log(token)
+    //console.log('AuthGuard', 'token', token)
     if (!token) {
       const tokenHeader = this.extractTokenFromHeader(request);   
       token = tokenHeader;    //ck
+      //console.log('AuthGuard', 'tokenHeader', tokenHeader)
     }        
     if (!token) {
       throw new UnauthorizedException();
@@ -31,7 +32,7 @@ export class AuthGuard implements CanActivate {
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers           
       request['user'] = payload;
-      console.log('AuthGuard', 'payload',payload)
+      //console.log('AuthGuard', 'payload',payload)
     } catch {
       throw new UnauthorizedException();
     }

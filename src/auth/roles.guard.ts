@@ -24,7 +24,7 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-   
+    //console.log('RolesGuard','requiredRoles',requiredRoles)
     if (!requiredRoles) {
       return true;
     }
@@ -34,6 +34,7 @@ export class RolesGuard implements CanActivate {
     // const [type, token] = request.headers.authorization?.split(' ') ?? [];
     const ck = this.extractJWTFromCookie(request);
     const token = ck;
+     //console.log('RolesGuard','token',token)
     if (!token) {
       return false;
     }
@@ -42,12 +43,11 @@ export class RolesGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });      
-    
-      console.log('cccccccccc')
+        
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
       return requiredRoles.some((role) => {
-        console.log('requiredRoles',payload.role, role)
+        //console.log('requiredRoles',payload.role, role)
         if (payload.role === role ) return true;
 
     });
@@ -62,6 +62,7 @@ export class RolesGuard implements CanActivate {
   // }
 
   private extractJWTFromCookie(req: Request): string | null {
+    //console.log('extractJWTFromCookie', req.cookies);
     if (req.cookies && req.cookies.access_token) {
       return req.cookies.access_token;
     }

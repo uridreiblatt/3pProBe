@@ -28,7 +28,6 @@ export class AuthController {
   ) {
     
     const resUser = await this.authService.signIn(signInDto);
-    console.log('resUser', resUser)
     if (resUser === undefined || resUser === null) {
       throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);
     }
@@ -56,7 +55,7 @@ export class AuthController {
       isSignedIn: true,
       userName: resUser.userName,
       userLastName: resUser.userSurname,
-      usermail: resUser.usermail,
+      usermail: resUser.userMail,
       userRoles: resUser.usersRoles.map((o) => {
         return { id: o.role.id, role: o.role.role };
       }),
@@ -120,7 +119,7 @@ export class AuthController {
       isSignedIn: true,
       userName: resUser.userName,
       userLastName: resUser.userSurname,
-      usermail: resUser.usermail,
+      usermail: resUser.userMail,
       userRoles: resUser.usersRoles.map((o) => {
         return { id: o.role.id, role: o.role.role };
       }),

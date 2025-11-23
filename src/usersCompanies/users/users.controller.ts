@@ -10,7 +10,7 @@ import { Roles } from 'src/auth/entities/roles.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { SkipCookieMatch } from 'src/auth/entities/skip-cookie-match.decorator';
-//@SkipCookieMatch()
+@SkipCookieMatch()
 @UseGuards(AuthGuard)
 @Roles(rolesEnum.SysAdmin, rolesEnum.Administrator)
 @ApiTags('users-ok')
@@ -28,7 +28,7 @@ export class UsersController {
       create( @Body() createUserDto: CreateUserDto) {
         return this.usersService.create(createUserDto);
       }
-    
+      //@SkipCookieMatch()
       @Get()
       async findAll(@Request() req,) {
         console.log(req.user)

@@ -6,30 +6,40 @@ import { CreateAuthDto } from "src/auth/dto/create-auth.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { randomUUID } from "crypto";
+import { UserCompany } from "../user-company/entities/user-company.entity";
+import { Company } from "../company/entities/company.entity";
 
 @Injectable()
 @Dependencies(getRepositoryToken(User))
 export class UsersService {
   constructor(
     @InjectRepository(User) 
-    private userRepository: Repository<User>,   
+    private userRepository: Repository<User>,
+    @InjectRepository(UserCompany) 
+    private userCompanyRepository: Repository<UserCompany>,   
   ) {}
   async create(createUserDto: CreateUserDto) {
+    console.log(createUserDto)
     const ins = new User();
     ins.userName = createUserDto.userName;
-    ins.userSurname = 'na';
     ins.userUuid = randomUUID();
-    ins.usermail = createUserDto.usermail;
-    ins.userMobile = createUserDto.userMobile;
-    ins.color = 'red';
-    ins.userPasswordEnc = createUserDto.userPasswordEnc;
-    ins.otp = '123';
-    ins.id= '10';   
-    return await this.userRepository.save(ins);
+    ins.userMail = createUserDto.usermail;
+    ins.userMobile = createUserDto.userMobile;    
+    ins.userPasswordEnc = createUserDto.userPasswordEnc;  
+    ins.isActive = createUserDto.isActive;  
+    const res  =  await this.userRepository.save(ins);
+    console.log(res)
+    const insUserCompant = new UserCompany();
+    insUserCompant.company =  new Company();
+    insUserCompant.company.id = createUserDto.companyId;
+    insUserCompant.users = new User();
+    insUserCompant.users.id = res.id;
+    console.log(insUserCompant)
+    const resUserCompany  =  await this.userCompanyRepository.save(insUserCompant);
+    return res;
   }
 
-  async findAll(companyId: string): Promise<any> {
-    console.log('companyId',companyId)
+  async findAll(companyId: string): Promise<any> {      
     return await this.userRepository.find({
       where: {
         userCompany: {company: {id: companyId}},        
@@ -38,7 +48,7 @@ export class UsersService {
         usersRoles: true,
         userCompany: {company: true},
       },
-      select: ["id", "userName", "usermail", "usersRoles", "color", "userMobile", "isActive"],
+      select: ["id", "userName", "userMail", "usersRoles", "color", "userMobile", "isActive"],
     });
   }
   
@@ -49,7 +59,7 @@ export class UsersService {
   async signIn(createAuthDto: CreateAuthDto): Promise<User> {
     return await this.userRepository.findOne({
       where: {
-        usermail: createAuthDto.email,
+        userMail: createAuthDto.email,
         userPasswordEnc: createAuthDto.password,
       },
       relations: {
@@ -85,7 +95,7 @@ export class UsersService {
   async update(id: number, updateUserDto: UpdateUserDto) {
     const ins = new User();
     ins.userName = updateUserDto.userName;
-    ins.usermail = updateUserDto.usermail;
+    ins.userMail = updateUserDto.usermail;
     ins.userMobile = updateUserDto.userMobile;
     return await this.userRepository.update(id, ins);
   }

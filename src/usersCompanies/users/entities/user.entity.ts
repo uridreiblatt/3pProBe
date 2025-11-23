@@ -10,16 +10,16 @@ import { UsersRoles } from 'src/usersCompanies/user-role/entities/user-role.enti
 import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
 @Entity('user')
 export class User extends Tablestamp{
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
-  @Column()
+  @Column({default: ''})
   userName: string;
   @Column()
   userSurname: string;
   @Column()
   userUuid: string;
   @Column()
-  usermail: string;
+  userMail: string;
   @Column()
   userMobile: string;
   @Column({default: 'grey'})

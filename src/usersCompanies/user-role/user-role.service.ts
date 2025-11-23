@@ -23,8 +23,6 @@ export class UserRoleService {
     const u = new User();
     u.id = createUserRoleDto.userId;    
     ins.users = u;
-    //ins.users.push(u);
-    console.log(ins);
     return await this.userRoleRepository.save(ins);
   }
 

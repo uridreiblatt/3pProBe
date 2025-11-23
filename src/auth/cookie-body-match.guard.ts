@@ -38,11 +38,14 @@ export class CookieMatchGuard implements CanActivate {
   async canActivate(ctx: ExecutionContext): Promise<boolean> {
     // ✅ Honor @SkipCookieMatch() on controller OR route
    
+
     const skip = this.reflector.getAllAndOverride<boolean>(
       SKIP_COOKIE_MATCH_KEY,
       [ctx.getHandler(), ctx.getClass()]
     );
     if (skip) return true;
+    
+    
     
     const req = ctx
       .switchToHttp()
@@ -51,11 +54,11 @@ export class CookieMatchGuard implements CanActivate {
 
     const ck = this.extractJWTFromCookie(req);
     let token = ck;    
-    console.log('CookieMatchGuard','token',token)
+    //console.log('CookieMatchGuard','token',token)
     if (!token) {
       const tokenHeader = this.extractTokenFromHeader(req);   
       token = tokenHeader;    //ck
-      console.log('CookieMatchGuard','tokenHeader',tokenHeader)
+      //console.log('CookieMatchGuard','tokenHeader',tokenHeader)
     }        
     if (!token) {
       throw new UnauthorizedException();
@@ -65,11 +68,10 @@ export class CookieMatchGuard implements CanActivate {
         secret: jwtConstants.secret,
       });
       
-      console.log('CookieMatchGuard','tokenHeader',payload)
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
       req["user"] = payload;
-      console.log('CookieMatchGuard','payload', payload)
+      //console.log('CookieMatchGuard','payload', payload)
       // Body match (typically POST)
       const bodyMethods = this.opts.bodyMethods ?? ["POST", "PUT", "PATCH"];
       if (this.opts.bodyFieldPath && bodyMethods.includes(method as any)) {
@@ -85,7 +87,7 @@ export class CookieMatchGuard implements CanActivate {
           );
         }
       }
-       console.log('CookieMatchGuard true')
+       console.log('CookieMatchGuard last return true')
     return true;
   }
 

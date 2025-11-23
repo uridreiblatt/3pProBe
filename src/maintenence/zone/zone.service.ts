@@ -29,7 +29,6 @@ export class ZoneService {
   }
 
   async findAll(selectCompany: string) {
-    console.log(selectCompany);
     return await this.zoneRepository.find({
       where: {company: {id: selectCompany}}
     });
