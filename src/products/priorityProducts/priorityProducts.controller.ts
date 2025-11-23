@@ -1,8 +1,10 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Request, UseGuards } from '@nestjs/common';
 import { priorityProductsService } from './priorityProducts.service';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/auth.guard';
 @ApiTags('priorityProducts')
 @Controller('priorityProducts')
+@UseGuards(AuthGuard)
 export class PriorityProductsController {
   constructor(private readonly partsService: priorityProductsService) {}
 
@@ -12,7 +14,8 @@ export class PriorityProductsController {
   // }
 
   @Get()
-  async findAll() {
+  async findAll(@Request() req) {
+    console.log('priorityProducts', req.user)
     return await this.partsService.findAll();
   }
 

@@ -22,7 +22,7 @@ export class User extends Tablestamp{
   usermail: string;
   @Column()
   userMobile: string;
-  @Column()
+  @Column({default: 'grey'})
   color: string;
   @Column({ select: false })
   userPasswordEnc: string;
@@ -43,6 +43,6 @@ export class User extends Tablestamp{
   // userRole: UserRole[];
   // @JoinColumn()
   // userRole: UserRole;
-  @Column()
+  @Column({default: '0'})
   otp: string;
 }

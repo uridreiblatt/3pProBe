@@ -7,14 +7,15 @@ export class TaskGrv extends Tablestamp {
   @PrimaryGeneratedColumn("uuid")
   id: string;
   DataInfo: string;
-  @Column()
-  PO: string;
-  @Column()
-  Location: string;
+  // @Column()
+  // PO: string;
+  // @Column()
+  // Location: string;
+  // @Column()
+  // Supplier: string;
   @Column()
   PartNumber: string;
-  @Column()
-  Supplier: string;
+  
   @Column({default: 0})
   NoOfBoxes: number;
   @Column({default: 0})

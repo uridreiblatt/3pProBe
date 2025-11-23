@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 import { CreateAuthDto } from "src/auth/dto/create-auth.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
+import { randomUUID } from "crypto";
 
 @Injectable()
 @Dependencies(getRepositoryToken(User))
@@ -16,22 +17,28 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     const ins = new User();
     ins.userName = createUserDto.userName;
+    ins.userSurname = 'na';
+    ins.userUuid = randomUUID();
     ins.usermail = createUserDto.usermail;
     ins.userMobile = createUserDto.userMobile;
+    ins.color = 'red';
+    ins.userPasswordEnc = createUserDto.userPasswordEnc;
+    ins.otp = '123';
+    ins.id= '10';   
     return await this.userRepository.save(ins);
   }
 
   async findAll(companyId: string): Promise<any> {
+    console.log('companyId',companyId)
     return await this.userRepository.find({
       where: {
-        userCompany: {id: companyId},
-        otp: "1",
+        userCompany: {company: {id: companyId}},        
       },
       relations: {
         usersRoles: true,
-        userCompany: true,
+        userCompany: {company: true},
       },
-      select: ["id", "userName", "usermail", "usersRoles", "color"],
+      select: ["id", "userName", "usermail", "usersRoles", "color", "userMobile", "isActive"],
     });
   }
   
@@ -42,8 +49,8 @@ export class UsersService {
   async signIn(createAuthDto: CreateAuthDto): Promise<User> {
     return await this.userRepository.findOne({
       where: {
-        usermail: createAuthDto.usermail,
-        userPasswordEnc: createAuthDto.userPasswordEnc,
+        usermail: createAuthDto.email,
+        userPasswordEnc: createAuthDto.password,
       },
       relations: {
         usersRoles: {

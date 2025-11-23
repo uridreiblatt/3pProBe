@@ -122,12 +122,12 @@ export interface Value {
   CDES: string;
   ORDNAME: string;
   DETAILS: string;
-  PORDERITEMS: PORDERITEMSLines[];
+  PORDERITEMS_SUBFORM: PORDERITEMSLines[];
 }
 
 export interface PORDERITEMSLines {
   PARTNAME: string;
-  CDES: string;
+  //CDES: string;
   PDES: string;
   TQUANT: string;
 }

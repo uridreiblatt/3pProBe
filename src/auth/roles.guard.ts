@@ -24,8 +24,7 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-
-    console.log('requiredRoles',requiredRoles)
+   
     if (!requiredRoles) {
       return true;
     }
@@ -43,10 +42,15 @@ export class RolesGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });      
-      console.log('payload',payload)
+    
+      console.log('cccccccccc')
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
-      return requiredRoles.some((role) => payload.role.includes(role));
+      return requiredRoles.some((role) => {
+        console.log('requiredRoles',payload.role, role)
+        if (payload.role === role ) return true;
+
+    });
     } catch (error) {
       this.logger.error(error);
     }

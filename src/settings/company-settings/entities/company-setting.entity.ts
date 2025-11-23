@@ -31,6 +31,8 @@ export class CompanySetting extends Tablestamp {
   priorityPoStatus: string;
   @Column({default: ''})
   priorityRmaStatus: string;
+  @Column({default: ''})
+  priorityProductStatus:string;
 
   @OneToOne(() => Company, (company) => company.companySetting)
   company: Company;

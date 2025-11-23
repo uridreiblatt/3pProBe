@@ -8,8 +8,11 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { rolesEnum } from 'src/auth/entities/role.enum';
 import { Roles } from 'src/auth/entities/roles.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { SkipCookieMatch } from 'src/auth/entities/skip-cookie-match.decorator';
+//@SkipCookieMatch()
 @UseGuards(AuthGuard)
-@Roles(rolesEnum.SysAdmin)
+@Roles(rolesEnum.SysAdmin, rolesEnum.Administrator)
 @ApiTags('users-ok')
 @Controller('users')
 export class UsersController {
@@ -28,6 +31,7 @@ export class UsersController {
     
       @Get()
       async findAll(@Request() req,) {
+        console.log(req.user)
          return await this.usersService.findAll(req.user.selectCompany);
       }
     

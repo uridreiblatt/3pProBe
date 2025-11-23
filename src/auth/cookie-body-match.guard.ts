@@ -50,9 +50,13 @@ export class CookieMatchGuard implements CanActivate {
     const method = (req.method || "").toUpperCase();
 
     const ck = this.extractJWTFromCookie(req);
-
-    //const token = this.extractTokenFromHeader(request);
-    const token = ck;    
+    let token = ck;    
+    console.log('CookieMatchGuard','token',token)
+    if (!token) {
+      const tokenHeader = this.extractTokenFromHeader(req);   
+      token = tokenHeader;    //ck
+      console.log('CookieMatchGuard','tokenHeader',tokenHeader)
+    }        
     if (!token) {
       throw new UnauthorizedException();
     }
@@ -60,13 +64,17 @@ export class CookieMatchGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConstants.secret,
       });
+      
+      console.log('CookieMatchGuard','tokenHeader',payload)
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
       req["user"] = payload;
+      console.log('CookieMatchGuard','payload', payload)
       // Body match (typically POST)
       const bodyMethods = this.opts.bodyMethods ?? ["POST", "PUT", "PATCH"];
       if (this.opts.bodyFieldPath && bodyMethods.includes(method as any)) {
-        const bodyVal = getByPath(req.body, this.opts.bodyFieldPath);      
+        const bodyVal = getByPath(req.body, this.opts.bodyFieldPath); 
+            
         if (bodyVal == null)
           throw new ForbiddenException(
             `Missing body field "${this.opts.bodyFieldPath}".`
@@ -77,12 +85,25 @@ export class CookieMatchGuard implements CanActivate {
           );
         }
       }
+       console.log('CookieMatchGuard true')
     return true;
   }
 
   private extractJWTFromCookie(req: Request): string | null {
     if (req.cookies && req.cookies.access_token) {
       return req.cookies.access_token;
+    }
+    return null;
+  }
+  private extractTokenFromHeader(req: Request): string | null {
+     if (req.headers && req.headers.authorization) {
+     
+
+      const obj = JSON.parse(req.headers.authorization?.split(" ")[1] );
+      const token = obj.access_token;
+      return token;
+      
+
     }
     return null;
   }

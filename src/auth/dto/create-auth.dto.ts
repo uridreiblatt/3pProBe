@@ -5,12 +5,12 @@ export class CreateAuthDto {
   @ApiProperty({ default: 'urid@gmail.com' })
 
   @IsEmail()
-  usermail: string;
+  email: string;
   @ApiProperty({
-    default: 'aaa',
+    default: 'aaaaaaa',
   })
   @IsString()
-  userPasswordEnc: string;
+  password: string;
 }
 export class SwitchCompanyDto {
   @ApiProperty()

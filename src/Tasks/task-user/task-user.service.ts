@@ -34,7 +34,8 @@ export class TaskUserService {
   private readonly _orderService: OrderService;
   private isLocked = false;
   private comapny = "cb3007"; // add call from database settings;
-  private urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS`;
+  //private urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS`;
+  private urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`
   private readonly logger = new Logger(TaskUserService.name);
   private readonly username: string;
   private readonly pwd: string;
@@ -123,13 +124,13 @@ export class TaskUserService {
           LinesInserted += 1;
           console.log(foundOne);
           const newPo = await this.taskUsersRepository.save(taskUser);
-          element.PORDERITEMS.forEach(async (subForm) => {
+          element.PORDERITEMS_SUBFORM.forEach(async (subForm) => {
             const ins = new TaskGrv();
             ins.taskUser = new TaskUser();
             ins.taskUser.id = EOrderUser.unAssigned;
             ins.PartNumber= subForm.PARTNAME;
-            ins.DataInfo= subForm.CDES;
-            ins.Location= subForm.PDES;
+            ins.DataInfo= subForm.PDES;
+            //ins.Location= subForm.CDES;
             ins.Total = Number(subForm.TQUANT);
             ins.taskUser =  new TaskUser();
             ins.taskUser.id = newPo.id;            
@@ -150,6 +151,7 @@ export class TaskUserService {
   }
 
   async findAll(companyId: string) {
+    console.log(companyId)
     return await this.taskUsersRepository.find({
       where: {
         user: { userCompany: { company: { id: companyId } } },
@@ -158,7 +160,7 @@ export class TaskUserService {
       relations: {
         taskStatus: true,
         taskType: true,
-        user: { userCompany: true },
+        //user: { userCompany: true },
       },
       order: { taskPriority: "DESC", updatedAt: "ASC" },
     });
@@ -172,7 +174,8 @@ export class TaskUserService {
       },
       relations: {
         taskStatus: true,
-        user: { userCompany: true },
+        taskType: true,
+        //user: { userCompany: true },
       },
     });
   }

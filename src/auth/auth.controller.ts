@@ -46,12 +46,13 @@ export class AuthController {
     const jwtToken = await this.authService.signAsyncCookie(jwtDetails);
     response.cookie('access_token', jwtToken.access_token, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none',
+      secure: false,
+      sameSite: 'lax',
       maxAge: 3600000,
     });
     const resLogin = {
       id: resUser.id,
+      accessToken: JSON.stringify(jwtToken),
       isSignedIn: true,
       userName: resUser.userName,
       userLastName: resUser.userSurname,
@@ -112,7 +113,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: 3600000,
+      maxAge: 36000,
     });
     const resLogin = {
       id: resUser.id,

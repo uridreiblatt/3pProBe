@@ -14,12 +14,13 @@ export class priorityProductsService {
     // return await this.PartRepository.find({
     //   // take: 100,
     // });
-    const sqlQuery =
-      'SELECT  pp.[id] ,pp.[PARTNAME]  ,pp.[PART] ,pp.[PARTDES] ,pp.[BARCODE],pp.[TYPE] ,pl.[location] , z.[zoneName],  cast(pl.[stockDate]as nvarchar) as stockDate,pl.[quantity]   ' +
-      ' FROM [dbo].[priorityProducts] pp  ' +
-      ' left JOIN  [dbo].[priorityProductsLocation] pl ON pp.[id]= pl.[priorityProductsId] ' +
-      ' left JOIN [dbo].[zone] z ON pl.[zoneId] = z.id order by isnull(z.priority,100) ';
-    const res = await this.PartRepository.query(sqlQuery);
+    // const sqlQuery =
+    //   'SELECT  pp.[id] ,pp.[PARTNAME]  ,pp.[PART] ,pp.[PARTDES] ,pp.[BARCODE],pp.[TYPE] ,pl.[location] , z.[zoneName],  cast(pl.[stockDate]as nvarchar) as stockDate,pl.[quantity]   ' +
+    //   ' FROM [dbo].[priorityProducts] pp  ' +
+    //   ' left JOIN  [dbo].[priorityProductsLocation] pl ON pp.[id]= pl.[priorityProductsId] ' +
+    //   ' left JOIN [dbo].[zone] z ON pl.[zoneId] = z.id order by isnull(z.priority,100) ';
+    // const res = await this.PartRepository.query(sqlQuery);
+    const res = await this.PartRepository.find();
     return res;
   }
 

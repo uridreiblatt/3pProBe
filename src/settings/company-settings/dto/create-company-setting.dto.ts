@@ -8,6 +8,7 @@ export class CreateCompanySettingDto {
   @ApiProperty()
   @IsString()
   priorityApiCompany: string;
+  
   @ApiProperty()
   @IsString()
   priorityApiUser: string;
@@ -26,4 +27,7 @@ export class CreateCompanySettingDto {
   @ApiProperty()
   @IsString()
   companyId: string;
+  @ApiProperty()
+  @IsString()
+  priorityProductStatus:string;
 }
