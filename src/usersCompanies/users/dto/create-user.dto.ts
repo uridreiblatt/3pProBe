@@ -52,6 +52,12 @@ export class CreateUserDto {
   @IsOptional()
   avatarUrl: string;
 
+@ApiProperty()
+  @IsString()
+  @IsOptional()
+  selectedCompany: string;
+  
+
 
 
   

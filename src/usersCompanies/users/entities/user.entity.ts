@@ -27,6 +27,10 @@ export class User extends Tablestamp{
   @Column({ select: false })
   userPasswordEnc: string;
   
+  @Column({ default:0 })
+  selectedCompany: string;
+
+  
   @OneToMany(() => UsersRoles, (userRole) => userRole.users)
   usersRoles: UsersRoles[];
   @JoinColumn()

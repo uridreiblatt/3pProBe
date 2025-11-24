@@ -7,7 +7,7 @@ export class CreateAuthDto {
   @IsEmail()
   email: string;
   @ApiProperty({
-    default: 'aaaaaaa',
+    default: '1234567',
   })
   @IsString()
   password: string;
@@ -29,6 +29,18 @@ export class AuthOtp {
   @ApiProperty()
   otp: string;
 }
+export class comapny {
+  @ApiProperty()
+  id: string; 
+  @ApiProperty()
+  name: string;  
+}
+export class role {
+  @ApiProperty()
+  id: number; 
+  @ApiProperty()
+  name: string;  
+}
 
 export class JwtDetails {
   @ApiProperty()
@@ -36,7 +48,13 @@ export class JwtDetails {
   @ApiProperty()
   userName: string;
   @ApiProperty()
+  userEmail: string;
+  @ApiProperty()
   userRole: string;
   @ApiProperty()
   userComapny: string;
+  @ApiProperty()
+  companies: comapny[];
+  @ApiProperty()
+  roles: role[];
 }

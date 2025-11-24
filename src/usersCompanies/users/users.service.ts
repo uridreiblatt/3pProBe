@@ -18,8 +18,7 @@ export class UsersService {
     @InjectRepository(UserCompany) 
     private userCompanyRepository: Repository<UserCompany>,   
   ) {}
-  async create(createUserDto: CreateUserDto) {
-    console.log(createUserDto)
+  async create(createUserDto: CreateUserDto) {    
     const ins = new User();
     ins.userName = createUserDto.userName;
     ins.userUuid = randomUUID();
@@ -27,14 +26,15 @@ export class UsersService {
     ins.userMobile = createUserDto.userMobile;    
     ins.userPasswordEnc = createUserDto.userPasswordEnc;  
     ins.isActive = createUserDto.isActive;  
+    ins.selectedCompany = createUserDto.companyId;
     const res  =  await this.userRepository.save(ins);
-    console.log(res)
+
     const insUserCompant = new UserCompany();
     insUserCompant.company =  new Company();
     insUserCompant.company.id = createUserDto.companyId;
     insUserCompant.users = new User();
     insUserCompant.users.id = res.id;
-    console.log(insUserCompant)
+  
     const resUserCompany  =  await this.userCompanyRepository.save(insUserCompant);
     return res;
   }
@@ -92,13 +92,13 @@ export class UsersService {
         userCompany:{company: true},
       },
     });
-    console.log(resUser)
     const resLogin = {
       id: resUser.id,
       userName: resUser.userName,
       userLastName: resUser.userSurname,
       usermail: resUser.userMail,
       userPasswordEnc: resUser.userPasswordEnc,
+      selectedCompany: resUser.selectedCompany,
       userRoles: resUser.usersRoles.map((o) => {
         return { id: o.role.id, role: o.role.role };
       }),
@@ -115,6 +115,7 @@ export class UsersService {
     ins.userMobile = updateUserDto.userMobile;
     ins.userPasswordEnc = updateUserDto.userPasswordEnc;
     ins.isActive = updateUserDto.isActive;
+    ins.selectedCompany = updateUserDto.selectedCompany;
     return await this.userRepository.update(id, ins);
   }
 

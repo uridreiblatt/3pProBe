@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
-import { CreateAuthDto, CreateAuthSwitchCompanyDto, JwtDetails, SwitchCompanyDto } from './dto/create-auth.dto';
+import { CreateAuthDto, CreateAuthSwitchCompanyDto, JwtDetails, role, SwitchCompanyDto } from './dto/create-auth.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from './auth.guard';
 import { SkipCookieMatch } from "src/auth/entities/skip-cookie-match.decorator";
@@ -38,10 +38,18 @@ export class AuthController {
       ...resUser.usersRoles.map((o) => o.role['id']),
       0,
     );
+    jwtDetails.userEmail = resUser.userMail;
     jwtDetails.userRole = maxValueOfY.toString();
-    jwtDetails.uuid = resUser.userUuid;
+    jwtDetails.uuid = resUser.userUuid;    
+    jwtDetails.userComapny =  resUser.selectedCompany === '0' ? resUser.userCompany[0].company.id : resUser.selectedCompany;
     
-    jwtDetails.userComapny = resUser.userCompany[0].company.id ;
+    jwtDetails.roles= resUser.usersRoles.map((o) => {
+        return { id: o.role.id, name: o.role.role }as role;
+      });
+    jwtDetails.companies = resUser.userCompany.map((o) => {
+         return { id: o.company.id, name: o.company.name }});;
+  
+
     const jwtToken = await this.authService.signAsyncCookie(jwtDetails);
     response.cookie('access_token', jwtToken.access_token, {
       httpOnly: true,

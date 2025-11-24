@@ -22,9 +22,12 @@ export class AuthService {
   async signAsyncCookie(data: JwtDetails): Promise<{ access_token: string }> {
     const payload = {
       userName: data.userName,
+      userEmail: data.userEmail,
       userUuid: data.uuid,
       role: data.userRole,
-      selectCompany: data.userComapny
+      selectCompany: data.userComapny,
+      roles: data.roles,
+      companies:  data.companies,
     };
     return {
       access_token: await this.jwtService.signAsync(payload),
