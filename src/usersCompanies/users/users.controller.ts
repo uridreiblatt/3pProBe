@@ -10,7 +10,7 @@ import { Roles } from 'src/auth/entities/roles.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { SkipCookieMatch } from 'src/auth/entities/skip-cookie-match.decorator';
-@SkipCookieMatch()
+//@SkipCookieMatch()
 @UseGuards(AuthGuard)
 @Roles(rolesEnum.SysAdmin, rolesEnum.Administrator)
 @ApiTags('users-ok')
@@ -39,10 +39,11 @@ export class UsersController {
       async findOne(@Param('id') id: string) {
         return this.usersService.findOne(id);
       }
-    
+      @SkipCookieMatch()
       @Patch(':id')
       async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-        return this.usersService.update(+id, updateUserDto);
+        console.log(id, updateUserDto)
+        return this.usersService.update(id, updateUserDto);
       }
     
       @Delete(':id')

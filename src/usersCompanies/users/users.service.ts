@@ -85,18 +85,36 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    return await this.userRepository.findOne({
+    const resUser =  await this.userRepository.findOne({
       where: { id: id },
       relations:{
-        userCompany:true,
+        usersRoles: {role: true},
+        userCompany:{company: true},
       },
     });
+    console.log(resUser)
+    const resLogin = {
+      id: resUser.id,
+      userName: resUser.userName,
+      userLastName: resUser.userSurname,
+      usermail: resUser.userMail,
+      userPasswordEnc: resUser.userPasswordEnc,
+      userRoles: resUser.usersRoles.map((o) => {
+        return { id: o.role.id, role: o.role.role };
+      }),
+      userCompanies: resUser.userCompany.map((o) => {
+        return { id: o.company.id, companyName: o.company.name };
+      }),
+    };
+    return  resLogin;
   }
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     const ins = new User();
     ins.userName = updateUserDto.userName;
     ins.userMail = updateUserDto.usermail;
     ins.userMobile = updateUserDto.userMobile;
+    ins.userPasswordEnc = updateUserDto.userPasswordEnc;
+    ins.isActive = updateUserDto.isActive;
     return await this.userRepository.update(id, ins);
   }
 
