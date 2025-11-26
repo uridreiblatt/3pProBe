@@ -40,16 +40,34 @@ export class UsersService {
   }
 
   async findAll(companyId: string): Promise<any> {      
-    return await this.userRepository.find({
+    const resUser  =  await this.userRepository.find({
       where: {
         userCompany: {company: {id: companyId}},        
       },
       relations: {
-        usersRoles: true,
+        usersRoles: {role: true},
         userCompany: {company: true},
+
       },
-      select: ["id", "userName", "userMail", "usersRoles", "color", "userMobile", "isActive"],
+      //select: ["id", "userName", "userMail", "usersRoles",  "userMobile", "isActive"],
     });
+    const res  =  resUser.map((user) => {
+    
+
+    return {
+      id: user.id,
+      userName: user.userName,
+      userMail: user.userMail,
+      userMobile: user.userMobile,            
+      roles: user.usersRoles.map((role)=>{
+        return        role.role.role}),
+        companies: user.userCompany.map((comapny)=>{
+        return comapny.company.name}),
+      isActive: user.isActive ? 'Active': 'InActive',
+    };
+  });
+  return res;
+
   }
   
 

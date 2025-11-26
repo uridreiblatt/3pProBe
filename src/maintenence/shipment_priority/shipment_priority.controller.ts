@@ -24,10 +24,8 @@ export class ShipmentPriorityController {
     }
   
     @Get(':id')
-    async findOne(@Request() req ,@Param('id') id: string) {
-      
-      const res = await this.shipmentPriorityService.findOne(id);
-      console.log(id, res)
+    async findOne(@Request() req ,@Param('id') id: string) {      
+      const res = await this.shipmentPriorityService.findOne(id);   
       validateCompany (req.user.selectCompany , res.company.id);
       return res;
     }

@@ -353,7 +353,7 @@ export class GetOrderInfoService {
         messages: [],
         printLables: [],
       };
-      console.log('createShipRushDelivery');
+      //console.log('createShipRushDelivery');
       await this._DbLogService.create({
         subject: 'shipRush Create ',
         message: 'orderId ' + Id,
@@ -409,7 +409,7 @@ export class GetOrderInfoService {
       await this._orderService.updateData(Id, updDOC);
       //return updDOC;
       const ShipRushXml = await this.BuilddataToShipRush(order, shp);
-      console.log('ShipRushXml', ShipRushXml);
+      //console.log('ShipRushXml', ShipRushXml);
       const shipRushResXml = await this.sendToShipRush(
         ShipRushXml,
         order.ORDNAME,
@@ -530,7 +530,7 @@ export class GetOrderInfoService {
       //       shipRushRes.ShipResponse.ShipTransaction.Shipment.ShipmentNumber,
       //   };
 
-      //   //console.log(updShipRushRes);
+      //   console.log(updShipRushRes);
       //   await this._orderService.updateData(Id, updShipRushRes);
       //   // await this.sleep(1000).then(async () => {});
       // }
@@ -551,7 +551,7 @@ export class GetOrderInfoService {
         //'shipRushRes.ShipResponse.ShipTransaction.Shipment.ShipmentNumber',
         '',
       );
-      console.log('resPriorityUpdateDoc', resPriorityUpdateDoc);
+      //console.log('resPriorityUpdateDoc', resPriorityUpdateDoc);
       // if (userResult.isSuccess === 'true') {
       //   console.log('resPriorityUpdateDoc', resPriorityUpdateDoc);
       //   const resPriorityUpdateDocFinal =
@@ -567,7 +567,7 @@ export class GetOrderInfoService {
       // }
       return userResult;
     } catch (error) {
-      console.log(error);
+      //console.log(error);
       throw error;
     }
     //ShipmentNumber
@@ -585,7 +585,7 @@ export class GetOrderInfoService {
         messages: [],
         printLables: [],
       };
-      console.log('createPrioritySh');
+      //console.log('createPrioritySh');
       await this._DbLogService.create({
         subject: 'priority sh Create ',
         message: 'orderId ' + Id,
@@ -677,10 +677,10 @@ export class GetOrderInfoService {
         ],
         printLables: [],
       };
-      console.log(userResult);
+      //console.log(userResult);
       return userResult;
     } catch (error) {
-      console.log(error);
+      //console.log(error);
       throw error;
     }
     //ShipmentNumber

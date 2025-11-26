@@ -30,8 +30,7 @@ export class UsersController {
       }
       //@SkipCookieMatch()
       @Get()
-      async findAll(@Request() req,) {
-        console.log(req.user)
+      async findAll(@Request() req,) {        
          return await this.usersService.findAll(req.user.selectCompany);
       }
     
@@ -42,7 +41,6 @@ export class UsersController {
       @SkipCookieMatch()
       @Patch(':id')
       async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-        console.log(id, updateUserDto)
         return this.usersService.update(id, updateUserDto);
       }
     

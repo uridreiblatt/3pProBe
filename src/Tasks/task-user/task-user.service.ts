@@ -122,7 +122,7 @@ export class TaskUserService {
 
         if (foundOne === null) {
           LinesInserted += 1;
-          console.log(foundOne);
+          //console.log(foundOne);
           const newPo = await this.taskUsersRepository.save(taskUser);
           element.PORDERITEMS_SUBFORM.forEach(async (subForm) => {
             const ins = new TaskGrv();

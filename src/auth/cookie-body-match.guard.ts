@@ -87,7 +87,7 @@ export class CookieMatchGuard implements CanActivate {
           );
         }
       }
-       console.log('CookieMatchGuard last return true')
+       //console.log('CookieMatchGuard last return true')
     return true;
   }
 

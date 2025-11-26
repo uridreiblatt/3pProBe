@@ -23,18 +23,27 @@ export class BoxesService {
     return await this.boxRepository.save(ins);
   }
 
-  async findAll(companyId: string): Promise<Boxsize[]> {
-    return await this.boxRepository.find({
+  async findAll(companyId: string): Promise<any> {
+    const resBox =  await this.boxRepository.find({
       where: {
         company:{ id: companyId} ,
-      },
-      relations:{
-        company: true,
-      },
+      },     
       order: {
         sizeDesc: 'ASC',
       },
     });
+     const res  =  resBox.map((box) => {
+    
+
+    return {
+      id: box.id,
+      sizeDesc: box.sizeDesc,
+      isActive: box.isActive ? 'Active': 'InActive',
+    };
+  });
+  return res;
+ 
+
   }
   async findOne(id: string): Promise<Boxsize> {
     return await this.boxRepository.findOne({
