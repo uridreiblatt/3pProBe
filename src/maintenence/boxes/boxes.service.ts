@@ -45,14 +45,15 @@ export class BoxesService {
  
 
   }
-  async findOne(id: string): Promise<Boxsize> {
+  async findOne(id: string, companyId: string): Promise<Boxsize> {
     return await this.boxRepository.findOne({
       where: {
          id: id ,
+         company: {id: companyId}
       },
-      relations:{
-        company: true,
-      },
+      // relations:{
+      //   company: true,
+      // },
       order: {
         sizeDesc: 'ASC',
       },
@@ -68,7 +69,7 @@ export class BoxesService {
     return res[0];
   }
 
-  async update(id: number, updateBoxDto: UpdateBoxDto) {
+  async update(id: string, updateBoxDto: UpdateBoxDto) {
     const ins = new  Boxsize();
     ins.sizeDesc = updateBoxDto.sizeDesc;
     ins.company = new Company() ;
@@ -76,7 +77,7 @@ export class BoxesService {
     return await this.boxRepository.update(id, ins);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return await this.boxRepository.delete(id);
   }
 }

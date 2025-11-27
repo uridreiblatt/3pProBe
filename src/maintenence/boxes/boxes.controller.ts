@@ -35,8 +35,8 @@ export class BoxesController {
   }
   @Get(":id")
   async findOne(@Request() req, @Param("id") id: string) {
-    const res = await this.boxesService.findOne(id);
-    validateCompany (req.user.selectCompany , res.company.id);
+    const res = await this.boxesService.findOne(id, req.user.selectCompany);
+    //validateCompany (req.user.selectCompany , res.company.id);
     return res;
   }
 
@@ -46,13 +46,13 @@ export class BoxesController {
     @Param("id") id: string,
     @Body() updateBoxDto: UpdateBoxDto
   ) {   
-    return this.boxesService.update(+id, updateBoxDto);
+    return this.boxesService.update(id, updateBoxDto);
   }
 
   @Delete(":id")
   async remove(@Request() req, @Param("id") id: string) {
-    const res = await this.boxesService.findOne(id);
-    validateCompany (req.user.selectCompany , res.company.id);
-    return this.boxesService.remove(+id);
+    // const res = await this.boxesService.findOne(id, req.usre.selectCompany);
+    // validateCompany (req.user.selectCompany , res.company.id);
+    return this.boxesService.remove(id);
   }
 }

@@ -7,8 +7,7 @@ export class CreateBoxDto {
   @IsString()
   sizeDesc: string;
 
-  @ApiProperty({default:0})
-  @Type(() => Number)   // "1" -> 1
-  @IsInt()
-  companyId!: string;   // required if you expect it in the body
+  @ApiProperty({default:''})
+  @IsString()
+  companyId: string;   // required if you expect it in the body
 }
