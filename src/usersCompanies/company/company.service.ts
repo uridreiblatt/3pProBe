@@ -27,6 +27,9 @@ export class CompanyService {
       where: {
         id: id,
       },
+      relations:{
+        companySetting: true,
+      },
     });
   }
 
