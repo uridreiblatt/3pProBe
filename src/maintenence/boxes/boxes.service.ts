@@ -77,7 +77,14 @@ export class BoxesService {
     return await this.boxRepository.update(id, ins);
   }
 
-  async remove(id: string) {
-    return await this.boxRepository.delete(id);
+  async remove(id: string, companyId: string) {
+    const res = await this.boxRepository.findOne({
+      where: {
+         id: id ,
+         company: {id: companyId}
+      },      
+    });
+    if (res)
+      return await this.boxRepository.delete(id);
   }
 }

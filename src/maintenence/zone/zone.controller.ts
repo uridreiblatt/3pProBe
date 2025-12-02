@@ -6,7 +6,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { validateCompany } from 'src/util/validateCompany.util';
 import { ApiTags } from '@nestjs/swagger';
 @UseGuards(AuthGuard)
-@ApiTags('zone-ok')
+@ApiTags('zone')
 @Controller('zone')
 export class ZoneController {
   constructor(private readonly zoneService: ZoneService) {}
@@ -23,20 +23,20 @@ export class ZoneController {
   @Get(':id')
   async findOne(@Request() req ,@Param('id') id: string) {
     
-    const res = await this.zoneService.findOne(id);
-    validateCompany (req.user.selectCompany , res.company.id);
+    const res = await this.zoneService.findOne(id, req.user.selectCompany);
+    //validateCompany (req.user.selectCompany , res.company.id);
     return res;
   }
 
   @Patch(':id')
   async update(@Request() req ,@Param('id') id: string, @Body() updateZoneDto: UpdateZoneDto) {   
-    return this.zoneService.update(+id, updateZoneDto);
+    return this.zoneService.update(id, updateZoneDto);
   }
 
   @Delete(':id')
   async remove(@Request() req, @Param('id') id: string) {
-    const res = await  this.zoneService.findOne(id);    
-    validateCompany (req.user.selectCompany , res.company.id);
-    return this.zoneService.remove(+id);
+    
+    //validateCompany (req.user.selectCompany , res.company.id);
+    return this.zoneService.remove(id, req.user.selectCompany);
   }
 }

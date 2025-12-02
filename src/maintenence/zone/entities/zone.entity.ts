@@ -9,7 +9,7 @@ export class Zone extends Tablestamp{
   id: string;
   @Column()
   zoneName: string;
-  @Column()
+  @Column({default: ''})
   color: string;
   @Column()
   priority: number;

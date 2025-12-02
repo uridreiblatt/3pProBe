@@ -20,7 +20,6 @@ export class CreateShipmentPriorityDto {
   @IsString()
   shipRushAcountNumber: string;
   @ApiProperty()
-  @Type(() => Number) // "1" -> 1
-  @IsInt()
+   @IsString()
   companyId: string;
 }

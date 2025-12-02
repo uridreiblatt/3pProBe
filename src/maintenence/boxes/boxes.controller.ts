@@ -51,8 +51,7 @@ export class BoxesController {
 
   @Delete(":id")
   async remove(@Request() req, @Param("id") id: string) {
-    // const res = await this.boxesService.findOne(id, req.usre.selectCompany);
-    // validateCompany (req.user.selectCompany , res.company.id);
-    return this.boxesService.remove(id);
+   
+    return this.boxesService.remove(id, req.user.selectCompany);
   }
 }

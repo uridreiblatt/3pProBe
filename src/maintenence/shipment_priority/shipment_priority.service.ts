@@ -34,9 +34,9 @@ export class ShipmentPriorityService {
       where:{
         company :{id: idComapny}
       },
-      relations: {
-        company: true,
-      }
+      // relations: {
+      //   company: true,
+      // }
     });
   }
 

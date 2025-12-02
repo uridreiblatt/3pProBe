@@ -13,8 +13,7 @@ export class CreateZoneDto {
   @Type(() => Number) // "1" -> 1
   @IsInt()
   priority: number;
-  @ApiProperty()
-  @Type(() => Number) // "1" -> 1
+  @ApiProperty()  
   @IsString()
   companyId: string;
 }

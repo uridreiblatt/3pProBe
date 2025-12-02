@@ -34,16 +34,13 @@ export class ZoneService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, selectCompany: string) {
     return await this.zoneRepository.findOne({
-      where: {id: id},
-      relations: {
-        company: true,
-      },
+      where: {id: id , company: {id: selectCompany}},      
     });
   }
 
-  async update(id: number, updateZoneDto: UpdateZoneDto) {
+  async update(id: string, updateZoneDto: UpdateZoneDto) {
     const ins = new  Zone();
       ins.zoneName = updateZoneDto.zoneName;
       ins.color = updateZoneDto.color;
@@ -54,7 +51,11 @@ export class ZoneService {
       return await this.zoneRepository.update(id, ins);
   }
 
-  async remove(id: number) {
-     return await this.zoneRepository.delete(id);
+  async remove(id: string, selectCompany: string) {
+    const res = await this.zoneRepository.findOne({
+      where: {id: id , company: {id: selectCompany}},      
+    });
+    if (res)
+      return await this.zoneRepository.delete(id);
   }
 }
