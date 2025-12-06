@@ -16,4 +16,11 @@ export class PriorityProductsHierarchy {
   )
   @JoinColumn({ name: 'PART', referencedColumnName: 'PART' })
   priorityProducts: PriorityProducts;
+  @ManyToOne(
+  () => PriorityProducts,
+  (priorityProducts) => priorityProducts.PriorityProductsHierarchy,
+  { nullable: false },
+)
+@JoinColumn({ name: 'SON', referencedColumnName: 'PART' })
+sonPriorityProduct: PriorityProducts;
 }

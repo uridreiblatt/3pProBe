@@ -116,7 +116,9 @@ export class priorityProductsService {
       },
       take:20,
       
-       relations:{ PriorityProductsHierarchy: true}
+       relations:{ PriorityProductsHierarchy: true,
+        PriorityProductsLocation: {zone: true},
+       }
       
     }
     );
@@ -129,8 +131,8 @@ export class priorityProductsService {
         id: id,
       },
       relations: {
-        PriorityProductsLocation: true,
-        PriorityProductsHierarchy: true,
+          PriorityProductsLocation: {zone: true},
+          PriorityProductsHierarchy: {sonPriorityProduct: true},
       },
     });
   }
@@ -145,7 +147,7 @@ export class priorityProductsService {
       },
       relations:{
         PriorityProductsHierarchy: true,
-      PriorityProductsLocation: true,}
+      PriorityProductsLocation: {zone: true},}
     });
   }
 
