@@ -49,17 +49,29 @@ export class UserRoleService {
     return resAll;
   }
 
-  async findOne(id: string) {
-    return await this.userRoleRepository.findOne({
+  async findOne(id: string, companyId: string) {
+    const res =  await this.userRoleRepository.findOne({
       where:{
         id:id,
-        //users: {userCompany:{ id: 1 }},
+        users:  {userCompany: {company: {id: companyId}}},
       },
       relations: {
         users: {userCompany: true,},
+        role: true,
       },
       //select: ['id', 'userName', 'usermail', 'usersRoles', 'color'],
     });
+    const resAll  =  {
+      id: res.id,             
+      //role: res.role.role,
+      user: res.users.userName,
+      userId: res.users.id,
+      role: res.role.role,
+      roleId: res.role.id,
+
+      isActive: res.isActive ? 'Active': 'InActive',
+    };
+    return resAll;
   }
 
   async update(id: number, updateUserRoleDto: UpdateUserRoleDto) {

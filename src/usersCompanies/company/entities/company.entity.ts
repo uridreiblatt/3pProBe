@@ -17,6 +17,7 @@ import { TaskUser } from "src/Tasks/task-user/entities/task-user.entity";
 import { Tablestamp } from "src/maintenence/boxes/entities/tablestamp.embed";
 import { AllRma } from "src/Tasks/all-rma/entities/all-rma.entity";
 import { CompanySetting } from "src/settings/company-settings/entities/company-setting.entity";
+import { PriorityProducts } from "src/products/priorityProducts/entities/priorityProducts.entity";
 
 @Entity()
 export class Company extends Tablestamp {
@@ -60,4 +61,6 @@ export class Company extends Tablestamp {
   taskUser: TaskUser[];
   @OneToMany(() => AllRma, (allRma) => allRma)
   allRma: AllRma[];
+  @OneToMany(() => PriorityProducts, (priorityProducts) => priorityProducts)
+  priorityProducts: PriorityProducts[];
 }

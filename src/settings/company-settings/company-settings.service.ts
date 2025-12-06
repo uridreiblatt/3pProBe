@@ -30,9 +30,12 @@ export class CompanySettingsService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} companySetting`;
-  }
+  async findOne(id: string) {
+    return await this.orderRepository.findOne(
+      {
+      where: {id: id}
+  });
+}
 
   update(id: number, updateCompanySettingDto: UpdateCompanySettingDto) {
     return `This action updates a #${id} companySetting`;

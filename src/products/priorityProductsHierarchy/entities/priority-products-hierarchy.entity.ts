@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { PriorityProducts } from 'src/products/priorityProducts/entities/priorityProducts.entity';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('priorityProductsHierarchy')
 export class PriorityProductsHierarchy {
@@ -8,10 +9,11 @@ export class PriorityProductsHierarchy {
   PART: number;
   @Column()
   SON: number;
-  // @ManyToOne(
-  //   () => PriorityProducts,
-  //   (priorityProducts) => priorityProducts.priorityProductsHierarchy,
-  // )
-  // @JoinColumn({ name: 'priorityProductsId' })
-  // priorityProducts: PriorityProducts;
+  @ManyToOne(
+    () => PriorityProducts,
+    (priorityProducts) => priorityProducts.PriorityProductsHierarchy,
+    { nullable: false },
+  )
+  @JoinColumn({ name: 'PART', referencedColumnName: 'PART' })
+  priorityProducts: PriorityProducts;
 }

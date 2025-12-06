@@ -19,7 +19,7 @@ export class CompanySettingsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.companySettingsService.findOne(+id);
+    return this.companySettingsService.findOne(id);
   }
 
   @Patch(':id')

@@ -22,12 +22,10 @@ export class PriorityProductsLocation {
   quantity: number;
   @ManyToOne(
     () => PriorityProducts,
-    (priorityProducts) => priorityProducts.PriorityProductsLocation,
+    (product) => product.PriorityProductsLocation,
+    { nullable: false },
   )
-  @JoinColumn({ name: 'priorityProductsId' })
   priorityProducts: PriorityProducts;
-
-  @ManyToOne(() => Zone, (zone) => zone.PriorityProductsLocation)
-  @JoinColumn({ name: 'zoneId' })
+  @ManyToOne(() => Zone, (zone) => zone.PriorityProductsLocation)  
   zone: Zone;
 }

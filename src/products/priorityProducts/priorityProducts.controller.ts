@@ -12,11 +12,15 @@ export class PriorityProductsController {
   // create(@Body() createPartDto: CreatePartDto) {
   //   return this.partsService.create(createPartDto);
   // }
+  @Get('getPriorityParts')
+  async getPriorityParts(){
+    await this.partsService.getPriorityParts();
+  }
 
   @Get()
   async findAll(@Request() req) {
     console.log('priorityProducts', req.user)
-    return await this.partsService.findAll();
+    return await this.partsService.findAll('aaa-aaa-aaa');
   }
 
   @Get('findOne/:id')
@@ -24,14 +28,14 @@ export class PriorityProductsController {
     return this.partsService.findOne(id);
   }
 
-  @Get('findChildByParentPart/:id')
-  async findChildByParentPart(@Param('id') id: string) {
-    return await this.partsService.findChildByParentPart(id);
-  }
-  @Get('findChildByParent/:id')
-  async findChildByParent(@Param('id') id: string) {
-    return await this.partsService.findChildByParent(id);
-  }
+  // @Get('findChildByParentPart/:id')
+  // async findChildByParentPart(@Param('id') id: string) {
+  //   return await this.partsService.findChildByParentPart(id);
+  // }
+  // @Get('findChildByParent/:id')
+  // async findChildByParent(@Param('id') id: string) {
+  //   return await this.partsService.findChildByParent(id);
+  // }
   @Get('findBarcode/:barcode')
   async findBarcode(@Param('barcode') id: string) {
     return await this.partsService.findBarcode(id);
