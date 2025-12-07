@@ -128,11 +128,11 @@ export class GetOrderInfoService {
         createOrderDto.accountId = element.FBES_ACCOUNT;
         createOrderDto.accountZip = element.FBES_ZIP;
 
-        createOrderDto.shipmentOrder = 1;
+        createOrderDto.shipmentOrder = false;
         const shp = await this._ShipmentPriorityService.findOneByStCode(
           createOrderDto.STCODE,
         );
-        createOrderDto.shipmentOrder = shp?.priority || 1;
+        createOrderDto.shipmentOrder = shp?.priority || false;
         createOrderDto.STDES = element.STDES;
         createOrderDto.FAX = element.SHIPTO2_SUBFORM?.FAX;
         createOrderDto.NAME = element.SHIPTO2_SUBFORM?.NAME;

@@ -6,11 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { PriorityProductsLocationsService } from './priority-products-locations.service';
 import { CreatePriorityProductsLocationDto } from './dto/create-priority-products-location.dto';
 import { UpdatePriorityProductsLocationDto } from './dto/update-priority-products-location.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/auth.guard';
+@UseGuards(AuthGuard)
 @ApiTags('priority-products-locations')
 @Controller('priority-products-locations')
 export class PriorityProductsLocationsController {
@@ -29,8 +33,8 @@ export class PriorityProductsLocationsController {
   }
 
   @Get('findAll')
-  findAll() {
-    return this.priorityProductsLocationsService.findAll();
+  findAll(@Request() req) {
+    return this.priorityProductsLocationsService.findAll(req.user.selectCompany);
   }
   @Get('findZones')
   findZones() {

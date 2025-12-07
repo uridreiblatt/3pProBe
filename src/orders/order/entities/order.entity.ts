@@ -61,7 +61,7 @@ export class Order {
   @Column({})
   priorityOrder: number;
   @Column({})
-  shipmentOrder: number;
+  shipmentOrder: boolean;
   @Column()
   DETAILS: string;
   @Column({})

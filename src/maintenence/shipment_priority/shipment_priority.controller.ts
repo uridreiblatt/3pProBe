@@ -40,14 +40,14 @@ export class ShipmentPriorityController {
   
     @Patch(':id')
     async update(@Request() req ,@Param('id') id: string, @Body() updateShipmentPriorityDto: UpdateShipmentPriorityDto) {   
-      return this.shipmentPriorityService.update(+id, updateShipmentPriorityDto);
+      return this.shipmentPriorityService.update(id, updateShipmentPriorityDto);
     }
   
     @Delete(':id')
     async remove(@Request() req, @Param('id') id: string) {
       const res = await  this.shipmentPriorityService.findOne(id);    
       validateCompany (req.user.selectCompany , res.company.id);
-      return this.shipmentPriorityService.remove(+id);
+      return this.shipmentPriorityService.remove(id);
     }
 
 

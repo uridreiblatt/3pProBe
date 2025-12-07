@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsInt, IsString } from "class-validator";
+import { IsBoolean, IsInt, IsString } from "class-validator";
 
 export class CreateShipmentPriorityDto {
   @ApiProperty()
@@ -10,9 +10,9 @@ export class CreateShipmentPriorityDto {
   @IsString()
   ShippingMethod: string;
   @ApiProperty()
-  @Type(() => Number) // "1" -> 1
-  @IsInt()
-  priority: number;
+ 
+  @IsBoolean()
+  priority: boolean;
   @ApiProperty()
   @IsString()
   shipRushCode: string;

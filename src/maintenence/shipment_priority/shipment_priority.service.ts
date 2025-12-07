@@ -61,7 +61,7 @@ export class ShipmentPriorityService {
 
   
 
-  async update(id: number, updateShipmentPriorityDto: UpdateShipmentPriorityDto) {
+  async update(id: string, updateShipmentPriorityDto: UpdateShipmentPriorityDto) {
       const ins = new ShipmentPriority();
       ins.ShipmentCode = updateShipmentPriorityDto.ShipmentCode;
       ins.ShippingMethod = updateShipmentPriorityDto.ShippingMethod;
@@ -71,7 +71,7 @@ export class ShipmentPriorityService {
       return await this.shipmentPriorityRepository.update(id, ins);
     }
   
-    async remove(id: number) {
+    async remove(id: string) {
       return await this.shipmentPriorityRepository.delete(id);
     }
 }

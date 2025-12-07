@@ -29,8 +29,25 @@ export class PriorityProductsLocationsService {
     return await this.priorityZoneRepo.find();
   }
 
-  async findAll() {
-    return await this.priorityProductsLocationsRepo.find();
+  async findAll(companyId: string) {
+    const res =  await this.priorityProductsLocationsRepo.find({
+       where: {
+              priorityProducts: { company: {id: companyId}}
+      
+            },
+            relations: {priorityProducts: true, zone: true,},
+            }
+    );
+    const resAll = res.map((loc)=>{
+      return {
+      id: loc.id,
+      location:  loc.location,
+      zone: loc.zone.zoneName,
+      product: loc.priorityProducts.PARTNAME,
+      }
+    });
+    return resAll;
+
   }
 
   async findAllByProduct(id: string) {
@@ -63,14 +80,23 @@ export class PriorityProductsLocationsService {
   }
 
   async findOne(id: string) {
-    return await this.priorityProductsLocationsRepo.findOne({
+    const res = await this.priorityProductsLocationsRepo.findOne({
       where: {
         id: id,
       },
       relations: {
         zone: true,
+        priorityProducts: true,
       },
     });
+
+    const resAll  =  {
+      id: res.id,             
+      zone: res.zone.zoneName,
+      location: res.location,
+      product: res.priorityProducts.PARTNAME,
+    };
+    return resAll;
   }
 
   async update(

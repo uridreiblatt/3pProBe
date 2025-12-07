@@ -44,8 +44,8 @@ export class CreateOrderDto {
   orderPhotoBase64_2: string;
   @ApiProperty({ default: 100 })
   priorityOrder: number;
-  @ApiProperty({ default: 2 })
-  shipmentOrder: number;
+  @ApiProperty({ default: false })
+  shipmentOrder: boolean;
   @ApiProperty({})
   STDES: string;
   @ApiProperty({ default: false })

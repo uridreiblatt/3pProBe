@@ -10,7 +10,7 @@ export class ShipmentPriority extends Tablestamp{
   @Column()
   ShippingMethod: string;
   @Column()
-  priority: number;
+  priority: boolean;
   @Column()
   shipRushCode: string;
   @Column()

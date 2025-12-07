@@ -12,7 +12,7 @@ export class Zone extends Tablestamp{
   @Column({default: ''})
   color: string;
   @Column()
-  priority: number;
+  priority: boolean;
   @OneToMany(
     () => PriorityProductsLocation,
     (priorityProductsLocation) => priorityProductsLocation.zone,
