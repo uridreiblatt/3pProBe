@@ -62,13 +62,13 @@ export class PriorityProductsLocationsController {
     updatePriorityProductsLocationDto: UpdatePriorityProductsLocationDto,
   ) {
     return this.priorityProductsLocationsService.update(
-      +id,
+      id,
       updatePriorityProductsLocationDto,
     );
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.priorityProductsLocationsService.remove(+id);
+    return this.priorityProductsLocationsService.remove(id);
   }
 }

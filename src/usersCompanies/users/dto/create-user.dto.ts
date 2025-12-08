@@ -6,7 +6,7 @@ export class CreateUserDto {
   @IsString()
   userName: string;
 
-  @ApiProperty()
+  @ApiProperty({default:''})
   @IsString()
   @IsOptional()
   userSurname: string;

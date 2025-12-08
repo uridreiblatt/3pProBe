@@ -18,9 +18,8 @@ export class PriorityProductsController {
   }
 
   @Get()
-  async findAll(@Request() req) {
-    console.log('priorityProducts', req.user)
-    return await this.partsService.findAll('aaa-aaa-aaa');
+  async findAll(@Request() req) {    
+    return await this.partsService.findAll(req.user.selectCompany);
   }
 
   @Get('findOne/:id')

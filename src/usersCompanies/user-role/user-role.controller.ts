@@ -33,7 +33,7 @@ export class UserRoleController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserRoleDto: UpdateUserRoleDto) {
-    return this.userRoleService.update(+id, updateUserRoleDto);
+    return this.userRoleService.update(id, updateUserRoleDto);
   }
 
   @Delete(':id')

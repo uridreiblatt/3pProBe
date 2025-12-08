@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PriorityProductsLocation } from './entities/priority-products-location.entity';
 import { Zone } from '../../maintenence/zone/entities/zone.entity';
+import { PriorityProducts } from '../priorityProducts/entities/priorityProducts.entity';
 
 @Injectable()
 export class PriorityProductsLocationsService {
@@ -17,9 +18,9 @@ export class PriorityProductsLocationsService {
   async create(
     createPriorityProductsLocationDto: CreatePriorityProductsLocationDto,
   ) {
-    if (createPriorityProductsLocationDto.stockDate?.toString() === '') {
-      createPriorityProductsLocationDto.stockDate = null;
-    }
+    // if (createPriorityProductsLocationDto.stockDate?.toString() === '') {
+    //   createPriorityProductsLocationDto.stockDate = null;
+    // }
     return await this.priorityProductsLocationsRepo.save(
       createPriorityProductsLocationDto,
     );
@@ -93,27 +94,38 @@ export class PriorityProductsLocationsService {
     const resAll  =  {
       id: res.id,             
       zone: res.zone.zoneName,
+      zoneId: res.zone.id,
       location: res.location,
       product: res.priorityProducts.PARTNAME,
+      productId: res.priorityProducts.id,
     };
     return resAll;
   }
 
   async update(
-    id: number,
+    id: string,
     updatePriorityProductsLocationDto: UpdatePriorityProductsLocationDto,
   ) {
-    if (updatePriorityProductsLocationDto.stockDate?.toString() === '') {
-      updatePriorityProductsLocationDto.stockDate = null;
-    }
+    // if (updatePriorityProductsLocationDto.stockDate?.toString() === '') {
+    //   updatePriorityProductsLocationDto.stockDate = null;
+    // }
+    console.log(id, updatePriorityProductsLocationDto)
+    const upt =  new PriorityProductsLocation();
+    upt.location = updatePriorityProductsLocationDto.location;
+    upt.quantity = updatePriorityProductsLocationDto.quantity;
+    upt.stockDate = null;
+    upt.priorityProducts = new PriorityProducts();
+    upt.priorityProducts.id = updatePriorityProductsLocationDto.productId;
+    upt.zone =  new Zone();
+    upt.zone.id = updatePriorityProductsLocationDto.zoneId;
 
     return await this.priorityProductsLocationsRepo.update(
       id,
-      updatePriorityProductsLocationDto,
+      upt,
     );
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return await this.priorityProductsLocationsRepo.delete(id);
   }
 }

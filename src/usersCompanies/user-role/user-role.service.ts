@@ -74,7 +74,7 @@ export class UserRoleService {
     return resAll;
   }
 
-  async update(id: number, updateUserRoleDto: UpdateUserRoleDto) {
+  async update(id: string, updateUserRoleDto: UpdateUserRoleDto) {
     const ins = new UsersRoles();
     const rl = new Role();
     rl.id = updateUserRoleDto.roleId;
