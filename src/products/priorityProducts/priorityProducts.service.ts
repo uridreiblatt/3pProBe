@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { catchError, lastValueFrom, map } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { Company } from 'src/usersCompanies/company/entities/company.entity';
+import { PriorityProductsHierarchy } from '../priorityProductsHierarchy/entities/priority-products-hierarchy.entity';
 
 @Injectable()
 export class priorityProductsService {
@@ -18,6 +19,12 @@ export class priorityProductsService {
   constructor(
     @InjectRepository(PriorityProducts)
     private PartRepository: Repository<PriorityProducts>,
+    @InjectRepository(PriorityProductsHierarchy)
+    private PartHierarchyRepository: Repository<PriorityProductsHierarchy>,
+
+
+
+    
      private configService: ConfigService,
      private httpService: HttpService,
   ) {
@@ -38,7 +45,7 @@ export class priorityProductsService {
         const url =
           `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
           this.comapny +
-          `/LOGPART?$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES,PART`;
+          `/LOGPART?$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES,PART&$expand=PARTARC_SUBFORM($select=SONNAME,TYPE,SON)`;
         const credentials = btoa(this.username + ':' + this.pwd);
         const basicAuth = 'Basic ' + credentials;
         const data = await lastValueFrom(
@@ -76,6 +83,14 @@ export class priorityProductsService {
             createPartDto.company.id = 'aaa-aaa-aaa'     
             try {
             await this.PartRepository.save(createPartDto);  
+            element.PARTARC_SUBFORM.map(async (son)=>{
+              const prod =  new PriorityProductsHierarchy();
+              prod.PART = element.PART,
+              prod.SON = son.SON,
+              await this.PartHierarchyRepository.save(prod);
+
+            })
+
             } catch (error) {
               console.log(error)
             }       
@@ -110,16 +125,17 @@ export class priorityProductsService {
     // const res = await this.PartRepository.query(sqlQuery);
     const res = await this.PartRepository.find({
       where: {
-        TYPE: 'R',
+        TYPE: 'P',
         company: {id: companyId},
 
       },
-      take:20,
+      //take:20,
       
        relations:{ PriorityProductsHierarchy: true,
         PriorityProductsLocation: {zone: true},
-       }
+       },
       
+         order: {PART: 'ASC'},      
     }
     );
     return res;
@@ -134,6 +150,7 @@ export class priorityProductsService {
           PriorityProductsLocation: {zone: true},
           PriorityProductsHierarchy: {sonPriorityProduct: true},
       },
+    
     });
   }
 

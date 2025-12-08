@@ -84,7 +84,7 @@ export class GetOrderInfoService {
       this.comapny +
       `/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq 'In Progress'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
     //url = `https://win01.maclocks.com/odata/Priority/tabula.ini/clpln18/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,STCODE,STDES,ORDSTATUSDES&$top=200&$filter=ORDNAME eq 'SO24E04168'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
-
+   
     const credentials = btoa(this.username + ':' + this.pwd);
     const basicAuth = 'Basic ' + credentials;
     const data = await lastValueFrom(
@@ -140,12 +140,22 @@ export class GetOrderInfoService {
         createOrderDto.PHONENUM = element.SHIPTO2_SUBFORM?.PHONENUM;
         createOrderDto.ADDRESS = element.SHIPTO2_SUBFORM?.ADDRESS;
         createOrderDto.ADDRESS2 = element.SHIPTO2_SUBFORM?.ADDRESS2;
-        createOrderDto.ADDRESS3 = element.SHIPTO2_SUBFORM?.ADDRESS3;
+        createOrderDto.ADDRESS3 = element.SHIPTO2_SUBFORM?.ADDRESS3 || '';
         createOrderDto.STATE = element.SHIPTO2_SUBFORM?.STATE;
         createOrderDto.STATECODE = element.SHIPTO2_SUBFORM?.STATECODE;
         createOrderDto.STATENAME = element.SHIPTO2_SUBFORM?.STATENAME;
         createOrderDto.ZIP = element.SHIPTO2_SUBFORM?.ZIP;
         createOrderDto.COUNTRYNAME = element.SHIPTO2_SUBFORM?.COUNTRYNAME;
+        createOrderDto.ShData = '';
+        createOrderDto.trackingNumber = '';
+        createOrderDto.shipRushDeliveryId = '';
+        createOrderDto.FAX='';
+        createOrderDto.shipRushShipmentId='';
+        createOrderDto.accountId='';
+        createOrderDto.accountZip='';
+        createOrderDto.DETAILS='';
+        createOrderDto.PHONENUM='';
+
         let tmpText = '';
         try {
           tmpText = element.ORDERSTEXT_SUBFORM?.TEXT;
@@ -160,7 +170,7 @@ export class GetOrderInfoService {
         }
         createOrderDto.ordertext = tmpText;
         createOrderDto.CURDATE = element.CURDATE;
-        createOrderDto.userId = '1' //EOrderUser.unAssigned;
+        createOrderDto.userId = 'aaa-bbb-ccc' //EOrderUser.unAssigned;
         createOrderDto.taskStatusId = 1;//EOrderUser.unAssigned;
         const checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {
           if (ln.TBALANCE > 0 && ln.ORDISTATUSDES === 'In progress')
@@ -177,6 +187,7 @@ export class GetOrderInfoService {
               order = await this._orderService.create(createOrderDto);
               LinesInserted += 1;
             } catch (error) {
+              console.log(error)
               await this._DbLogService.create({
                 subject: 'priority orders - create Error ' + createOrderDto.ORDNAME,
                 message: JSON.stringify(error).substring(
@@ -184,7 +195,7 @@ export class GetOrderInfoService {
                 ),
                 level: '',
                 context: '',
-                metadata: '',
+                metadata: JSON.stringify(error).substring(1000,3000),
                 companyId: 0
               });
             }
@@ -213,7 +224,7 @@ export class GetOrderInfoService {
               )
                 return false;
               if (
-                or.user.id === '1' && //EOrderUser.unAssigned &&
+                or.user.id === 'aaa-bbb-ccc' && //EOrderUser.unAssigned &&
                 or.role.id === EOrderRole.Picker &&
                 or.taskStatus.id === EOrderStatus.New
               )
@@ -231,6 +242,7 @@ export class GetOrderInfoService {
                 order = await this._orderService.create(createOrderDto);
                 LinesInserted += 1;
               } catch (error) {
+                console.log(error)
                 await this._DbLogService.create({
                   subject: 'priority orders - create ' + createOrderDto.ORDNAME,
                   message: JSON.stringify(error).substring(
@@ -255,7 +267,7 @@ export class GetOrderInfoService {
               );
             if (
               orderLineExixts === null &&
-              order.user.id === '1' //EOrderUser.unAssigned
+              order.user.id === EOrderUser.unAssigned
             ) {
               if (
                 subForm.TBALANCE > 0 &&
@@ -273,26 +285,28 @@ export class GetOrderInfoService {
                 createOrderLineDto.prioritykline = subForm?.KLINE;
                 createOrderLineDto.priorityremarks = subForm.REMARK1;
                 createOrderLineDto.ORDI = subForm.ORDI;
+                createOrderLineDto.Fullfilled=0;
+                createOrderLineDto.FullfilledSuperViser=0;
+                createOrderLineDto.priorityremarks='';
 
                 if (createOrderLineDto.BARCODE !== null)
                   try {
                     await this._orderLinesService.create(createOrderLineDto);
                   } catch (error) {
+                    console.log('createOrderLineDto error',error)
                     await this._DbLogService.create({
                       subject: 'priority orders - Line create ' +
                         createOrderDto.ORDNAME,
-                      message: JSON.stringify(error).substring(
-                        JSON.stringify(error).lastIndexOf('originalError')
-                      ),
+                      message: JSON.stringify(error).substring(1,3999),
                       level: '',
                       context: '',
-                      metadata: '',
+                      metadata: JSON.stringify(error).substring(2000,1000),
                       companyId: 0
                     });
                   }
               }
             } else {
-              if (order.user.UserId === '1') //EOrderUser.unAssigned) 
+              if (order.user.UserId === EOrderUser.unAssigned) 
                 {
                 if (orderLineExixts.TBALANCE !== subForm.TBALANCE) {
                   const c_Tbalance = {

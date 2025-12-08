@@ -8,6 +8,7 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { randomUUID } from "crypto";
 import { UserCompany } from "../user-company/entities/user-company.entity";
 import { Company } from "../company/entities/company.entity";
+import { UsersRoles } from "../user-role/entities/user-role.entity";
 
 @Injectable()
 @Dependencies(getRepositoryToken(User))
@@ -16,7 +17,9 @@ export class UsersService {
     @InjectRepository(User) 
     private userRepository: Repository<User>,
     @InjectRepository(UserCompany) 
-    private userCompanyRepository: Repository<UserCompany>,   
+    private userCompanyRepository: Repository<UserCompany>, 
+    // @InjectRepository(UsersRoles) 
+    // private userRolesRepository: Repository<UsersRoles>,   
   ) {}
   async create(createUserDto: CreateUserDto) {    
     const ins = new User();
@@ -36,6 +39,7 @@ export class UsersService {
     insUserCompant.users.id = res.id;
   
     const resUserCompany  =  await this.userCompanyRepository.save(insUserCompant);
+    
     return res;
   }
 

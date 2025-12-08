@@ -3,7 +3,9 @@ export enum EOrderRole {
   QC = 2,
   Packer = 3,
   Shipper = 4,
-  Administrator = 5,
+  BackOffice = 5,
+   Administrator = 6,
+    SysAdmin = 5,
 }
 export enum EOrderStatus {
   New = 1,
@@ -13,5 +15,5 @@ export enum EOrderStatus {
 }
 
 export enum EOrderUser {
-  unAssigned = '1',
+  unAssigned = 'aaa-bbb-ccc',
 }

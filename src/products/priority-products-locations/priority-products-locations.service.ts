@@ -18,11 +18,17 @@ export class PriorityProductsLocationsService {
   async create(
     createPriorityProductsLocationDto: CreatePriorityProductsLocationDto,
   ) {
-    // if (createPriorityProductsLocationDto.stockDate?.toString() === '') {
-    //   createPriorityProductsLocationDto.stockDate = null;
-    // }
+    
+     const ins =  new PriorityProductsLocation();
+    ins.location = createPriorityProductsLocationDto.location;
+    ins.quantity = createPriorityProductsLocationDto.quantity;
+    ins.stockDate = null;
+    ins.priorityProducts = new PriorityProducts();
+    ins.priorityProducts.id = createPriorityProductsLocationDto.productId;
+    ins.zone =  new Zone();
+    ins.zone.id = createPriorityProductsLocationDto.zoneId;
     return await this.priorityProductsLocationsRepo.save(
-      createPriorityProductsLocationDto,
+      ins,
     );
   }
 

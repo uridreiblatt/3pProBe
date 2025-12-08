@@ -72,25 +72,25 @@ export class Order {
   NAME: string;
   @Column()
   PHONENUM: string;
-  @Column()
+  @Column({ nullable: true })
   FAX: string;
-  @Column()
+  @Column({ nullable: true })
   trackingNumber: string;
   @Column()
   shipRushStatus: string;
-  @Column()
+  @Column({ nullable: true, default:'' })
   shipRushDeliveryId: string;
-  @Column()
+  @Column({ nullable: true, default:'' })
   DOCUMENT_DOCNO: string;
-  @Column()
+  @Column({ nullable: true, default:'' })
   DOCUMENT_DOC: string;
-  @Column()
+  @Column({ nullable: true, default:'' })
   shipRushShipmentId: string;
-  @Column()
+  @Column({ nullable: true, default:'' })
   accountId: string;
-  @Column()
+  @Column({ nullable: true, default:'' })
   accountZip: string;
-  @Column()
+  @Column({ nullable: true, default:'' })
   orderNote: string;
   @ManyToOne(() => User, (user) => user.id)
   user: User;

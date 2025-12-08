@@ -19,7 +19,7 @@ export class Log {
   level: string;
   @Column({ nullable: true })
   context: string;
-  @Column({ nullable: true, length: 2000 })
+  @Column({ nullable: true, length: 4000 })
   metadata: string;
   @Column()
   companyId: number;
