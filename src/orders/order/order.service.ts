@@ -98,9 +98,18 @@ export class OrderService {
   }
 
   async findAll(): Promise<any> {
-    const queryViewFields =
-      'SELECT * FROM v_orders v order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) ';
-    return await this.orderRepository.query(queryViewFields);
+    // const queryViewFields =
+    //   'SELECT * FROM v_orders v order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) ';
+    // return await this.orderRepository.query(queryViewFields);
+
+    return await this.orderRepository.find({
+      where: {taskStatus: { id: Not(3) } },
+      relations: {
+        taskStatus: true,
+        orderLines: true,
+      },
+    });
+
   }
 
   async findByOrderName(orderName: string): Promise<Order[]> {

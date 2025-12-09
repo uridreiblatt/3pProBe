@@ -72,9 +72,9 @@ export class Order {
   NAME: string;
   @Column()
   PHONENUM: string;
-  @Column({ nullable: true })
+  @Column({ nullable: true , default:''})
   FAX: string;
-  @Column({ nullable: true })
+  @Column({ nullable: true, default:'' })
   trackingNumber: string;
   @Column()
   shipRushStatus: string;
