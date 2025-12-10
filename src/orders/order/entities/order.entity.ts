@@ -15,6 +15,7 @@ import { OrderLine } from 'src/orders/order-lines/entities/order-line.entity';
 import { Role } from 'src/usersCompanies/role/entities/role.entity';
 import { OrderBoxes } from 'src/orders/order-boxes/entities/order-box.entity';
 import { OrderBasket } from 'src/orders/order-basket/entities/order-basket.entity';
+import { Company } from 'src/usersCompanies/company/entities/company.entity';
 
 @Entity()
 export class Order {
@@ -119,4 +120,7 @@ export class Order {
   @OneToMany(() => OrderBasket, (orderBasket) => orderBasket.order)
   orderBasket: OrderBasket[];
   order: any;
+  @ManyToOne(() => Company, (comapny) => comapny.id)
+  //@JoinColumn({ name: 'taskStatusId' })
+  comapny: Company;
 }

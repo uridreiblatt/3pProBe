@@ -19,6 +19,7 @@ import { OrderBoxesService } from 'src/orders/order-boxes/order-boxes.service';
 import { OrderBasketService } from 'src/orders/order-basket/order-basket.service';
 import { TaskUserService } from 'src/Tasks/task-user/task-user.service';
 import { CreateShipRushDto } from 'src/shipments/ship-rush/dto/create-ship-rush.dto';
+import { Company } from 'src/usersCompanies/company/entities/company.entity';
 
 @Injectable()
 export class OrderService {
@@ -41,12 +42,12 @@ export class OrderService {
     this._taskUserService = taskUserService;
   }
 
-  async create(createOrderDto: CreateOrderDto) {
-    const res = this.orderFromDto(createOrderDto);
+  async create(createOrderDto: CreateOrderDto,companyId: string) {
+    const res = this.orderFromDto(createOrderDto, companyId);
     await this.orderRepository.save(res);
     return res;
   }
-  orderFromDto(createOrderDto: CreateOrderDto) {
+  orderFromDto(createOrderDto: CreateOrderDto, companyId: string): Order {
     const orderFromDto = new Order();
     orderFromDto.CUSTNAME = createOrderDto.CUSTNAME;
     orderFromDto.CURDATE = createOrderDto.CURDATE;
@@ -88,6 +89,8 @@ export class OrderService {
     orderFromDto.taskStatus = taskStatus;
     orderFromDto.user = user;
     orderFromDto.taskStatus = taskStatus;
+    orderFromDto.comapny = new Company();
+    orderFromDto.comapny.id = companyId;
     return orderFromDto;
   }
 
@@ -97,13 +100,13 @@ export class OrderService {
     return await this.orderRepository.query(queryViewFields);
   }
 
-  async findAll(): Promise<any> {
+  async findAll(companyId: string): Promise<any> {
     // const queryViewFields =
     //   'SELECT * FROM v_orders v order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) ';
     // return await this.orderRepository.query(queryViewFields);
 
     return await this.orderRepository.find({
-      where: {taskStatus: { id: Not(3) } },
+      where: {taskStatus: { id: Not(3) } , comapny: {id: companyId }},
       relations: {
         taskStatus: true,
         orderLines: true,

@@ -1,5 +1,5 @@
 // INSERT INTO `p3pro`.`user` (`id`, `userName`, `userSurname`, `userUuid`, `usermail`, `userMobile`, `color`, `userPasswordEnc`, `otp`) VALUES ('aaa-bbb-ccc', 'unAssigned', 'unAssigned', uuid(), 'unAssigned@gmail.com', '0528012899', 'red', 'dfasdfdasf-dsaf-sdafdsa-fads', '1');
-// INSERT INTO `p3pro`.`user` (`id`, `userName`, `userSurname`, `userUuid`, `usermail`, `userMobile`, `color`, `userPasswordEnc`, `otp`) VALUES ('bbb-ccc-ddd', 'urid', 'dreiblatt', uuid(), 'urid@gmail.com', '0528012899', 'red', 'aaaaaa', '');
+// INSERT INTO `p3pro`.`user` (`id`, `userName`, `userSurname`, `userUuid`, `usermail`, `userMobile`, `color`, `userPasswordEnc`, `otp`) VALUES ('bbb-ccc-ddd', 'urid', 'dreiblatt', uuid(), 'urid@gmail.com', '0528012899', 'red', '1234567', '');
 // INSERT INTO `p3pro`.`user` (`id`, `userName`, `userSurname`, `userUuid`, `usermail`, `userMobile`, `color`, `userPasswordEnc`, `otp`) VALUES ('ccc-ddd-eee', 'Gaya', 'dreiblatt', uuid(), 'gaya@gmail.com', '+972525123', 'red', 'aaaaaa', '');
 // INSERT INTO `p3pro`.`user` (`id`, `userName`, `userSurname`, `userUuid`, `usermail`, `userMobile`, `color`, `userPasswordEnc`, `otp`) VALUES ('ddd-eee-ccc', 'Ella', 'dreiblatt', uuid(), 'ella@gmail.com', '+972525124', 'red', 'aaaaaa', '');
 // DELIMITER //
@@ -114,5 +114,8 @@
 
 // DELIMITER //
 
+
+// INSERT INTO `p3pro`.`zone` (`id`, `zoneName`, `color`, `priority`, `companyId`) VALUES ('aaa-zzz', 'Zone A', 'red', '1', 'aaa-aaa-aaa');
+// INSERT INTO `p3pro`.`zone` (`id`, `zoneName`, `color`, `priority`, `companyId`) VALUES ('aaa-xzzz', 'Zone B', 'red', '0', 'aaa-aaa-aaa');
 
 

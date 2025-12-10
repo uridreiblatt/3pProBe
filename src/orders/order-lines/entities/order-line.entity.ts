@@ -10,6 +10,10 @@ import {
 import { TaskStatus } from 'src/settings/task-status/entities/task-status.entity';
 import { Order } from 'src/orders/order/entities/order.entity';
 
+
+//      orderLineFromDto.pickingAid = false;
+//      orderLineFromDto.assemblyAid = false;
+
 @Entity()
 export class OrderLine {
   @PrimaryGeneratedColumn('uuid')
@@ -22,27 +26,27 @@ export class OrderLine {
   PARTDES: string;
   @Column()
   TBALANCE: number;
-  @Column()
+  @Column({ nullable: true , default: 0})
   Fullfilled: number;
-  @Column()
+  @Column(    { nullable: true , default: 0} )
   FullfilledSuperViser: number;
   @Column()
   BARCODE: string;
-  @Column({ nullable: true })
+  @Column({ nullable: true , default: ''})
   lineRemarks: string;
-  @Column()
+  @Column({ nullable: true , default: false})
   approved: boolean;
-  @Column()
+  @Column({ nullable: true , default: false})
   picked: boolean;
-  @Column()
+  @Column({ nullable: true , default: false})
   pickingError: boolean;
   @Column()
   prioritykline: number;
   @Column()
   priorityremarks: string;
-  @Column()
+  @Column({ nullable: true , default: false})
   pickingAid: boolean;
-  @Column()
+  @Column({ nullable: true , default: false})
   assemblyAid: boolean;
   @Column()
   ORDI: number;

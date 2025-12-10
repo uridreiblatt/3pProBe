@@ -7,29 +7,31 @@ import {
   Param,
   Delete,
   Header,
-  //UseGuards,
+  Request,
   Logger,
+  UseGuards,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/auth.guard';
 //import { AuthGuard } from 'src/auth/auth.guard';
 @ApiTags('order')
-//@UseGuards(AuthGuard)
 @Controller('order')
+@UseGuards(AuthGuard)
 export class OrderController {
   private readonly logger = new Logger(OrderController.name);
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
-  async create(@Body() createOrderDto: CreateOrderDto) {
-    return await this.orderService.create(createOrderDto);
+  async create(@Request() req ,@Body() createOrderDto: CreateOrderDto) {
+    return await this.orderService.create(createOrderDto, req.user.selectCompany);
   }
 
   @Get('findAll')
-  async findAll() {
-    return await this.orderService.findAll();
+  async findAll(@Request() req) {
+    return await this.orderService.findAll(req.user.selectCompany);
   }
   @Get('findAllComplete')
   @Header('Cache-Control', 'max-age=0')

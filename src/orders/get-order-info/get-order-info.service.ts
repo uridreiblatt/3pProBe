@@ -27,6 +27,7 @@ import { ShipmentPriority } from 'src/maintenence/shipment_priority/entities/shi
 import { PartCqauntService } from 'src/settings/part-cqaunt/part-cqaunt.service';
 import { PartCqaunt } from 'src/settings/part-cqaunt/entities/part-cqaunt.entity';
 import { CreateDbLogDto } from 'src/db-log/dto/create-db-log.dto';
+import { CompanyService } from 'src/usersCompanies/company/company.service';
 
 @Injectable()
 export class GetOrderInfoService {
@@ -40,6 +41,7 @@ export class GetOrderInfoService {
   private readonly _orderLinesService: OrderLinesService;
   private readonly _shipRushService: ShipRushService;
   private readonly _ShipmentPriorityService: ShipmentPriorityService;
+  private readonly _CompanyService: CompanyService;
   private readonly _DbLogService: DbLogService;
   private readonly _PartCqauntService: PartCqauntService;
   private isLocked = false;
@@ -53,39 +55,48 @@ export class GetOrderInfoService {
     private DbLogService: DbLogService,
     private ShipRushService: ShipRushService,
     private PartCqauntService: PartCqauntService,
+    private CompanyService: CompanyService,
   ) {
     //@InjectRepository(MirshamimHeader) private mirshamimHeaderRepository: Repository<MirshamimHeader>,
     //@InjectRepository(MirshamimLines) private mirshamimLinesRepository: Repository<MirshamimLines>
-    this.username = this.configService.get<string>('PRIORITY_USER');
-    this.pwd = this.configService.get<string>('PRIORITY_PWD');
-    this.comapny = this.configService.get<string>('COMPANY') || '';
-    this.priorityShipRushUrl =
-      this.configService.get<string>('PRIORITY_SPRSH_CALL_BACK') || '';
+    // this.username = this.configService.get<string>('PRIORITY_USER');
+    // this.pwd = this.configService.get<string>('PRIORITY_PWD');
+    // this.comapny = this.configService.get<string>('COMPANY') || '';
+    // this.priorityShipRushUrl =
+    //   this.configService.get<string>('PRIORITY_SPRSH_CALL_BACK') || '';
     this._orderService = orderService;
     this._orderLinesService = orderLinesService;
     this._ShipmentPriorityService = ShipmentPriorityService;
     this._DbLogService = DbLogService;
     this._shipRushService = ShipRushService;
     this._PartCqauntService = PartCqauntService;
+    this._PartCqauntService = PartCqauntService;
+    this._CompanyService = CompanyService;
   }
   @Cron(CronExpression.EVERY_DAY_AT_10AM)
   handleCron() {
     this.logger.log('crone Called EVERY_DAY_AT_10AM');
   }
 
-  async findAll(): Promise<any> {
+  async GetAll(companyId: string): Promise<any> {
     if (this.isLocked) {
       return 'is locked';
     }
 
+
+
+    const resCompantSettings = await this._CompanyService.findOne(companyId)
+
+
     this.isLocked = true;
     const url =
-      `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-      this.comapny +
+      //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+      resCompantSettings.companySetting.priorityApiUrl +
+      resCompantSettings.companySetting.priorityApiCompany +
       `/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq 'In Progress'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
     //url = `https://win01.maclocks.com/odata/Priority/tabula.ini/clpln18/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,STCODE,STDES,ORDSTATUSDES&$top=200&$filter=ORDNAME eq 'SO24E04168'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
    
-    const credentials = btoa(this.username + ':' + this.pwd);
+    const credentials = btoa(resCompantSettings.companySetting.priorityApiUser + ':' + resCompantSettings.companySetting.priorityApiPassword);
     const basicAuth = 'Basic ' + credentials;
     const data = await lastValueFrom(
       this.httpService
@@ -155,6 +166,8 @@ export class GetOrderInfoService {
         createOrderDto.accountZip='';
         createOrderDto.DETAILS='';
         createOrderDto.PHONENUM='';
+        
+      
 
         let tmpText = '';
         try {
@@ -184,7 +197,7 @@ export class GetOrderInfoService {
           );
           if (orders.length === 0) {
             try {
-              order = await this._orderService.create(createOrderDto);
+              order = await this._orderService.create(createOrderDto, companyId);
               LinesInserted += 1;
             } catch (error) {
               console.log(error)
@@ -239,7 +252,7 @@ export class GetOrderInfoService {
               NewOrder === undefined
             ) {
               try {
-                order = await this._orderService.create(createOrderDto);
+                order = await this._orderService.create(createOrderDto, companyId);
                 LinesInserted += 1;
               } catch (error) {
                 console.log(error)

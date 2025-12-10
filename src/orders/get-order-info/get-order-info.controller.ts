@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Patch } from '@nestjs/common';
+import { Controller, Get, Param, Patch,Request } from '@nestjs/common';
 import { GetOrderInfoService } from './get-order-info.service';
 import { ApiTags } from '@nestjs/swagger';
 @ApiTags('get-order-info')
@@ -7,8 +7,9 @@ export class GetOrderInfoController {
   constructor(private readonly getOrderInfoService: GetOrderInfoService) {}
 
   @Get()
-  async findAll(): Promise<boolean> {
-    const res = await this.getOrderInfoService.findAll();
+  async GetAll(@Request() req): Promise<boolean> {
+    console.log('request user', req.user.selectCompany);
+    const res = await this.getOrderInfoService.GetAll(req.user.selectCompany);
     return res;
   }
 

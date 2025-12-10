@@ -8,12 +8,14 @@ import { ShipmentPriorityModule } from 'src/maintenence/shipment_priority/shipme
 import { DbLogModule } from 'src/db-log/db-log.module';
 import { ShipRushModule } from 'src/shipments/ship-rush/ship-rush.module';
 import { PartCqauntModule } from 'src/settings/part-cqaunt/part-cqaunt.module';
+import { CompanyModule } from 'src/usersCompanies/company/company.module';
 
 @Module({
   imports: [
     HttpModule,
     OrderModule,
     OrderLinesModule,
+    CompanyModule,
     ShipmentPriorityModule,
     DbLogModule,
     ShipRushModule,

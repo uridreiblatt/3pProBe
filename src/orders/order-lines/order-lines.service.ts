@@ -36,7 +36,13 @@ export class OrderLinesService {
     orderLineFromDto.prioritykline = createOrderLineDto.prioritykline;
     orderLineFromDto.priorityremarks = createOrderLineDto.priorityremarks;
     orderLineFromDto.ORDI = createOrderLineDto.ORDI;
-    //orderLineFromDto.linePhotoBase64 = createOrderLineDto.linePhotoBase64;
+    orderLineFromDto.Fullfilled = 0;
+    orderLineFromDto.FullfilledSuperViser = 0;
+    orderLineFromDto.approved = false;
+     orderLineFromDto.picked = false;
+     orderLineFromDto.pickingError = false;
+     orderLineFromDto.pickingAid = false;
+     orderLineFromDto.assemblyAid = false;
 
     const order = new Order();
     order.id = createOrderLineDto.orderId;
