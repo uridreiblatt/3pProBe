@@ -1,116 +1,109 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { PriorityProducts } from './entities/priorityProducts.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ConfigService } from '@nestjs/config';
-import { catchError, lastValueFrom, map } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
-import { Company } from 'src/usersCompanies/company/entities/company.entity';
-import { PriorityProductsHierarchy } from '../priorityProductsHierarchy/entities/priority-products-hierarchy.entity';
+import { Injectable, Logger } from "@nestjs/common";
+import { PriorityProducts } from "./entities/priorityProducts.entity";
+import { Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
+import { ConfigService } from "@nestjs/config";
+import { catchError, lastValueFrom, map } from "rxjs";
+import { HttpService } from "@nestjs/axios";
+import { Company } from "src/usersCompanies/company/entities/company.entity";
+import { PriorityProductsHierarchy } from "../priorityProductsHierarchy/entities/priority-products-hierarchy.entity";
+import { CompanyService } from "src/usersCompanies/company/company.service";
 
 @Injectable()
 export class priorityProductsService {
   private isLocked = false;
   private readonly logger = new Logger(priorityProductsService.name);
-    private readonly username: string;
-    private readonly pwd: string;
-    private readonly comapny: string;
- 
+  private readonly username: string;
+  private readonly pwd: string;
+  private readonly comapny: string;
+  private readonly _CompanyService: CompanyService;
+
   constructor(
     @InjectRepository(PriorityProducts)
     private PartRepository: Repository<PriorityProducts>,
     @InjectRepository(PriorityProductsHierarchy)
     private PartHierarchyRepository: Repository<PriorityProductsHierarchy>,
-
-
-
-    
-     private configService: ConfigService,
-     private httpService: HttpService,
+    private CompanyService: CompanyService,
+    private configService: ConfigService,
+    private httpService: HttpService
   ) {
-    this.username = this.configService.get<string>('PRIORITY_USER');
-    this.pwd = this.configService.get<string>('PRIORITY_PWD');
-    this.comapny = this.configService.get<string>('COMPANY') || '';
+    this.username = this.configService.get<string>("PRIORITY_USER");
+    this.pwd = this.configService.get<string>("PRIORITY_PWD");
+    this.comapny = this.configService.get<string>("COMPANY") || "";
+    this._CompanyService = CompanyService;
   }
 
+  async getPriorityParts(companyId: string) {
+    //https://win01.maclocks.com/odata/Priority/tabula.ini/cb3007/LOGPART?$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES
+    if (this.isLocked) {
+      return "is locked";
+    }
 
+    this.isLocked = true;
+    const resCompantSettings = await this._CompanyService.findOne(companyId)
+    const url =
+      //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+      //   this.comapny +
+      resCompantSettings.companySetting.priorityApiUrl +
+      resCompantSettings.companySetting.priorityApiCompany +
+      `/LOGPART?$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES,PART&$expand=PARTARC_SUBFORM($select=SONNAME,TYPE,SON)`;
+    const credentials = btoa(this.username + ":" + this.pwd);
+    const basicAuth = "Basic " + credentials;
+    const data = await lastValueFrom(
+      this.httpService
+        .get(url, {
+          headers: {
+            Authorization: basicAuth,
+          },
+        })
+        .pipe(map((resp) => resp.data))
+        .pipe(
+          catchError((error) => {
+            this.isLocked = false;
+            throw `An error happened. Msg: ${JSON.stringify(error.request)}`;
+          })
+        )
+    );
+    const orderInfo: any = data;
+    //this._DbLogService.create({
+    console.log(
+      "priority parts ",
+      "start import parts " + orderInfo.value.length.toString()
+    );
+    let LinesInserted = 0;
 
-  async getPriorityParts(){
-    //https://win01.maclocks.com/odata/Priority/tabula.ini/cb3007/LOGPART?$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES 
-        if (this.isLocked) {
-          return 'is locked';
-        }
-    
-        this.isLocked = true;
-        const url =
-          `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-          this.comapny +
-          `/LOGPART?$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES,PART&$expand=PARTARC_SUBFORM($select=SONNAME,TYPE,SON)`;
-        const credentials = btoa(this.username + ':' + this.pwd);
-        const basicAuth = 'Basic ' + credentials;
-        const data = await lastValueFrom(
-          this.httpService
-            .get(url, {
-              headers: {
-                Authorization: basicAuth,
-              },
-            })
-            .pipe(map((resp) => resp.data))
-            .pipe(
-              catchError((error) => {
-                this.isLocked = false;
-                throw `An error happened. Msg: ${JSON.stringify(error.request)}`;
-              }),
-            ),
-        );
-        const orderInfo: any = data;
-        //this._DbLogService.create({
-        console.log(
-          'priority parts ',
-           'start import parts ' + orderInfo.value.length.toString(),
-        );
-        let LinesInserted = 0;
-    
-        orderInfo.value.forEach(async (element) => {
-          
-            const createPartDto  = new PriorityProducts();
-            createPartDto.PARTNAME = element.PARTNAME;
-            createPartDto.BARCODE = element.BARCODE || '';
-             createPartDto.PARTDES = element.STATDES;
-            createPartDto.PART = element.PART;                       
-            createPartDto.TYPE = element.TYPE;
-            createPartDto.company= new Company();
-            createPartDto.company.id = 'aaa-aaa-aaa'     
-            try {
-            await this.PartRepository.save(createPartDto);  
-            element.PARTARC_SUBFORM.map(async (son)=>{
-              const prod =  new PriorityProductsHierarchy();
-              prod.PART = element.PART,
-              prod.SON = son.SON,
-              await this.PartHierarchyRepository.save(prod);
-
-            })
-
-            } catch (error) {
-              console.log(error)
-            }       
-            
-            
-                        
-                  
+    orderInfo.value.forEach(async (element) => {
+      const createPartDto = new PriorityProducts();
+      createPartDto.PARTNAME = element.PARTNAME;
+      createPartDto.BARCODE = element.BARCODE || "";
+      createPartDto.PARTDES = element.STATDES;
+      createPartDto.PART = element.PART;
+      createPartDto.TYPE = element.TYPE;
+      createPartDto.company = new Company();
+      createPartDto.company.id = "aaa-aaa-aaa";
+      try {
+        await this.PartRepository.save(createPartDto);
+        element.PARTARC_SUBFORM.map(async (son) => {
+          const prod = new PriorityProductsHierarchy();
+          (prod.PART = element.PART),
+            (prod.SON = son.SON),
+            await this.PartHierarchyRepository.save(prod);
         });
-    
-        // await this._DbLogService.create({
-        //   subject: 'priority orders',
-        //   message: 'end import orders orders: ' + LinesInserted.toString(),
-        //   level: '',
-        //   context: '',
-        //   metadata: '',
-        //   companyId: 0
-        // });
-        this.isLocked = false;
-        return true;
-      
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    // await this._DbLogService.create({
+    //   subject: 'priority orders',
+    //   message: 'end import orders orders: ' + LinesInserted.toString(),
+    //   level: '',
+    //   context: '',
+    //   metadata: '',
+    //   companyId: 0
+    // });
+    this.isLocked = false;
+    return true;
   }
 
   async findAll(companyId: string) {
@@ -125,19 +118,18 @@ export class priorityProductsService {
     // const res = await this.PartRepository.query(sqlQuery);
     const res = await this.PartRepository.find({
       where: {
-        TYPE: 'P',
-        company: {id: companyId},
-
+        TYPE: "P",
+        company: { id: companyId },
       },
       //take:20,
-      
-       relations:{ PriorityProductsHierarchy: true,
-        PriorityProductsLocation: {zone: true},
-       },
-      
-         order: {PART: 'ASC'},      
-    }
-    );
+
+      relations: {
+        PriorityProductsHierarchy: true,
+        PriorityProductsLocation: { zone: true },
+      },
+
+      order: { PART: "ASC" },
+    });
     return res;
   }
 
@@ -147,10 +139,9 @@ export class priorityProductsService {
         id: id,
       },
       relations: {
-          PriorityProductsLocation: {zone: true},
-          PriorityProductsHierarchy: {sonPriorityProduct: true},
+        PriorityProductsLocation: { zone: true },
+        PriorityProductsHierarchy: { sonPriorityProduct: true },
       },
-    
     });
   }
 
@@ -162,9 +153,10 @@ export class priorityProductsService {
       where: {
         BARCODE: barcode,
       },
-      relations:{
+      relations: {
         PriorityProductsHierarchy: true,
-      PriorityProductsLocation: {zone: true},}
+        PriorityProductsLocation: { zone: true },
+      },
     });
   }
 

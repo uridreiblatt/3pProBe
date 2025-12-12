@@ -13,8 +13,8 @@ export class PriorityProductsController {
   //   return this.partsService.create(createPartDto);
   // }
   @Get('getPriorityParts')
-  async getPriorityParts(){
-    await this.partsService.getPriorityParts();
+  async getPriorityParts(@Request() req ) {
+    await this.partsService.getPriorityParts(req.user.selectCompany);
   }
 
   @Get()
