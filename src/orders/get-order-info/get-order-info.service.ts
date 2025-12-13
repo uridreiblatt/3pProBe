@@ -120,7 +120,7 @@ export class GetOrderInfoService {
       level: '',
       context: '',
       metadata: '',
-      companyId: 0
+      companyId: companyId
     });
     let LinesInserted = 0;
 
@@ -209,7 +209,7 @@ export class GetOrderInfoService {
                 level: '',
                 context: '',
                 metadata: JSON.stringify(error).substring(1000,3000),
-                companyId: 0
+                companyId: companyId,
               });
             }
           } else {
@@ -264,7 +264,7 @@ export class GetOrderInfoService {
                   level: '',
                   context: '',
                   metadata: '',
-                  companyId: 0
+                  companyId: companyId,
                 });
               }
             }
@@ -314,7 +314,7 @@ export class GetOrderInfoService {
                       level: '',
                       context: '',
                       metadata: JSON.stringify(error).substring(2000,1000),
-                      companyId: 0
+                      companyId: companyId,
                     });
                   }
               }
@@ -341,7 +341,7 @@ export class GetOrderInfoService {
                       level: '',
                       context: '',
                       metadata: '',
-                      companyId: 0
+                      companyId: companyId,
                     });
                   }
                 }
@@ -358,7 +358,7 @@ export class GetOrderInfoService {
       level: '',
       context: '',
       metadata: '',
-      companyId: 0
+      companyId:  companyId,
     });
     this.isLocked = false;
     return true;
@@ -387,7 +387,7 @@ export class GetOrderInfoService {
         level: '',
         context: '',
         metadata: '',
-        companyId: 0
+        companyId: '',
       });
       const order = await this._orderService.findOne(Id);
       if (!order) {
@@ -480,8 +480,7 @@ export class GetOrderInfoService {
           level: '',
           context: '',
           metadata: '',
-          companyId: 0
-        };
+          companyId: '',        };
         await this._DbLogService.create(errLog);
 
         userResult = {
@@ -619,7 +618,7 @@ export class GetOrderInfoService {
         level: '',
         context: '',
         metadata: '',
-        companyId: 0
+        companyId: '',
       });
       const order = await this._orderService.findOne(Id);
       if (!order) {

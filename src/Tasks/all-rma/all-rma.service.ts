@@ -11,39 +11,43 @@ import { HttpService } from "@nestjs/axios";
 import { ConfigService } from "@nestjs/config";
 import { lastValueFrom, map, catchError } from "rxjs";
 import { DbLogService } from "src/db-log/db-log.service";
+import { CompanyService } from "src/usersCompanies/company/company.service";
 
 @Injectable()
 export class AllRmaService {
   private isLocked = false;
-  private comapny = 'cb3007'; // add call from database settings;
-  private urlEndPoint = `/DOCUMENTS_m?$filter=STATDES eq 'Open' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES`;
+  private urlEndPoint = `/DOCUMENTS_m?$filter=STATDES eq 'Open' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
   private readonly logger = new Logger(AllRmaService.name);
-  private readonly username: string;
-  private readonly pwd: string;
+  private readonly _CompanyService: CompanyService;
   private readonly _DbLogService: DbLogService;
   constructor(
     @InjectRepository(AllRma)
     private allRmaRepository: Repository<AllRma>,
     private httpService: HttpService,
     private configService: ConfigService,
-    private DbLogService: DbLogService
+    private DbLogService: DbLogService,
+    private CompanyService: CompanyService
   ) {
     this._DbLogService = DbLogService;
-    this.username = this.configService.get<string>('PRIORITY_USER');
-    this.pwd = this.configService.get<string>('PRIORITY_PWD');
+    this._CompanyService = CompanyService;
   }
 
-  async getAllNewRmaFromPriority(): Promise<any> {
+  async getAllNewRmaFromPriority(companyId: string): Promise<any> {
     if (this.isLocked) {
       return "is locked";
     }
-
     this.isLocked = true;
+    const resCompantSettings = await this._CompanyService.findOne(companyId);
     const url =
-      `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-      this.comapny +
-      this.urlEndPoint;    
-    const credentials = btoa(this.username + ":" + this.pwd);
+      //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+      resCompantSettings.companySetting.priorityApiUrl +
+      resCompantSettings.companySetting.priorityApiCompany +
+      this.urlEndPoint;
+    const credentials = btoa(
+      resCompantSettings.companySetting.priorityApiUser +
+        ":" +
+        resCompantSettings.companySetting.priorityApiPassword
+    );
     const basicAuth = "Basic " + credentials;
     const data = await lastValueFrom(
       this.httpService
@@ -70,41 +74,42 @@ export class AllRmaService {
       level: "",
       context: "",
       metadata: "",
-      companyId: 0,
+      companyId: companyId ,
     });
     let LinesInserted = 0;
+    //console.log(url,"RmaInfo.value.length: " + RmaInfo.value.length, JSON.stringify(RmaInfo.value));
+
 
     RmaInfo.value.forEach(async (element) => {
       if (element !== null) {
         const rma: AllRma = new AllRma();
-        rma.CUSTNAME = element.CUSTNAME;
+        rma.CUSTNAME = element.CUSTNAME || "";
         rma.CUSTDES = element.CUSTDES;
         rma.CURDATE = element.CURDATE;
         rma.DOCNO = element.DOCNO;
         rma.STATDES = element.STATDES;
-        rma.DETAILS = element.DETAILS || '';
-        rma.FBCM_RETREASONCODE = element.FBCM_RETREASONCODE || '';
-        rma.FBCM_RETREASONDES = element.FBCM_RETREASONDES || '';
-        rma.orderid = '';
-        rma.orderlineId = '';
+        rma.DETAILS = element.DETAILS || "";
+        rma.FBCM_RETREASONCODE = element.FBCM_RETREASONCODE || "";
+        rma.FBCM_RETREASONDES = element.FBCM_RETREASONDES || "";
+        rma.orderid = "";
+        rma.orderlineId = "";
         rma.taskPriority = 10;
-        rma.cylinder = '';
+        rma.cylinder = "";
         rma.backToInventory = 1;
         rma.user = new User();
-        rma.user.id = "1";
+        rma.user.id = "aaa-bbb-ccc"; // unAssigned
         rma.taskStatus = new TaskStatus();
         rma.taskStatus.id = 1;
         rma.company = new Company();
-        rma.company.id = "1";
-        const foundOne =  await this.allRmaRepository.findOne({
-          where : {DOCNO: rma.DOCNO}
-        })
+        rma.company.id = companyId;
+        const foundOne = await this.allRmaRepository.findOne({
+          where: { DOCNO: rma.DOCNO },
+        });
 
-        if (foundOne === null) 
-          {
-            LinesInserted+=1;
-            await this.allRmaRepository.save(rma);
-          }
+        if (foundOne === null) {
+          LinesInserted += 1;
+          await this.allRmaRepository.save(rma);
+        }
       }
     });
     this._DbLogService.create({
@@ -113,7 +118,7 @@ export class AllRmaService {
       level: "",
       context: "",
       metadata: "",
-      companyId: 0,
+      companyId: companyId,
     });
     this.isLocked = false;
   }

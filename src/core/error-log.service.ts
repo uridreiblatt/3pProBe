@@ -16,7 +16,7 @@ export class ErrorLogService {
       const errorLog = new Log();
       errorLog.subject= JSON.stringify( {rbody: request.body,});
       errorLog.level = 'error';
-      errorLog.companyId = 5;
+      errorLog.companyId = 'unknown'  ; // Adjust based on your auth implementation
       errorLog.message = error.message || 'Unknown error';
       errorLog.context = `Request: ${request.method} ${request.url}`;
       errorLog.metadata = JSON.stringify( {

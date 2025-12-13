@@ -7,21 +7,21 @@ import { PrimaryGeneratedColumn, ManyToOne, Column, JoinColumn, Entity } from "t
 export class AllRma extends Tablestamp{
     @PrimaryGeneratedColumn('uuid')
       id: string;
-      @Column()
+      @Column({default: '', nullable: true})
       CUSTNAME: string;      
-      @Column()
+      @Column({default: '', nullable: true})
       CUSTDES: string;      
       @Column()
       CURDATE: string;      
-      @Column()
+      @Column({default: '', nullable: true})
       DOCNO: string;      
-      @Column()
+      @Column({default: '', nullable: true})
       DETAILS: string;      
-      @Column()
+      @Column({default: '', nullable: true})
       STATDES: string;   
-      @Column()
+      @Column({default: '', nullable: true})
       FBCM_RETREASONCODE: string;   
-      @Column()
+      @Column({default: '', nullable: true})
       FBCM_RETREASONDES: string;      
       
       

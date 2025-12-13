@@ -27,7 +27,7 @@ export class TaskUserController {
 
   @Get('getAllNewPoFromPriority')
   async getAllNewPoFromPriority(@Request() req) {
-    return await this.taskUserService.getAllNewPoFromPriority();
+    return await this.taskUserService.getAllNewPoFromPriority(req.user.selectCompany );
   }
 
   @Post()

@@ -22,7 +22,7 @@ export class Log {
   @Column({ nullable: true, length: 4000 })
   metadata: string;
   @Column()
-  companyId: number;
+  companyId: string;
 }
 
 

@@ -57,7 +57,7 @@ export class TaskUserService {
     this.pwd = this.configService.get<string>("PRIORITY_PWD");
   }
 
-  async getAllNewPoFromPriority(): Promise<any> {
+  async getAllNewPoFromPriority(companyId: string): Promise<any> {
     if (this.isLocked) {
       return "is locked";
     }
@@ -95,7 +95,7 @@ export class TaskUserService {
       level: "",
       context: "",
       metadata: "",
-      companyId: 0,
+      companyId: companyId,
     });
     let LinesInserted = 0;
 
@@ -145,7 +145,7 @@ export class TaskUserService {
       level: "Info",
       context: "",
       metadata: "",
-      companyId: 0,
+      companyId: companyId,
     });
     this.isLocked = false;
   }

@@ -20,7 +20,7 @@ export class DbLogService {
     }
   }
 
-  async findAll(selectCompanyId: number) {
+  async findAll(selectCompanyId: string) {
      return await this.DbLogRepository.find({
       where: {companyId:  selectCompanyId}
     });

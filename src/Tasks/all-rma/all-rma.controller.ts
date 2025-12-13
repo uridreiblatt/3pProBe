@@ -17,12 +17,12 @@ export class AllRmaController {
 
 @Get('getAllNewRmaFromPriority')
   async getAllNewRmaFromPriority(@Request() req) {
-    return await this.allRmaService.getAllNewRmaFromPriority();
+    return await this.allRmaService.getAllNewRmaFromPriority(req.user.selectCompany);
   }
 
 
 
-  @Get()
+  @Get('findAll')
   async findAll(@Request() req) {
     return await this.allRmaService.findAll(req.user.selectCompany);
   }

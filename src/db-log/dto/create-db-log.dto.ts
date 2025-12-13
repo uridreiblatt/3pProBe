@@ -12,5 +12,5 @@ export class CreateDbLogDto {
     @ApiProperty()
     metadata: string;
     @ApiProperty()
-    companyId: number;
+    companyId: string;
 }
