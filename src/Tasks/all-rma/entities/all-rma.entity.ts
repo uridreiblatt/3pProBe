@@ -23,26 +23,18 @@ export class AllRma extends Tablestamp{
       FBCM_RETREASONCODE: string;   
       @Column({default: '', nullable: true})
       FBCM_RETREASONDES: string;      
-      
-      
-      // @Column()
-      // DataInfo: string;
-      // @Column()
-      // Title: string;         
+      @Column({default: '', nullable: true})
+      Title: string;
+      @Column({default: '', nullable: true})
+      trackingNumber: string;
       @ManyToOne(() => User, (user) => user.id)
       user: User;  
       @ManyToOne(() => TaskStatus, (taskStatus) => taskStatus.id)
-      taskStatus: TaskStatus;
-      @Column()
-      orderid: string;
-      @Column()
-      orderlineId: string;
+      taskStatus: TaskStatus;      
       @Column()
       taskPriority: number;
-      @Column()
-      cylinder: string;
-      @Column()
-      backToInventory: number;
+      @Column({default: '', nullable: true})
+      remarks: string;
       @ManyToOne(() => Company, (company) => company.allRma, { nullable: false })
         @JoinColumn({ name: 'companyId' }) // <-- owns the FK column
         company: Company;

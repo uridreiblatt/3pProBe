@@ -34,5 +34,5 @@ export class CreateTaskRmaDto {
   remarks: string;
   @ApiProperty()
   @IsInt()
-  taskUserId: string;
+  rmaId: string;
 }

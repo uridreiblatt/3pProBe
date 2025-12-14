@@ -13,8 +13,8 @@ export class TaskRmaController {
   }
 
   @Get()
-  findAll(@Param('taskTypeId') taskTypeId: string) {
-    return this.taskRmaService.findAll(taskTypeId);
+  findAll(@Param('rmaId') rmaId: string) {
+    return this.taskRmaService.findAll(rmaId);
   }
 
   @Get(':id')

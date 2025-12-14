@@ -1,6 +1,4 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { CreateAllRmaDto, RootRmaPriority } from "./dto/create-all-rma.dto";
-import { UpdateAllRmaDto } from "./dto/update-all-rma.dto";
 import { AllRma } from "./entities/all-rma.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -12,6 +10,7 @@ import { ConfigService } from "@nestjs/config";
 import { lastValueFrom, map, catchError } from "rxjs";
 import { DbLogService } from "src/db-log/db-log.service";
 import { CompanyService } from "src/usersCompanies/company/company.service";
+import { RootRmaPriority } from "./dto/create-all-rma.dto";
 
 @Injectable()
 export class AllRmaService {
@@ -38,11 +37,13 @@ export class AllRmaService {
     }
     this.isLocked = true;
     const resCompantSettings = await this._CompanyService.findOne(companyId);
+    
     const url =
       //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
       this.urlEndPoint;
+     
     const credentials = btoa(
       resCompantSettings.companySetting.priorityApiUser +
         ":" +
@@ -68,6 +69,7 @@ export class AllRmaService {
         )
     );
     const RmaInfo: RootRmaPriority = data;
+   
     this._DbLogService.create({
       subject: "priority rmas",
       message: "start import rmas " + RmaInfo.value.length.toString(),
@@ -76,8 +78,7 @@ export class AllRmaService {
       metadata: "",
       companyId: companyId ,
     });
-    let LinesInserted = 0;
-    //console.log(url,"RmaInfo.value.length: " + RmaInfo.value.length, JSON.stringify(RmaInfo.value));
+    let LinesInserted = 0;    
 
 
     RmaInfo.value.forEach(async (element) => {
@@ -90,15 +91,14 @@ export class AllRmaService {
         rma.STATDES = element.STATDES;
         rma.DETAILS = element.DETAILS || "";
         rma.FBCM_RETREASONCODE = element.FBCM_RETREASONCODE || "";
-        rma.FBCM_RETREASONDES = element.FBCM_RETREASONDES || "";
-        rma.orderid = "";
-        rma.orderlineId = "";
-        rma.taskPriority = 10;
-        rma.cylinder = "";
-        rma.backToInventory = 1;
+        rma.FBCM_RETREASONDES = element.FBCM_RETREASONDES || "";        
+        rma.taskPriority = 10;        
         rma.user = new User();
         rma.user.id = "aaa-bbb-ccc"; // unAssigned
         rma.taskStatus = new TaskStatus();
+        rma.Title= '';
+        rma.trackingNumber= '';
+        rma.remarks= '';
         rma.taskStatus.id = 1;
         rma.company = new Company();
         rma.company.id = companyId;
@@ -136,9 +136,31 @@ export class AllRmaService {
   }
 
   async findAll(companyId: string) {
-    return await this.allRmaRepository.find({
+    const res = await this.allRmaRepository.find({
       where: { company: { id: companyId } },
+      relations:{
+        user: true,
+        taskStatus: true,
+
+      }
     });
+    const resAll = res.map((rma)=>{
+      return {
+      id: rma.id,
+      CURDATE:  rma.CURDATE,
+      CUSTDES:  rma.CUSTDES,
+      CUSTNAME:  rma.CUSTNAME,
+      DOCNO:  rma.DOCNO,
+      DETAILS:  rma.DETAILS,
+      FBCM_RETREASONCODE:  rma.FBCM_RETREASONCODE,
+      FBCM_RETREASONDES:  rma.FBCM_RETREASONDES,
+
+      status: rma.taskStatus.status,
+      userName: rma.user.userName,
+      }
+    });
+    return resAll;
+   
   }
 
   async findOne(id: string) {

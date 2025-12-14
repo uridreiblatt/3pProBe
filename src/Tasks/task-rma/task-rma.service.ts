@@ -5,6 +5,7 @@ import { TaskRma } from './entities/task-rma.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TaskUser } from '../task-user/entities/task-user.entity';
+import { AllRma } from '../all-rma/entities/all-rma.entity';
 
 @Injectable()
 export class TaskRmaService {
@@ -18,16 +19,16 @@ export class TaskRmaService {
 
   async create(createTaskRmaDto: CreateTaskRmaDto) {
     const ins =  new TaskRma();
-    ins.taskUser =  new TaskUser();
-    ins.taskUser.id = createTaskRmaDto.taskUserId;
+    ins.allRma =  new AllRma();
+    ins.allRma.id = createTaskRmaDto.rmaId;
     return await this.taskRmaRepository.save(ins);
     
   }
 
-  async findAll(taskUserId: string) {
+  async findAll(rmaId: string) {
     return await this.taskRmaRepository.find({
       where: {
-        taskUser: {id: taskUserId}
+        allRma: {id: rmaId}
       }
     });
   }
@@ -39,9 +40,9 @@ export class TaskRmaService {
   }
 
   async update(id: string, updateTaskRmaDto: UpdateTaskRmaDto) {
-     const ins =  new TaskRma();
-    ins.taskUser =  new TaskUser();
-    ins.taskUser.id = updateTaskRmaDto.taskUserId;
+    const ins =  new TaskRma();
+    ins.allRma =  new AllRma();
+    ins.allRma.id = updateTaskRmaDto.rmaId;
     return await this.taskRmaRepository.update(id, ins);
   }
 

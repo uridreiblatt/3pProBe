@@ -10,10 +10,10 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class AllRmaController {
   constructor(private readonly allRmaService: AllRmaService) {}
 
-  @Post()
-  async create(@Body() createAllRmaDto: CreateAllRmaDto) {
-    return await this.allRmaService.create(createAllRmaDto);
-  }
+  // @Post()
+  // async create(@Body() createAllRmaDto: CreateAllRmaDto) {
+  //   return await this.allRmaService.create(createAllRmaDto);
+  // }
 
 @Get('getAllNewRmaFromPriority')
   async getAllNewRmaFromPriority(@Request() req) {
