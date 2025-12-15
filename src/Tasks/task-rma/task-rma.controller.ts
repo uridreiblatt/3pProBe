@@ -17,6 +17,13 @@ export class TaskRmaController {
     return this.taskRmaService.findAll(rmaId);
   }
 
+  @Get('findAllByRma/:rmaId')
+  findAllByRma(@Param('rmaId') rmaId: string) {
+    return this.taskRmaService.findAll(rmaId);
+  }
+
+  
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.taskRmaService.findOne(id);
@@ -24,6 +31,7 @@ export class TaskRmaController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTaskRmaDto: UpdateTaskRmaDto) {
+    console.log('updateTaskRmaDto', updateTaskRmaDto);
     return this.taskRmaService.update(id, updateTaskRmaDto);
   }
 

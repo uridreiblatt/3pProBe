@@ -4,18 +4,6 @@ import { IsBoolean, IsInt, IsString } from "class-validator";
 export class CreateTaskRmaDto {
   @ApiProperty()
   @IsString()
-  rmaNumber: string;
-  @ApiProperty()
-  @IsString()
-  trackingNumber: string;
-  @ApiProperty()
-  @IsInt()
-  statusRma: number;
-  @ApiProperty()
-  @IsString()
-  customerName: string;
-  @ApiProperty()
-  @IsString()
   PartNumber: string;
   @ApiProperty()
   @IsInt()
@@ -35,4 +23,7 @@ export class CreateTaskRmaDto {
   @ApiProperty()
   @IsInt()
   rmaId: string;
+  @ApiProperty()  
+  @IsString()
+  companyId: string;
 }

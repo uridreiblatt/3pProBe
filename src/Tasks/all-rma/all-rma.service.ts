@@ -164,9 +164,42 @@ export class AllRmaService {
   }
 
   async findOne(id: string) {
-    return await this.allRmaRepository.findOne({
+    const res = await this.allRmaRepository.findOne({
       where: { id: id },
-    });
+            relations:{
+        user: true,
+        taskStatus: true,
+        taskRma: true,
+        
+
+      },
+    });  
+    const resAll = {
+      id: res.id,
+      CURDATE:  res.CURDATE,
+      CUSTDES:  res.CUSTDES,
+      CUSTNAME:  res.CUSTNAME,
+      DOCNO:  res.DOCNO,
+      DETAILS:  res.DETAILS,
+      FBCM_RETREASONCODE:  res.FBCM_RETREASONCODE,
+      FBCM_RETREASONDES:  res.FBCM_RETREASONDES,
+
+      status: res.taskStatus.status,
+      userName: res.user.userName,
+      taskRma: res.taskRma.map((rma)=>{
+        return {
+          id: rma.id,
+          PartNumber: rma.PartNumber,
+          productStatus: rma.productStatus,
+          partQount: rma.partQount,
+          backToInventory: rma.backToInventory,
+          cylinder: rma.cylinder,
+          remarks: rma.remarks,
+
+
+      }}),
+    };
+    return resAll;
   }
 
   async update(id: number, updateAllRmaDto: any) {

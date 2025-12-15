@@ -26,12 +26,11 @@ export class TaskRma extends Tablestamp {
   @Column({ default: false })
   productStatus: boolean;
 
-  @Column()
+  @Column({ default: '', nullable: true })
   cylinder: string;
-  @Column()
+  @Column({ default: '', nullable: true })
   remarks: string;
   @ManyToOne(() => AllRma, (allRma) => allRma.id)
   allRma: AllRma;
-  @ManyToOne(() => User, (user) => user.id)
-  user: User;
+
 }
