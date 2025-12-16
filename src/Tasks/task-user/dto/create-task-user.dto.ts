@@ -69,8 +69,8 @@ export class CreateTaskUserDto {
   @ApiProperty()
   @IsString()
   orderName: string;
-  @ApiProperty({ default: 1 })
-  @IsInt()
+  @ApiProperty({ default: 'aaa-bbb-ccc' })
+  @IsString()
   userId: string;
   @ApiProperty({ default: 1 })
   @IsInt()
@@ -108,7 +108,7 @@ export class CreateTaskUserDto {
   @ApiProperty()
   @IsInt()
   backToInventory: number;
-  @ApiProperty({ default: "1" })
+  @ApiProperty({ default: "aaa-aaa-aaa" })
   @IsString()
   companyId: string; // required if you expect it in the body
 }

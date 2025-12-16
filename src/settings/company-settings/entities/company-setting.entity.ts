@@ -27,6 +27,9 @@ export class CompanySetting extends Tablestamp {
   priorityApiPassword: string;
   @Column({default: ''})
   priorityOrderStatus: string;
+  @Column({default: '',nullable:true})
+  priorityOrderLineStatus: string;
+  
   @Column({default: ''})
   priorityPoStatus: string;
   @Column({default: ''})

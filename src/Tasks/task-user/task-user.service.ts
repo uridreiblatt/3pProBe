@@ -24,7 +24,7 @@ import { Company } from "src/usersCompanies/company/entities/company.entity";
 import { DbLogService } from "src/db-log/db-log.service";
 import { catchError, lastValueFrom, map } from "rxjs";
 import { HttpService } from "@nestjs/axios";
-import { RootPoPriority } from "./dto/create-task-user.dto";
+import { CreateTaskUserDto, RootPoPriority } from "./dto/create-task-user.dto";
 import { ConfigService } from "@nestjs/config";
 import { EOrderUser } from "src/orders/order/enums/enum";
 import { TaskGrv } from "../task-grv/entities/task-grv.entity";
@@ -154,7 +154,7 @@ export class TaskUserService {
     console.log(companyId)
     return await this.taskUsersRepository.find({
       where: {
-        user: { userCompany: { company: { id: companyId } } },
+        company: { id: companyId },
         taskStatus: { id: Not(5) },
       },
       relations: {
