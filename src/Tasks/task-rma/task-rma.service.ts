@@ -18,6 +18,12 @@ export class TaskRmaService {
   async create(createTaskRmaDto: CreateTaskRmaDto) {
     const ins = new TaskRma();
     ins.allRma = new AllRma();
+    ins.PartNumber = createTaskRmaDto.PartNumber;
+    ins.partQount = createTaskRmaDto.partQount;
+    ins.backToInventory = createTaskRmaDto.backToInventory;
+    ins.productStatus = createTaskRmaDto.productStatus;
+    ins.cylinder = createTaskRmaDto.cylinder;
+    ins.remarks = createTaskRmaDto.remarks;
     ins.allRma.id = createTaskRmaDto.rmaId;
     return await this.taskRmaRepository.save(ins);
   }

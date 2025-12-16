@@ -21,7 +21,7 @@ export class CreateTaskRmaDto {
   @IsString()
   remarks: string;
   @ApiProperty()
-  @IsInt()
+  @IsString()
   rmaId: string;
   @ApiProperty()  
   @IsString()
