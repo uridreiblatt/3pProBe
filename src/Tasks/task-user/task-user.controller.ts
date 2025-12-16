@@ -43,7 +43,7 @@ export class TaskUserController {
   @Get(':id')
   async findOne(@Request() req,@Param('id') id: string) {
     const res = await this.taskUserService.findOne(id);
-    validateCompanies (req.user.selectCompany , res.user.userCompany);    
+    //validateCompanies (req.user.selectCompany , res.user.userCompany);    
     return res;
   }
 
@@ -58,7 +58,7 @@ export class TaskUserController {
   @Delete(':id')
   async remove(@Request() req, @Param('id') id: string) {
     const res = await this.taskUserService.findOne(id);
-    validateCompanies (req.user.selectCompany , res.user.userCompany);    
+    //validateCompanies (req.user.selectCompany , res.us.userCompany);    
     return await this.taskUserService.remove(id);
   }
 }

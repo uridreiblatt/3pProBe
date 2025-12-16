@@ -152,7 +152,7 @@ export class TaskUserService {
 
   async findAll(companyId: string) {
     console.log(companyId)
-    return await this.taskUsersRepository.find({
+    const res =  await this.taskUsersRepository.find({
       where: {
         company: { id: companyId },
         taskStatus: { id: Not(5) },
@@ -164,20 +164,40 @@ export class TaskUserService {
       },
       order: { taskPriority: "DESC", updatedAt: "ASC" },
     });
+    const result = res.map((task) => {
+      const { user, taskStatus, taskType, ...rest } = task;
+      return {
+        ...rest,
+        userName: user ? `${user.userName}` : 'Unassigned',
+        taskType: taskType ? `${taskType.role }` : 'Unassigned',
+        taskStatus: taskStatus ? `${taskStatus.status }` : 'Unassigned',
+      };
+    });
+    return result;
   }
 
   async findOne(id: string) {
     console.log(id);
-    return await this.taskUsersRepository.findOne({
+    const res = await this.taskUsersRepository.findOne({
       where: {
         id: id,
       },
       relations: {
         taskStatus: true,
         taskType: true,
-        //user: { userCompany: true },
+        user: true ,
       },
     });
+    
+      const { user, taskStatus, taskType, ...rest } = res;
+      return {
+        ...rest,
+        //...user,
+        userName: user ? `${user.userName}` : 'Unassigned',
+        taskType: taskType ? `${taskType.role }` : 'Unassigned',
+        taskStatus: taskStatus ? `${taskStatus.status }` : 'Unassigned',
+      };    
+    
   }
 
   async findTasksOpenByOrder(orderId: string) {
