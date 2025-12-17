@@ -32,7 +32,7 @@ export class TaskGrvService {
   }
 
   async findOne(id: string) {
-    return await this.taskGrvRepository.find({
+    return await this.taskGrvRepository.findOne({
       where:{id: id}
     })
   }

@@ -6,14 +6,15 @@ import { TaskUser } from "src/Tasks/task-user/entities/task-user.entity";
 export class TaskGrv extends Tablestamp {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+  @Column({default: ''})
   DataInfo: string;
-  // @Column()
+  // 
   // PO: string;
   // @Column()
   // Location: string;
   // @Column()
   // Supplier: string;
-  @Column()
+  @Column({default: ''})
   PartNumber: string;
   
   @Column({default: 0})
@@ -46,4 +47,5 @@ export class TaskGrv extends Tablestamp {
   Total: number;
   @ManyToOne(() => TaskUser, (taskUser) => taskUser.id)
   taskUser: TaskUser;
+  
 }

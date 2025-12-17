@@ -17,7 +17,7 @@ export class CreateTaskGrvDto {
   @ApiProperty()
   @IsString()
   PartNumber: string;
-  
+
   @ApiProperty()
   @IsInt()
   NoOfBoxes: number;
@@ -63,4 +63,7 @@ export class CreateTaskGrvDto {
   @ApiProperty()
   @IsString()
   taskUserId: string;
+  @ApiProperty()
+  @IsString()
+  companyId: string;
 }

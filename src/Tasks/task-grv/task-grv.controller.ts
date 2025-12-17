@@ -12,8 +12,13 @@ export class TaskGrvController {
     return this.taskGrvService.create(createTaskGrvDto);
   }
 
-  @Get()
-  findAll(taskUserId: string) {
+  // @Get('taskUserId:taskUserId')
+  // findAll(taskUserId: string) {
+  //   return this.taskGrvService.findAll(taskUserId);
+  //}
+
+   @Get('findAllByGrv/:taskUserId')
+  findAllByRma(@Param('taskUserId') taskUserId: string) {
     return this.taskGrvService.findAll(taskUserId);
   }
 
