@@ -16,7 +16,22 @@ export class TaskGrvService {
 
 
   async create(createTaskGrvDto: CreateTaskGrvDto) {
-    const ins = new TaskGrv();
+        const ins = new TaskGrv();
+    ins.DataInfo = createTaskGrvDto.DataInfo;
+    ins.NoOfItems= createTaskGrvDto.NoOfItems;
+    ins.NoOfBoxes = createTaskGrvDto.NoOfBoxes;
+    ins.NoOfItems_1= createTaskGrvDto.NoOfItems_1;
+    ins.NoOfBoxes_1 = createTaskGrvDto.NoOfBoxes_1;
+    ins.NoOfItems_2= createTaskGrvDto.NoOfItems_2;
+    ins.NoOfBoxes_2 = createTaskGrvDto.NoOfBoxes_2;
+    ins.NoOfItems_3= createTaskGrvDto.NoOfItems_3;
+    ins.NoOfBoxes_3 = createTaskGrvDto.NoOfBoxes_3;
+    ins.NoOfItems_4= createTaskGrvDto.NoOfItems_4;
+    ins.NoOfBoxes_4 = createTaskGrvDto.NoOfBoxes_4;
+    ins.NoOfItems_5= createTaskGrvDto.NoOfItems_5;
+    ins.NoOfBoxes_5 = createTaskGrvDto.NoOfBoxes_5;
+    ins.bulkQauntity= createTaskGrvDto.bulkQauntity;
+    ins.Total= createTaskGrvDto.Total;    
     ins.taskUser= new TaskUser();
     ins.taskUser.id = createTaskGrvDto.taskUserId;
     return await this.taskGrvRepository.save(ins);
@@ -32,16 +47,39 @@ export class TaskGrvService {
   }
 
   async findOne(id: string) {
-    return await this.taskGrvRepository.findOne({
-      where:{id: id}
+    const res = await this.taskGrvRepository.findOne({
+      where:{id: id}, 
+      relations :{taskUser: true},
+
     })
+    const { taskUser, ...rest } = res;
+
+    return {
+      ...rest,
+      taskUserId: taskUser.id,
+    };
   }
 
   async update(id: string, updateTaskGrvDto: UpdateTaskGrvDto) {
     const ins = new TaskGrv();
+    ins.DataInfo = updateTaskGrvDto.DataInfo;
+    ins.NoOfItems= updateTaskGrvDto.NoOfItems;
+    ins.NoOfBoxes = updateTaskGrvDto.NoOfBoxes;
+    ins.NoOfItems_1= updateTaskGrvDto.NoOfItems_1;
+    ins.NoOfBoxes_1 = updateTaskGrvDto.NoOfBoxes_1;
+    ins.NoOfItems_2= updateTaskGrvDto.NoOfItems_2;
+    ins.NoOfBoxes_2 = updateTaskGrvDto.NoOfBoxes_2;
+    ins.NoOfItems_3= updateTaskGrvDto.NoOfItems_3;
+    ins.NoOfBoxes_3 = updateTaskGrvDto.NoOfBoxes_3;
+    ins.NoOfItems_4= updateTaskGrvDto.NoOfItems_4;
+    ins.NoOfBoxes_4 = updateTaskGrvDto.NoOfBoxes_4;
+    ins.NoOfItems_5= updateTaskGrvDto.NoOfItems_5;
+    ins.NoOfBoxes_5 = updateTaskGrvDto.NoOfBoxes_5;
+    ins.bulkQauntity= updateTaskGrvDto.bulkQauntity;
+    ins.Total= updateTaskGrvDto.Total;    
     ins.taskUser= new TaskUser();
     ins.taskUser.id = updateTaskGrvDto.taskUserId;
-    return await this.taskGrvRepository.save(ins);
+    return await this.taskGrvRepository.update(id, ins);
   }
 
   async remove(id: string) {
