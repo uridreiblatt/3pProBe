@@ -30,10 +30,11 @@ export class TaskInventoryCountController {
   async create(
     @Body() createTaskInventoryCountDto: CreateTaskInventoryCountDto
   ) {
+        console.log('cre', createTaskInventoryCountDto)
     return await this.taskInventoryCountService.create(createTaskInventoryCountDto);
   }
 
-  @Get()
+  @Get("findAll/:id")
   @Header("Cache-Control", "max-age=0")
   async findAll(@Request() req,  @Param("id") id: string) {
     return await this.taskInventoryCountService.findAll(req.user.selectCompany, id);
