@@ -105,13 +105,35 @@ export class OrderService {
     //   'SELECT * FROM v_orders v order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) ';
     // return await this.orderRepository.query(queryViewFields);
 
-    return await this.orderRepository.find({
+    const res =  await this.orderRepository.find({
       where: {taskStatus: { id: Not(3) } , comapny: {id: companyId }},
       relations: {
         taskStatus: true,
         orderLines: true,
+        user: true,
       },
     });
+     const resAll = res.map((ord)=>{
+      return {
+      id: ord.id,
+      ORDNAME:ord.ORDNAME,
+      CUSTDES:  ord.CUSTDES,
+      CUSTNAME:  ord.CUSTNAME,
+
+      createdAt: ord.createdAt,
+      user: ord.user.userName,
+      COUNTRYNAME:ord.COUNTRYNAME,
+      STDES: ord.STDES,
+      status: ord.taskStatus.status,
+      orderLines: ord.orderLines,
+      taskStatus: {
+        status: ord.taskStatus.status,
+      }, 
+
+      }
+    });
+    return resAll;
+   //
 
   }
 

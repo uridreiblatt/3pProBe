@@ -16,6 +16,12 @@ export class UserCompanyController {
   findAll(@Request() req ) {
     return this.userCompanyService.findAll(req.user.selectCompany);
   }
+@Get('findAllUsersByCompany')
+  findAllUsersByCompany(@Request() req ) {
+    return this.userCompanyService.findAllUsersByCompany(req.user.selectCompany);
+  }
+
+  
 
   @Get(':id')
   findOne(@Param('id') id: string) {
