@@ -217,7 +217,8 @@ export class OrderService {
     //     id: 6, //pending
     //   },
     // };
-    return await this.orderRepository.update(id, upd);
+    const { companyId, ...rest } = upd;
+    return await this.orderRepository.update(id, rest);
   }
 
   async update(orderId: string, updateOrderDto: UpdateOrderDto): Promise<any> {

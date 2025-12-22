@@ -13,6 +13,7 @@ import { SKIP_COOKIE_MATCH_KEY } from "src/auth/entities/skip-cookie-match.decor
 import { JwtService } from "@nestjs/jwt";
 import { jwtConstants } from "./constants";
 import { Request } from "express";
+import { ApiUnauthorizedResponse } from "@nestjs/swagger";
 
 export const COOKIE_MATCH_OPTS = "COOKIE_MATCH_OPTS";
 type Methods = Array<
@@ -77,12 +78,13 @@ export class CookieMatchGuard implements CanActivate {
       if (this.opts.bodyFieldPath && bodyMethods.includes(method as any)) {
         const bodyVal = getByPath(req.body, this.opts.bodyFieldPath); 
             
+        console.log(bodyVal, this.opts.bodyFieldPath, bodyMethods, method)
         if (bodyVal == null)
           throw new ForbiddenException(
             `Missing body field "${this.opts.bodyFieldPath}".`
           );
         if (String(payload.selectCompany) !== String(bodyVal)) {
-          throw new ForbiddenException(
+          throw new BadRequestException(
             `Cookie "${this.opts.cookieName}" must match body "${this.opts.bodyFieldPath}". comapny: "${payload.selectCompany}" destination company: "${String(bodyVal)}"`
           );
         }
@@ -113,6 +115,7 @@ export class CookieMatchGuard implements CanActivate {
 
 // tiny helper: dot-path read (no external deps)
 function getByPath(obj: any, path: string) {
+  console.log(obj, path)
   return path
     .split(".")
     .reduce((acc, key) => (acc == null ? acc : acc[key]), obj);
