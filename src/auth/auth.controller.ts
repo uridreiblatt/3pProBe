@@ -120,7 +120,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      maxAge: 36000,
+      maxAge: 144000,
     });
     const resLogin = {
       id: resUser.id,

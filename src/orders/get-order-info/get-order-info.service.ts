@@ -57,6 +57,7 @@ export class GetOrderInfoService {
     private PartCqauntService: PartCqauntService,
     private CompanyService: CompanyService,
   ) {
+    
     //@InjectRepository(MirshamimHeader) private mirshamimHeaderRepository: Repository<MirshamimHeader>,
     //@InjectRepository(MirshamimLines) private mirshamimLinesRepository: Repository<MirshamimLines>
     // this.username = this.configService.get<string>('PRIORITY_USER');
@@ -389,7 +390,7 @@ export class GetOrderInfoService {
         metadata: '',
         companyId: '',
       });
-      const order = await this._orderService.findOne(Id);
+      const order = await this._orderService.findOneGetOrder(Id);
       if (!order) {
         throw new BadRequestException('order Not Found ', {
           cause: new Error(),
@@ -620,7 +621,7 @@ export class GetOrderInfoService {
         metadata: '',
         companyId: '',
       });
-      const order = await this._orderService.findOne(Id);
+      const order = await this._orderService.findOneGetOrder(Id);
       if (!order) {
         throw new BadRequestException('order Not Found ', {
           cause: new Error(),

@@ -157,8 +157,45 @@ export class OrderService {
       },
     });
   }
-
   async findOne(id: string) {
+    const res = await this.orderRepository.findOne({
+      where: {
+        id: id,
+      },
+      relations: {
+        taskStatus: true,
+        user: true,
+        orderLines: true,
+        orderBoxes: {
+          boxSize: true,
+        },
+        //orderBasket: true,
+        role: true,
+      },
+    });
+    const resAll = {
+      id: res.id,
+      ORDNAME:res.ORDNAME,
+      CUSTDES:  res.CUSTDES,
+      CUSTNAME:  res.CUSTNAME,
+
+      createdAt: res.createdAt,
+      user: res.user.userName,
+      COUNTRYNAME:res.COUNTRYNAME,
+      STDES: res.STDES,
+      status: res.taskStatus.status,
+      orderLines: res.orderLines,
+      role: res.role.roleDisplayName,
+      taskStatus: {
+        status: res.taskStatus.status,
+      }      
+    }
+
+    return resAll;
+   //
+  }
+
+  async findOneGetOrder(id: string) {
     return await this.orderRepository.findOne({
       where: {
         id: id,

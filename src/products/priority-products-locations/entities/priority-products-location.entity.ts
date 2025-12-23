@@ -13,7 +13,7 @@ import { IsDate } from 'class-validator';
 export class PriorityProductsLocation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  @Column()
+  @Column({default:'', nullable:true})
   location: string;
   @Column({ nullable: true, type: 'date' })
   @IsDate()
