@@ -20,6 +20,7 @@ import { OrderBasketService } from 'src/orders/order-basket/order-basket.service
 import { TaskUserService } from 'src/Tasks/task-user/task-user.service';
 import { CreateShipRushDto } from 'src/shipments/ship-rush/dto/create-ship-rush.dto';
 import { Company } from 'src/usersCompanies/company/entities/company.entity';
+import { role } from 'src/auth/dto/create-auth.dto';
 
 @Injectable()
 export class OrderService {
@@ -105,12 +106,14 @@ export class OrderService {
     //   'SELECT * FROM v_orders v order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) ';
     // return await this.orderRepository.query(queryViewFields);
 
+    console.log('fff')
     const res =  await this.orderRepository.find({
       where: {taskStatus: { id: Not(3) } , comapny: {id: companyId }},
       relations: {
         taskStatus: true,
         orderLines: true,
         user: true,
+        role: true,
       },
     });
      const resAll = res.map((ord)=>{
@@ -126,6 +129,7 @@ export class OrderService {
       STDES: ord.STDES,
       status: ord.taskStatus.status,
       orderLines: ord.orderLines,
+      role: ord.role.roleDisplayName,
       taskStatus: {
         status: ord.taskStatus.status,
       }, 

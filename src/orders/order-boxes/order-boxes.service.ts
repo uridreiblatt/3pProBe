@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 //import { Order } from 'src/order/entities/order.entity';
 import { UpdateOrderBoxDto } from './dto/update-order-box.dto';
 import { Order } from '../order/entities/order.entity';
+import { Boxsize } from 'src/maintenence/boxes/entities/box.entity';
 
 @Injectable()
 export class OrderBoxesService {
@@ -16,8 +17,17 @@ export class OrderBoxesService {
     private OrderBoxesRepository: Repository<OrderBoxes>,
   ) {}
   async create(createOrderBoxDto: CreateOrderBoxDto) {
-    delete createOrderBoxDto['id'];
-    return await this.OrderBoxesRepository.save(createOrderBoxDto);
+    console.log('uird',createOrderBoxDto)
+//    delete createOrderBoxDto['id'];
+      const ordB =  new OrderBoxes();
+      ordB.boxNo = createOrderBoxDto.boxNo;      
+      ordB.boxNo = createOrderBoxDto.boxweight;
+      ordB.boxSize = new Boxsize();
+      ordB.boxSize.id = createOrderBoxDto.boxId;
+      ordB.order =  new  Order();
+      ordB.order.id = createOrderBoxDto.orderId;      
+
+    return await this.OrderBoxesRepository.save(ordB);
   }
 
   async findAll(id: string) {

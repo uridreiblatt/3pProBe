@@ -16,7 +16,7 @@ export class OrderBoxes {
   id: string;
   @Column({ nullable: true })
   lineRemarks: string;
-  @Column('float', { precision: 8, scale: 2 })
+  @Column('float', { precision: 8, scale: 2 , default: 0})
   boxweight: float;
   @Column({ nullable: true })
   boxNo: number;
