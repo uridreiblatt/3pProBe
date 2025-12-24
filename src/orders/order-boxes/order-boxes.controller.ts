@@ -23,10 +23,10 @@ export class OrderBoxesController {
     return await this.orderBoxesService.create(createOrderBoxDto);
   }
 
-  @Get()
-  async findAll() {
-    return await this.orderBoxesService.findAll();
-  }
+  // @Get(':id')
+  // async findAll(@Param('id') id: string) {
+  //   return await this.orderBoxesService.findAll(id);
+  // }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {

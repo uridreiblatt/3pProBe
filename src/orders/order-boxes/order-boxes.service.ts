@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 //import { Boxsize } from 'src/boxes/entities/box.entity';
 //import { Order } from 'src/order/entities/order.entity';
 import { UpdateOrderBoxDto } from './dto/update-order-box.dto';
+import { Order } from '../order/entities/order.entity';
 
 @Injectable()
 export class OrderBoxesService {
@@ -19,8 +20,9 @@ export class OrderBoxesService {
     return await this.OrderBoxesRepository.save(createOrderBoxDto);
   }
 
-  async findAll() {
+  async findAll(id: string) {
     return await this.OrderBoxesRepository.find({
+      where : {order: {id: id}},
       relations: {
         boxSize: true,
       },
@@ -39,7 +41,7 @@ export class OrderBoxesService {
   }
 
   async getOrderBoxes(id: string) {
-    return await this.OrderBoxesRepository.find({
+    const res = await this.OrderBoxesRepository.find({
       where: {
         order: {
           id: id,
@@ -49,6 +51,20 @@ export class OrderBoxesService {
         boxSize: true,
       },
     });
+    const resAll = res.map((ordBox)=>{
+      return {
+        id:ordBox.id,
+        boxweight: ordBox.boxweight,
+        boxNo: ordBox.boxNo,
+        box: {
+          id: ordBox.boxSize.id,
+          sizeDesc: ordBox.boxSize.sizeDesc
+        }
+
+
+      }
+    });
+    return resAll;
   }
 
   async update(id: string, updateOrderBoxDto: UpdateOrderBoxDto) {
