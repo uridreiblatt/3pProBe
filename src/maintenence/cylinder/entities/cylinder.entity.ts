@@ -6,9 +6,9 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 export class Cylinder extends Tablestamp {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  @Column()
+  @Column({default:''})
   partName: string;
-  @Column()
+  @Column({default:''})
   description: string;
 
   @ManyToOne(() => Company, (company) => company.boxsizes)

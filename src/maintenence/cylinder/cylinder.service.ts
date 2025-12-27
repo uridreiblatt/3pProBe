@@ -14,13 +14,22 @@ export class CylinderService {
   ) {}
 
   async findAll(companyId: string) {
-    return await this.cylinderRepository.find({
+    const res = await this.cylinderRepository.find({
       where: {
         company: {id:companyId},
       },
-      relations: {company:true},
+      //relations: {company:true},
 
     });
+    const resAll = res.map((cylinder) => {
+      return {
+        id: cylinder.id,
+        partName: cylinder.partName,
+        description: cylinder.description
+
+      };
+    });
+    return resAll;
   }
 
   async findOne(id: string) {
@@ -28,7 +37,7 @@ export class CylinderService {
       where: {
         id: id,
       },
-      relations: {company:true},
+      //relations: {company:true},
 
     });
   }
