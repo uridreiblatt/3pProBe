@@ -47,8 +47,7 @@ export class RolesGuard implements CanActivate {
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
       return requiredRoles.some((role) => {
-        //console.log('requiredRoles',payload.role, role)
-        if (payload.role === role ) return true;
+        if (Number(payload.role) === role ) return true;
 
     });
     } catch (error) {

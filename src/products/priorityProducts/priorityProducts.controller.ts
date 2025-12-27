@@ -27,10 +27,10 @@ export class PriorityProductsController {
     return this.partsService.findOne(id);
   }
 
-  // @Get('findChildByParentPart/:id')
-  // async findChildByParentPart(@Param('id') id: string) {
-  //   return await this.partsService.findChildByParentPart(id);
-  // }
+  @Get('findChildByParentPart/:id')
+  async findChildByParentPart(@Param('id') id: string) {
+    return await this.partsService.findChildByParentPart(id);
+  }
   // @Get('findChildByParent/:id')
   // async findChildByParent(@Param('id') id: string) {
   //   return await this.partsService.findChildByParent(id);

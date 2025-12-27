@@ -30,7 +30,6 @@ export class TaskInventoryCountController {
   async create(
     @Body() createTaskInventoryCountDto: CreateTaskInventoryCountDto
   ) {
-        console.log('cre', createTaskInventoryCountDto)
     return await this.taskInventoryCountService.create(createTaskInventoryCountDto);
   }
 

@@ -31,7 +31,6 @@ export class TaskRmaController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTaskRmaDto: UpdateTaskRmaDto) {
-    console.log('updateTaskRmaDto', updateTaskRmaDto);
     return this.taskRmaService.update(id, updateTaskRmaDto);
   }
 

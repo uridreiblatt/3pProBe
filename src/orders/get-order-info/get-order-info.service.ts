@@ -10,7 +10,7 @@ import { CreateOrderLineDto } from 'src/orders/order-lines/dto/create-order-line
 import { catchError, lastValueFrom, map } from 'rxjs';
 import { ShipmentPriorityService } from 'src/maintenence/shipment_priority/shipment_priority.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { EOrderRole, EOrderStatus, EOrderUser } from 'src/orders/order/enums/enum';
+import { EOrderRole, EOrderUser, OrderStatusEnum } from 'src/orders/order/enums/enum';
 import { Order } from 'src/orders/order/entities/order.entity';
 import { DbLogService } from 'src/db-log/db-log.service';
 import { Headertmp, RootShipRequest } from './dto/shipRushRequest.dto';
@@ -218,7 +218,7 @@ export class GetOrderInfoService {
               if (
                 or.user.id === EOrderUser.unAssigned &&
                 or.role.id === EOrderRole.Picker &&
-                or.taskStatus.id === EOrderStatus.New
+                or.taskStatus.id === OrderStatusEnum.New
               )
                 return true;
               return false;
@@ -226,7 +226,7 @@ export class GetOrderInfoService {
             const CompleteOrder = orders.find((or) => {
               if (
                 or.role.id === EOrderRole.Shipper &&
-                or.taskStatus.id === EOrderStatus.Complete
+                or.taskStatus.id === OrderStatusEnum.Complete
               )
                 return true;
               return false;
@@ -234,13 +234,13 @@ export class GetOrderInfoService {
             const InProgressOrder = orders.find((or) => {
               if (
                 or.role.id === EOrderRole.Shipper &&
-                or.taskStatus.id === EOrderStatus.Complete
+                or.taskStatus.id === OrderStatusEnum.Complete
               )
                 return false;
               if (
                 or.user.id === 'aaa-bbb-ccc' && //EOrderUser.unAssigned &&
                 or.role.id === EOrderRole.Picker &&
-                or.taskStatus.id === EOrderStatus.New
+                or.taskStatus.id === OrderStatusEnum.New
               )
                 return false;
               return true;

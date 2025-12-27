@@ -151,7 +151,6 @@ export class TaskUserService {
   }
 
   async findAll(companyId: string) {
-    console.log(companyId)
     const res =  await this.taskUsersRepository.find({
       where: {
         company: { id: companyId },

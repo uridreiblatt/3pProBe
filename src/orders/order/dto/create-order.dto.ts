@@ -96,4 +96,6 @@ export class CreateOrderDto {
   accountZip: string;
   @ApiProperty()
   companyId: string;
+  @ApiProperty()
+  roleId: number;
 }

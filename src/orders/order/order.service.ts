@@ -21,6 +21,8 @@ import { TaskUserService } from 'src/Tasks/task-user/task-user.service';
 import { CreateShipRushDto } from 'src/shipments/ship-rush/dto/create-ship-rush.dto';
 import { Company } from 'src/usersCompanies/company/entities/company.entity';
 import { role } from 'src/auth/dto/create-auth.dto';
+import { EOrderUser, OrderStatusEnum } from './enums/enum';
+import { rolesEnum } from 'src/auth/entities/role.enum';
 
 @Injectable()
 export class OrderService {
@@ -104,9 +106,7 @@ export class OrderService {
   async findAll(companyId: string): Promise<any> {
     // const queryViewFields =
     //   'SELECT * FROM v_orders v order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) ';
-    // return await this.orderRepository.query(queryViewFields);
-
-    console.log('fff')
+    // return await this.orderRepository.query(queryViewFields);   
     const res =  await this.orderRepository.find({
       where: {taskStatus: { id: Not(3) } , comapny: {id: companyId }},
       relations: {
@@ -130,6 +130,7 @@ export class OrderService {
       status: ord.taskStatus.status,
       orderLines: ord.orderLines,
       role: ord.role.roleDisplayName,
+      roleId: ord.role.id,
       taskStatus: {
         status: ord.taskStatus.status,
       }, 
@@ -263,16 +264,17 @@ export class OrderService {
     //     id: 6, //pending
     //   },
     // };
+    
     const { companyId, ...rest } = upd;
     return await this.orderRepository.update(id, rest);
   }
 
   async update(orderId: string, updateOrderDto: UpdateOrderDto): Promise<any> {
-    let newRole = updateOrderDto.role.id;
+    let newRole = updateOrderDto.roleId;
     let orderStatus = updateOrderDto.taskStatus.id; // new  5-complete 2 - inproress
     let userInOrder = updateOrderDto.user.id;
 
-    if (orderStatus === 5 && newRole === 1) {
+    if (orderStatus === OrderStatusEnum.Complete && newRole === rolesEnum.Picker) {
       //findTasksOpenByOrder
       const ts = await this._taskUserService.findTasksOpenByOrder(orderId);
       if (ts !== null) {
@@ -295,7 +297,7 @@ export class OrderService {
       },
     });
     if (Currentorder.role.id === newRole) {
-      if (Currentorder.user.id !== '1' && Currentorder.user.id !== userInOrder) {
+      if (Currentorder.user.id !== EOrderUser.unAssigned && Currentorder.user.id !== userInOrder) {
         throw new BadRequestException('Order assigned to another user', {
           cause: new Error(),
           description: 'Order assigned to another user',
@@ -303,24 +305,24 @@ export class OrderService {
       }
     }
 
-    if (orderStatus === 2) {
+    if (orderStatus === OrderStatusEnum.InProgres) {
       if (
         Currentorder !== null &&
-        (Currentorder.taskStatus.id === 1000 ||
-          Currentorder.taskStatus.id === 1001)
+        (Currentorder.taskStatus.id === OrderStatusEnum.AssistantPending ||
+          Currentorder.taskStatus.id === OrderStatusEnum.AssistantComplete)
       ) {
         orderStatus = Currentorder.taskStatus.id;
       }
     }
 
-    if (orderStatus === 5) {
-      if (newRole < 4) {
+    if (orderStatus === OrderStatusEnum.Complete) {
+      if (newRole < rolesEnum.Shipper) {
         newRole = newRole + 1;
-        orderStatus = 1;
-        userInOrder = '1'; // unassgined
+        orderStatus = OrderStatusEnum.New;
+        userInOrder = EOrderUser.unAssigned; // unassgined
       }
     }
-    if (newRole === 4) {
+    if (newRole === rolesEnum.Shipper) {
       await this._orderBasketService.removeByOrderId(orderId);
     }
     const res = {

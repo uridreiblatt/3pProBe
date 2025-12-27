@@ -118,7 +118,7 @@ export class priorityProductsService {
     // const res = await this.PartRepository.query(sqlQuery);
     const res = await this.PartRepository.find({
       where: {
-        TYPE: "P",
+        TYPE: "R",
         company: { id: companyId },
       },
       //take:20,
@@ -160,37 +160,23 @@ export class priorityProductsService {
     });
   }
 
-  // async findChildByParentPart(id: string) {
-  //   const sqlQuery =
-  //     //   '   SELECT P.PART, C.SON , 	PL.[quantity], PL.[stockDate],  ' +
-  //     //   ' (SELECT DT.[PARTNAME] FROM [dbo].[priorityProducts] DT WHERE DT.PART = C.SON ) AS PARTNAME, ' +
-  //     //   ' (SELECT DT.[PARTDES] FROM [dbo].[priorityProducts] DT WHERE DT.PART = C.SON ) AS PARTDES, ' +
-  //     //   ' (SELECT DT.[BARCODE] FROM [dbo].[priorityProducts] DT WHERE DT.PART = C.SON ) AS BARCODE ' +
-  //     //   ' FROM [dbo].[priorityProducts] AS P ' +
-  //     //   ' inner join  [dbo].[priorityProductsHierarchy] C  on P.[PART] = C.[PART] ' +
-  //     //   ' left join [dbo].[priorityProductsLocation] PL on P.[id] = PL.[priorityProductsId] ';
-  //     // sqlQuery += " where   P.[PARTNAME] = '" + id + "'";
+  async findChildByParentPart(id: string) {
+    const sqlQuery =
 
-  //     ` SELECT PP.PARTNAME, PL.location, PL.stockDate, PL.quantity , Z.zoneName ` +
-  //     ` FROM [dbo].[priorityProducts]  PP left join  [dbo].[priorityProductsLocation] PL on PL.priorityProductsId = PP.id ` +
-  //     ` left join [dbo].zone Z on Z.id = PL.zoneId ` +
-  //     ` WHERE  PP.PART IN ( ` +
-  //     ` SELECT   C.[SON] FROM [dbo].[priorityProducts]  P  left join  [dbo].[priorityProductsHierarchy] C  on P.[PART] = C.[PART]  ` +
-  //     ` where   P.[PARTNAME] = '` +
-  //     id +
-  //     `') order by PP.PARTNAME, Z.priority `;
-  //   const res = await this.PartRepository.query(sqlQuery);
-  //   return res;
-  // }
+      `SELECT     PP.PARTNAME,    PL.location,    PL.stockDate,    PL.quantity,    Z.zoneName ` +
+` FROM priorityProducts AS P LEFT JOIN priorityProductsHierarchy AS C    ON P.PART = C.PART LEFT JOIN priorityProducts AS PP    ON PP.PART = C.SON LEFT JOIN priorityProductsLocation AS PL     ON PL.priorityProductsId = PP.id LEFT JOIN zone AS Z    ON Z.id = PL.zoneId `+
+` WHERE P.PARTNAME = '`+id+ `'`  +
+` ORDER BY PP.PARTNAME, Z.priority`;
+console.log(sqlQuery);
+    const res = await this.PartRepository.query(sqlQuery);
+    return res;
+  }
 
   // async findChildByParent(id: string) {
-  //   let sqlQuery =
-  //     '   SELECT P.PART, C.SON , 	  ' +
-  //     ' (SELECT DT.[PARTNAME] FROM [dbo].[priorityProducts] DT WHERE DT.PART = C.SON ) AS PARTNAME, ' +
-  //     ' (SELECT DT.[PARTDES] FROM [dbo].[priorityProducts] DT WHERE DT.PART = C.SON ) AS PARTDES, ' +
-  //     ' (SELECT DT.[BARCODE] FROM [dbo].[priorityProducts] DT WHERE DT.PART = C.SON ) AS BARCODE ' +
-  //     '  FROM [dbo].[priorityProducts]  P ' +
-  //     ' left join  [dbo].[priorityProductsHierarchy] C  on P.[PART] = C.[PART] ';
+//   //   let sqlQuery =
+//   SELECT    P.PART,    C.SON,    DT.PARTNAME,    DT.PARTDES,    DT.BARCODE FROM priorityProducts P
+// LEFT JOIN priorityProductsHierarchy C   ON P.PART = C.PART LEFT JOIN priorityProducts DT    ON DT.PART = C.SON
+// WHERE P.PARTNAME = 'TCDP04W1910GASW';
   //   sqlQuery += " where   P.[id] = '" + id + "'";
   //   //} else {
   //   //  sqlQuery += " AND  P.[PARTNAME] = '" + id + "'";

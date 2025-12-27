@@ -17,7 +17,6 @@ export class OrderBoxesService {
     private OrderBoxesRepository: Repository<OrderBoxes>,
   ) {}
   async create(createOrderBoxDto: CreateOrderBoxDto) {
-    console.log('uird',createOrderBoxDto)
 //    delete createOrderBoxDto['id'];
       const ordB =  new OrderBoxes();
       ordB.boxNo = createOrderBoxDto.boxNo;      

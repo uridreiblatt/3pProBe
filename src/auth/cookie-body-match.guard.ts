@@ -77,8 +77,6 @@ export class CookieMatchGuard implements CanActivate {
       const bodyMethods = this.opts.bodyMethods ?? ["POST", "PUT", "PATCH"];
       if (this.opts.bodyFieldPath && bodyMethods.includes(method as any)) {
         const bodyVal = getByPath(req.body, this.opts.bodyFieldPath); 
-            
-        console.log(bodyVal, this.opts.bodyFieldPath, bodyMethods, method)
         if (bodyVal == null)
           throw new ForbiddenException(
             `Missing body field "${this.opts.bodyFieldPath}".`
@@ -89,7 +87,6 @@ export class CookieMatchGuard implements CanActivate {
           );
         }
       }
-       //console.log('CookieMatchGuard last return true')
     return true;
   }
 
@@ -115,7 +112,6 @@ export class CookieMatchGuard implements CanActivate {
 
 // tiny helper: dot-path read (no external deps)
 function getByPath(obj: any, path: string) {
-  console.log(obj, path)
   return path
     .split(".")
     .reduce((acc, key) => (acc == null ? acc : acc[key]), obj);
