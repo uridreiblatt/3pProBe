@@ -184,13 +184,22 @@ export class GetOrderInfoService {
         }
         createOrderDto.ordertext = tmpText;
         createOrderDto.CURDATE = element.CURDATE;
-        createOrderDto.userId = 'aaa-bbb-ccc' //EOrderUser.unAssigned;
+        createOrderDto.userId = EOrderUser.unAssigned;
         createOrderDto.taskStatusId = 1;//EOrderUser.unAssigned;
-        const checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {
-          if (ln.TBALANCE > 0 && ln.ORDISTATUSDES === 'In progress')
+        let checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {
+          if (ln.TBALANCE > 0 )
             return true;
           return false;
         });
+        if (resCompantSettings.companySetting.priorityOrderLineStatus === null)
+        {
+          checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {
+          if (ln.TBALANCE > 0 && ln.ORDISTATUSDES === resCompantSettings.companySetting.priorityOrderLineStatus)
+            return true;
+          return false;
+        });
+        }
+        
         if (checkLines) {
           let order: Order = null;
           const orders = await this._orderService.findByOrderName(
@@ -238,7 +247,7 @@ export class GetOrderInfoService {
               )
                 return false;
               if (
-                or.user.id === 'aaa-bbb-ccc' && //EOrderUser.unAssigned &&
+                or.user.id === EOrderUser.unAssigned &&
                 or.role.id === EOrderRole.Picker &&
                 or.taskStatus.id === OrderStatusEnum.New
               )
@@ -283,10 +292,15 @@ export class GetOrderInfoService {
               orderLineExixts === null &&
               order.user.id === EOrderUser.unAssigned
             ) {
-              if (
-                subForm.TBALANCE > 0 &&
-                subForm.ORDISTATUSDES === 'In progress'
-              ) {
+              let CheckOrderLineStatus = false;
+
+              if((resCompantSettings.companySetting.priorityOrderLineStatus === null && subForm.TBALANCE > 0) ||
+              (subForm.ORDISTATUSDES === resCompantSettings.companySetting.priorityOrderLineStatus)){
+                CheckOrderLineStatus = true;
+                
+              }
+              if ( CheckOrderLineStatus ) 
+                {
                 const createOrderLineDto: CreateOrderLineDto =
                   new CreateOrderLineDto();
                 createOrderLineDto.orderId = order.id;
