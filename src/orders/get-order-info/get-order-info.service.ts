@@ -223,6 +223,24 @@ export class GetOrderInfoService {
               });
             }
           } else {
+            createOrderDto.ADDRESS = element.SHIPTO2_SUBFORM?.ADDRESS;
+        createOrderDto.ADDRESS2 = element.SHIPTO2_SUBFORM?.ADDRESS2;
+        createOrderDto.ADDRESS3 = element.SHIPTO2_SUBFORM?.ADDRESS3 || '';
+
+        const updateOrderAddress = orders.find((or) => {
+              if (
+                or.ADDRESS === element.SHIPTO2_SUBFORM?.ADDRESS &&
+                or.ADDRESS2 === element.SHIPTO2_SUBFORM?.ADDRESS2 &&
+                (or.ADDRESS3 === element.SHIPTO2_SUBFORM?.ADDRESS3 || '')
+              )
+                return true;
+              return false;
+            });
+            if (updateOrderAddress)
+            {
+              console.log('update shipping address')
+            }
+
             const NewOrder = orders.find((or) => {
               if (
                 or.user.id === EOrderUser.unAssigned &&
