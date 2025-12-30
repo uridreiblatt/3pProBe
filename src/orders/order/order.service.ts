@@ -115,6 +115,7 @@ export class OrderService {
         user: true,
         role: true,
       },
+      order:{priorityOrder: 'ASC'}
     });
      const resAll = res.map((ord)=>{
       return {
@@ -346,8 +347,7 @@ export class OrderService {
       },
     };
     await this.orderRepository.update(orderId, res);
-    const promisesLines = updateOrderDto.orderLines.map(async (ol) => {
-      console.log(ol)
+    const promisesLines = updateOrderDto.orderLines.map(async (ol) => {      
       const updateOrderLine = {
         Fullfilled: ol.Fullfilled,
         FullfilledSuperViser: ol.FullfilledSuperViser,
