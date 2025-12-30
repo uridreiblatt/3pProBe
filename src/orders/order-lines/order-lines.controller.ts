@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { OrderLinesService } from './order-lines.service';
 import { CreateOrderLineDto } from './dto/create-order-line.dto';
-import { UpdateOrderLineDto } from './dto/update-order-line.dto';
+import { UpdateOrderLineAssemblyAidDto, UpdateOrderLineDto } from './dto/update-order-line.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('order-lines')
@@ -55,11 +55,11 @@ export class OrderLinesController {
   @Patch('updateAssemblyAid/:id')
   async updateAssemblyAid(
     @Param('id') id: string,
-    @Body() updateOrderLineDto: UpdateOrderLineDto,
+    @Body() updateOrderLineAssemblyAidDto: UpdateOrderLineAssemblyAidDto,
   ) {
     return await this.orderLinesService.updateAssemblyAid(
       id,
-      updateOrderLineDto,
+      updateOrderLineAssemblyAidDto,
     );
   }
   @Patch('removeAssemblyPickingAid/:id')

@@ -20,8 +20,8 @@ export enum OrderStatusEnum {
   InProgres = 2,
   Complete = 3,
   Pending = 4,
-  AssistantPending = 1000,
-  AssistantComplete = 1001,
+  AssistantPending = 5,
+  AssistantComplete = 6,
   Review = 7,
 
 

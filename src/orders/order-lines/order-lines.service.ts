@@ -1,15 +1,17 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateOrderLineDto } from './dto/create-order-line.dto';
-import { UpdateOrderLineDto } from './dto/update-order-line.dto';
+import { UpdateOrderLineAssemblyAidDto, UpdateOrderLineDto } from './dto/update-order-line.dto';
 import { OrderLine } from './entities/order-line.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from 'src/orders/order/entities/order.entity';
-import { TaskStatus } from 'src/settings/task-status/entities/task-status.entity';
+import { TaskStatus, TaskStatusEnum } from 'src/settings/task-status/entities/task-status.entity';
 import { TaskUserService } from 'src/Tasks/task-user/task-user.service';
 import { TaskUser } from 'src/Tasks/task-user/entities/task-user.entity';
 import { User } from 'src/usersCompanies/users/entities/user.entity';
-import { TaskType } from 'src/settings/task-type/entities/task-type.entity';
+import { TaskType, TaskTypesEnum } from 'src/settings/task-type/entities/task-type.entity';
+import { EOrderUser } from '../order/enums/enum';
+import { Company } from 'src/usersCompanies/company/entities/company.entity';
 
 @Injectable()
 export class OrderLinesService {
@@ -19,6 +21,8 @@ export class OrderLinesService {
     private orderLinesRepository: Repository<OrderLine>,
     @Inject(forwardRef(() => TaskUserService))
     private taskUserService: TaskUserService,
+    @InjectRepository(TaskUser)
+        private taskUsersRepository: Repository<TaskUser>,
   ) {
     this._taskUserService = taskUserService;
   }
@@ -90,37 +94,9 @@ export class OrderLinesService {
     return await this.orderLinesRepository.update(id, updateOrderLineDto);
   }
   async updatePickingAid(id: string, updateOrderLineDto: UpdateOrderLineDto) {
-    await this.orderLinesRepository.update(id, updateOrderLineDto);
-    const orderLine = await this.orderLinesRepository.findOne({
-      where: {
-        id: id,
-      },
-      relations: {
-        order: true,
-      },
-    });
-    if (orderLine) {
-      const createAssemblyTask = new TaskUser();
-      createAssemblyTask.orderid = orderLine.order.id;
-      createAssemblyTask.orderlineId = orderLine.id;
-      createAssemblyTask.DataInfo = orderLine.order.ORDNAME;
-      createAssemblyTask.PartNumber = orderLine.PARTNAME;
-      createAssemblyTask.QTYtoassemble = orderLine.TBALANCE;
-      createAssemblyTask.user = new User();
-      createAssemblyTask.user.id = '1000';
-      createAssemblyTask.taskType = new TaskType();
-      createAssemblyTask.taskType.id = 8; //Picking
-      createAssemblyTask.taskType.role = 'Picking'; //Picking
-      createAssemblyTask.taskStatus = new TaskStatus();
-      createAssemblyTask.taskStatus.id = 1; //new
-      await this._taskUserService.create(createAssemblyTask);
-      await this._taskUserService.updateTaskAssignedOrder(orderLine.order.id);
-    }
-  }
-
-  async updateAssemblyAid(id: string, updateOrderLineDto: any) {
+    const { companyId, ...rest } = updateOrderLineDto;
     const upd = {
-      assemblyAid: updateOrderLineDto.assemblyAid,
+      pickingAid: true, // updateOrderLineDto.pickingAid,
     };
     await this.orderLinesRepository.update(id, upd);
     const orderLine = await this.orderLinesRepository.findOne({
@@ -137,17 +113,60 @@ export class OrderLinesService {
       createAssemblyTask.orderlineId = orderLine.id;
       createAssemblyTask.DataInfo = orderLine.order.ORDNAME;
       createAssemblyTask.PartNumber = orderLine.PARTNAME;
-      createAssemblyTask.QTYtoassemble = updateOrderLineDto.assemblyQty;
+      createAssemblyTask.QTYtoassemble = orderLine.TBALANCE;
       createAssemblyTask.user = new User();
-      createAssemblyTask.user.id = '1000';
+      createAssemblyTask.user.id = EOrderUser.unAssigned;
       createAssemblyTask.taskType = new TaskType();
-      createAssemblyTask.taskType.id = 1; //assembly
-      createAssemblyTask.taskType.role = 'Assembly'; //assembly
+      createAssemblyTask.taskType.id = TaskTypesEnum.Picking; //Picking
+      //createAssemblyTask.taskType.role = 'Picking'; //Picking
       createAssemblyTask.taskStatus = new TaskStatus();
-      createAssemblyTask.taskStatus.id = 1; //new
-      createAssemblyTask.taskInfo = updateOrderLineDto.taskInfo;
-      createAssemblyTask.cylinder = updateOrderLineDto.cylinder;
-      await this._taskUserService.create(createAssemblyTask);
+      createAssemblyTask.taskStatus.id = TaskStatusEnum.New; //new
+      createAssemblyTask.company =  new Company()
+      createAssemblyTask.company.id =  companyId;
+
+        // taskUser.user.id = EOrderUser.unAssigned;
+        //       taskUser.taskType = new TaskType();
+        //       taskUser.taskType.id = TaskTypesEnum.Good_received;
+        //       taskUser.taskStatus = new TaskStatus();
+        //       taskUser.taskStatus.id = TaskStatusEnum.New;
+        console.log(createAssemblyTask  )
+      await this.taskUsersRepository.save(createAssemblyTask);
+      await this._taskUserService.updateTaskAssignedOrder(orderLine.order.id);
+    }
+  }
+
+  async updateAssemblyAid(id: string, updateOrderLineAssemblyAidDto: UpdateOrderLineAssemblyAidDto) {
+    const upd = {
+      assemblyAid: updateOrderLineAssemblyAidDto.assemblyAid,
+    };
+    await this.orderLinesRepository.update(id, upd);
+    const orderLine = await this.orderLinesRepository.findOne({
+      where: {
+        id: id,
+      },
+      relations: {
+        order: true,
+      },
+    });
+    if (orderLine) {
+      const createAssemblyTask = new TaskUser();
+      createAssemblyTask.orderid = orderLine.order.id;
+      createAssemblyTask.orderlineId = orderLine.id;
+      createAssemblyTask.DataInfo = orderLine.order.ORDNAME;
+      createAssemblyTask.PartNumber = orderLine.PARTNAME;
+      createAssemblyTask.QTYtoassemble = updateOrderLineAssemblyAidDto.assemblyQty;
+      createAssemblyTask.user = new User();
+      createAssemblyTask.user.id = EOrderUser.unAssigned;
+      createAssemblyTask.taskType = new TaskType();
+      createAssemblyTask.taskType.id = TaskTypesEnum.Assembly; //assembly
+      //createAssemblyTask.taskType.role = TaskTypesEnum.Assembly;
+      createAssemblyTask.taskStatus = new TaskStatus();
+      createAssemblyTask.taskStatus.id = TaskStatusEnum.New; //new
+      createAssemblyTask.taskInfo = updateOrderLineAssemblyAidDto.taskInfo;
+      createAssemblyTask.cylinder = updateOrderLineAssemblyAidDto.cylinder;
+      createAssemblyTask.company =  new Company()
+      createAssemblyTask.company.id =  updateOrderLineAssemblyAidDto.companyId;
+      await this.taskUsersRepository.save(createAssemblyTask);
       await this._taskUserService.updateTaskAssignedOrder(orderLine.order.id);
     }
   }
@@ -173,13 +192,13 @@ export class OrderLinesService {
       createAssemblyTask.PartNumber = orderLine.PARTNAME;
       createAssemblyTask.QTYtoassemble = orderLine.TBALANCE;
       createAssemblyTask.user = new User();
-      createAssemblyTask.user.id = '1000';
+      createAssemblyTask.user.id = EOrderUser.unAssigned;
       createAssemblyTask.taskType = new TaskType();
-      createAssemblyTask.taskType.id = 1; //assembly
-      createAssemblyTask.taskType.role = 'Assembly'; //assembly
+      createAssemblyTask.taskType.id = TaskTypesEnum.Assembly_Order; //assembly
+      //createAssemblyTask.taskType.role = 'Assembly'; //assembly
       createAssemblyTask.taskStatus = new TaskStatus();
-      createAssemblyTask.taskStatus.id = 1; //new
-      await this._taskUserService.create(createAssemblyTask);
+      createAssemblyTask.taskStatus.id = TaskStatusEnum.New; //new
+      await this.taskUsersRepository.save(createAssemblyTask);
       await this._taskUserService.updateTaskAssignedOrder(orderLine.order.id);
     }
   }

@@ -26,7 +26,7 @@ import { catchError, lastValueFrom, map } from "rxjs";
 import { HttpService } from "@nestjs/axios";
 import { CreateTaskUserDto, RootPoPriority } from "./dto/create-task-user.dto";
 import { ConfigService } from "@nestjs/config";
-import { EOrderUser } from "src/orders/order/enums/enum";
+import { EOrderUser, OrderStatusEnum } from "src/orders/order/enums/enum";
 import { TaskGrv } from "../task-grv/entities/task-grv.entity";
 
 @Injectable()
@@ -246,10 +246,10 @@ export class TaskUserService {
     return res;
   }
   async updateTaskAssignedOrder(id: string) {
-    const setOrderstatus = {
-      taskStatus: { id: 1000 }, // return status to in progress
+    const setOrderstatusOrderStatusEnum = {
+      taskStatus: { id: OrderStatusEnum.AssistantPending }, // return status to in progress
     };
-    await this._orderService.updateData(id, setOrderstatus);
+    await this._orderService.updateData(id, setOrderstatusOrderStatusEnum);
     return true;
   }
   async updateorderStatus(id: string) {

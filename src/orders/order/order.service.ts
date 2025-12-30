@@ -347,6 +347,7 @@ export class OrderService {
     };
     await this.orderRepository.update(orderId, res);
     const promisesLines = updateOrderDto.orderLines.map(async (ol) => {
+      console.log(ol)
       const updateOrderLine = {
         Fullfilled: ol.Fullfilled,
         FullfilledSuperViser: ol.FullfilledSuperViser,

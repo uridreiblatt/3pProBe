@@ -1,23 +1,24 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
+import {  IsBoolean, IsNumber, IsString } from "class-validator";
 
 export class CreateOrderLineDto {
-  @ApiProperty({ default: '' })
+  @ApiProperty({ default: "" })
   orderId: string;
-  @ApiProperty({ default: '' })
+  @ApiProperty({ default: "" })
   PARTNAME: string;
-  @ApiProperty({ default: '' })
+  @ApiProperty({ default: "" })
   PARTDES: string;
   @ApiProperty({ default: 0 })
   TBALANCE: number;
-  @ApiProperty({ default: '' })
+  @ApiProperty({ default: "" })
   BARCODE: string;
-  @ApiProperty({ default: '' })
+  @ApiProperty({ default: "" })
   lineRemarks: string;
   @ApiProperty({ default: 0 })
   Fullfilled: number;
   @ApiProperty({ default: 0 })
   prioritykline: number;
-  @ApiProperty({ default: '' })
+  @ApiProperty({ default: "" })
   priorityremarks: string;
   @ApiProperty({ default: 0 })
   FullfilledSuperViser: number;
@@ -33,8 +34,25 @@ export class CreateOrderLineDto {
   assemblyAid: boolean;
   @ApiProperty({ default: 0 })
   ORDI: number;
-  // @ApiProperty({ default: 'na' })
-  // linePhotoBase64: string;
-  // @ApiProperty({ default: 1 })
-  // taskStatusId: number;
+  @ApiProperty({ default: "" })
+  @IsString()
+  companyId: string;
+}
+
+export class CreateOrderLineAssemblyAidDto {
+  @ApiProperty({ default: false })
+  @IsBoolean()
+  assemblyAid:  boolean;
+  @ApiProperty({ default: 1 })
+  @IsNumber()
+  assemblyQty: number;
+  @ApiProperty({ default: "" })
+  @IsString()
+  companyId: string;
+  @ApiProperty({ default: "" })
+  @IsString()
+  cylinder: string;
+  @ApiProperty({ default: "" })
+  @IsString()
+  taskInfo: string;
 }

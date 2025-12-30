@@ -4,10 +4,11 @@ import { OrderLinesController } from './order-lines.controller';
 import { OrderLine } from './entities/order-line.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TaskUserModule } from 'src/Tasks/task-user/task-user.module';
+import { TaskUser } from 'src/Tasks/task-user/entities/task-user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([OrderLine]),
+    TypeOrmModule.forFeature([OrderLine, TaskUser]),
     forwardRef(() => TaskUserModule),
   ],
   controllers: [OrderLinesController],
