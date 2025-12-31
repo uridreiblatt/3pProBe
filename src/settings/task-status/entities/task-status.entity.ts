@@ -16,10 +16,11 @@ export enum TaskStatusEnum
     
     New =1,    
     In_Progress = 2,
-    Complete = 5,
-    Pending=6,
-    Assistant_Pending=1000,
-    Assistant_Complete=1001,
-    Review =1002,
+    Complete = 3,
+    Pending=4,
+    Assistant_Pending=5,
+    Assistant_Complete=6,
+    Review =7,
 
   }
+  

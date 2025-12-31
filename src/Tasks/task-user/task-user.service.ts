@@ -154,12 +154,12 @@ export class TaskUserService {
     const res =  await this.taskUsersRepository.find({
       where: {
         company: { id: companyId },
-        taskStatus: { id: Not(5) },
+        //taskStatus: { id: Not(TaskStatusEnum.Complete) },
       },
       relations: {
         taskStatus: true,
         taskType: true,
-        //user: { userCompany: true },
+        user: true,
       },
       order: { taskPriority: "DESC", updatedAt: "ASC" },
     });
@@ -241,7 +241,13 @@ export class TaskUserService {
   }
 
   async update(id: string, updateTaskUserDto: UpdateTaskUserDto) {
-    const res = await this.taskUsersRepository.update(id, updateTaskUserDto);
+    const { companyId, userId, ...rest } = updateTaskUserDto;
+    const data = {
+      ...rest,
+      user: {id: userId},
+      taskStatus: {id: TaskStatusEnum.Complete}
+    }
+    const res = await this.taskUsersRepository.update(id, data);
     await this.updateorderStatus(id);
     return res;
   }
