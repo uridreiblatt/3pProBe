@@ -29,7 +29,9 @@ export class CompanySetting extends Tablestamp {
   priorityOrderStatus: string;
   @Column({default: '',nullable:true})
   priorityOrderLineStatus: string;
-  
+  @Column({default: false,nullable:true})
+  addtionalPickingInfo: boolean;
+
   @Column({default: ''})
   priorityPoStatus: string;
   @Column({default: ''})

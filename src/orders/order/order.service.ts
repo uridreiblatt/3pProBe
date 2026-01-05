@@ -289,7 +289,7 @@ export class OrderService {
     const Currentorder = await this.orderRepository.findOne({
       where: {
         id: orderId,
-        //taskStatus: { id: Between(1000, 1001) }, // in assistent 1000 asistent pending 1001 asistent complete
+        //taskStatus: { id: Between(1000, 1001) }, // in assistent 5 asistent pending 6 asistent complete
       },
       relations: {
         taskStatus: true,
@@ -354,7 +354,7 @@ export class OrderService {
         lineRemarks: ol.lineRemarks,
         pickingError: ol.pickingError,
         approved: ol.approved,
-        picked: ol.picked,
+        picked: ol.picked,       
       };
       return await this._orderLinesService.update(ol.id, updateOrderLine);
     });

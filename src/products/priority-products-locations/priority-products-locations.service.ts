@@ -6,6 +6,8 @@ import { Repository } from 'typeorm';
 import { PriorityProductsLocation } from './entities/priority-products-location.entity';
 import { Zone } from '../../maintenence/zone/entities/zone.entity';
 import { PriorityProducts } from '../priorityProducts/entities/priorityProducts.entity';
+import { TaskStatusEnum } from 'src/settings/task-status/entities/task-status.entity';
+import { rolesEnum } from 'src/auth/entities/role.enum';
 
 @Injectable()
 export class PriorityProductsLocationsService {
@@ -71,7 +73,7 @@ export class PriorityProductsLocationsService {
       },
     });
   }
-  async findAllByProductName(partName: string) {
+  async findAllByProductName(partName: string) {    
     return await this.priorityProductsLocationsRepo.find({
       where: {
         priorityProducts: { PARTNAME: partName },

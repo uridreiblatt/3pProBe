@@ -203,7 +203,8 @@ export class TaskUserService {
     return await this.taskUsersRepository.findOne({
       where: {
         orderid: orderId,
-        taskStatus: { id: Not(5) }, // 5 complete
+        //taskStatus: { id: Not(5) }, // 5 complete
+        taskStatus: { id: Not(TaskStatusEnum.Complete) }, // 5 complete
       },
       relations: {
         taskStatus: true,
@@ -269,12 +270,13 @@ export class TaskUserService {
     const tasksUser = await this.taskUsersRepository.find({
       where: {
         orderid: taskUser.orderid,
-        taskStatus: { id: Not(Equal(5)) },
+        //taskStatus: { id: Not(Equal(OrderStatusEnum.AssistantPending)) },
+        taskStatus: { id: OrderStatusEnum.AssistantPending },
       },
     });
     if (tasksUser.length > 0) return true;
     const setOrderstatus = {
-      taskStatus: { id: 1001 }, // return status to in progress
+      taskStatus: { id: TaskStatusEnum.In_Progress }, // return status to in progress
     };
     await this._orderService.updateData(taskUser.orderid, setOrderstatus);
     return true;

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString } from "class-validator";
+import { IsBoolean, IsString } from "class-validator";
 
 export class CreateCompanySettingDto {
   @ApiProperty()
@@ -30,4 +30,7 @@ export class CreateCompanySettingDto {
   @ApiProperty()
   @IsString()
   priorityProductStatus:string;
+  @ApiProperty()
+  @IsBoolean()
+  addtionalPickingInfo: boolean;
 }

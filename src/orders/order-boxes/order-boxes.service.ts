@@ -20,7 +20,7 @@ export class OrderBoxesService {
 //    delete createOrderBoxDto['id'];
       const ordB =  new OrderBoxes();
       ordB.boxNo = createOrderBoxDto.boxNo;      
-      ordB.boxNo = createOrderBoxDto.boxweight;
+      ordB.boxweight = createOrderBoxDto.boxweight;
       ordB.boxSize = new Boxsize();
       ordB.boxSize.id = createOrderBoxDto.boxId;
       ordB.order =  new  Order();
