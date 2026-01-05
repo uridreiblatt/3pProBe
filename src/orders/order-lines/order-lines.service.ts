@@ -158,7 +158,7 @@ export class OrderLinesService {
       createAssemblyTask.user = new User();
       createAssemblyTask.user.id = EOrderUser.unAssigned;
       createAssemblyTask.taskType = new TaskType();
-      createAssemblyTask.taskType.id = TaskTypesEnum.Assembly; //assembly
+      createAssemblyTask.taskType.id = TaskTypesEnum.Assembly_Order; //assembly
       //createAssemblyTask.taskType.role = TaskTypesEnum.Assembly;
       createAssemblyTask.taskStatus = new TaskStatus();
       createAssemblyTask.taskStatus.id = TaskStatusEnum.New; //new

@@ -34,14 +34,12 @@ export class OrderController {
     return await this.orderService.findAll(req.user.selectCompany);
   }
   @Get('findAllComplete')
-  @Header('Cache-Control', 'max-age=0')
   //findAll(@Request() req) {
   async findAllComplete() {
     return await this.orderService.findAllComplete();
   }
 
   @Get(':id')
-  @Header('Cache-Control', 'max-age=0')
   async findOne(@Param('id') id: string) {
     return await this.orderService.findOne(id);
   }
