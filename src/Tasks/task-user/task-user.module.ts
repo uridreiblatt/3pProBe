@@ -8,12 +8,14 @@ import { HttpModule } from "@nestjs/axios";
 import { DbLogModule } from "src/db-log/db-log.module";
 import { ConfigModule } from "@nestjs/config";
 import { TaskGrv } from "../task-grv/entities/task-grv.entity";
+import { CompanyModule } from "src/usersCompanies/company/company.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([TaskUser, TaskGrv]),
     forwardRef(() => OrderModule),
     DbLogModule,
+    CompanyModule,
     HttpModule,
     ConfigModule,
   ],

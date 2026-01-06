@@ -1,4 +1,3 @@
-
 import { Tablestamp } from "src/maintenence/boxes/entities/tablestamp.embed";
 import { Company } from "src/usersCompanies/company/entities/company.entity";
 import {
@@ -15,29 +14,32 @@ export class CompanySetting extends Tablestamp {
   @PrimaryGeneratedColumn("uuid")
   id: string; // The primary key will be a UUID string
 
-  @Column({default: ''})
+  @Column({ default: "" })
   priorityApiUrl: string;
-  @Column({default: ''})
+  @Column({ default: "" })
   priorityApiCompany: string;
 
-  @Column({default: ''})
+  @Column({ default: "" })
   priorityApiUser: string;
 
-  @Column({default: ''})
+  @Column({ default: "" })
   priorityApiPassword: string;
-  @Column({default: ''})
+  @Column({ default: "" })
   priorityOrderStatus: string;
-  @Column({default: '',nullable:true})
+  @Column({ default: "", nullable: true })
   priorityOrderLineStatus: string;
-  @Column({default: false,nullable:true})
+  @Column({ default: false, nullable: true })
   addtionalPickingInfo: boolean;
 
-  @Column({default: ''})
+  @Column({ default: false, nullable: true })
+  qcRequired: boolean;
+
+  @Column({ default: "" })
   priorityPoStatus: string;
-  @Column({default: ''})
+  @Column({ default: "" })
   priorityRmaStatus: string;
-  @Column({default: ''})
-  priorityProductStatus:string;
+  @Column({ default: "" })
+  priorityProductStatus: string;
 
   @OneToOne(() => Company, (company) => company.companySetting)
   company: Company;

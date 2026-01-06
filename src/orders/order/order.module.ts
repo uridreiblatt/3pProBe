@@ -7,6 +7,7 @@ import { OrderLinesModule } from 'src/orders/order-lines/order-lines.module';
 import { OrderBasketModule } from 'src/orders/order-basket/order-basket.module';
 import { OrderBoxesModule } from 'src/orders/order-boxes/order-boxes.module';
 import { TaskUserModule } from 'src/Tasks/task-user/task-user.module';
+import { CompanyModule } from 'src/usersCompanies/company/company.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TaskUserModule } from 'src/Tasks/task-user/task-user.module';
     forwardRef(() => OrderLinesModule),
     OrderBoxesModule,
     OrderBasketModule,
+    CompanyModule,
     forwardRef(() => TaskUserModule),
   ],
   controllers: [OrderController],

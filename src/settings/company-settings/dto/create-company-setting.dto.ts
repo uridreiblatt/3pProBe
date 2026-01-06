@@ -33,4 +33,7 @@ export class CreateCompanySettingDto {
   @ApiProperty()
   @IsBoolean()
   addtionalPickingInfo: boolean;
+@ApiProperty()
+  @IsBoolean()
+  qcRequired: boolean;
 }

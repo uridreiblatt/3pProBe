@@ -28,18 +28,20 @@ import { CreateTaskUserDto, RootPoPriority } from "./dto/create-task-user.dto";
 import { ConfigService } from "@nestjs/config";
 import { EOrderUser, OrderStatusEnum } from "src/orders/order/enums/enum";
 import { TaskGrv } from "../task-grv/entities/task-grv.entity";
+import { CompanyService } from "src/usersCompanies/company/company.service";
 
 @Injectable()
 export class TaskUserService {
   private readonly _orderService: OrderService;
   private isLocked = false;
-  private comapny = "cb3007"; // add call from database settings;
+  //private comapny = "cb3007"; // add call from database settings;
   //private urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS`;
   private urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`
   private readonly logger = new Logger(TaskUserService.name);
-  private readonly username: string;
-  private readonly pwd: string;
+  //private readonly username: string;
+  //private readonly pwd: string;
   private readonly _DbLogService: DbLogService;
+  private readonly _CompanyService: CompanyService;
   constructor(
     @InjectRepository(TaskUser)
     private taskUsersRepository: Repository<TaskUser>,
@@ -49,12 +51,14 @@ export class TaskUserService {
     private orderService: OrderService,
     private DbLogService: DbLogService,
     private configService: ConfigService,
-    private httpService: HttpService
+    private httpService: HttpService,
+    private CompanyService: CompanyService
   ) {
     this._orderService = orderService;
     this._DbLogService = DbLogService;
-    this.username = this.configService.get<string>("PRIORITY_USER");
-    this.pwd = this.configService.get<string>("PRIORITY_PWD");
+    // this.username = this.configService.get<string>("PRIORITY_USER");
+    // this.pwd = this.configService.get<string>("PRIORITY_PWD");
+    this._CompanyService = CompanyService;
   }
 
   async getAllNewPoFromPriority(companyId: string): Promise<any> {
@@ -63,11 +67,22 @@ export class TaskUserService {
     }
 
     this.isLocked = true;
+    const resCompantSettings = await this._CompanyService.findOne(companyId);
     const url =
-      `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-      this.comapny +
+      //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+      resCompantSettings.companySetting.priorityApiUrl +
+      resCompantSettings.companySetting.priorityApiCompany +
       this.urlEndPoint;
-    const credentials = btoa(this.username + ":" + this.pwd);
+    // const url =
+    //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+    //   this.comapny +
+    //   this.urlEndPoint;
+    //const credentials = btoa(this.username + ":" + this.pwd);
+    const credentials = btoa(
+      resCompantSettings.companySetting.priorityApiUser +
+        ":" +
+        resCompantSettings.companySetting.priorityApiPassword
+    );
     const basicAuth = "Basic " + credentials;
 
     const data = await lastValueFrom(

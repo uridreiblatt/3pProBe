@@ -11,7 +11,7 @@ import { Company } from 'src/usersCompanies/company/entities/company.entity';
 export class CompanySettingsService {
   constructor(
       @InjectRepository(CompanySetting)
-      private orderRepository: Repository<CompanySetting>,
+      private CompanySettingRepository: Repository<CompanySetting>,
       
     ) {
      
@@ -19,19 +19,19 @@ export class CompanySettingsService {
   async create(createCompanySettingDto: CreateCompanySettingDto) {
     const ins  =  new CompanySetting();
     ins.company =  new Company();
-    ins.company.id = '1';
+    ins.company.id = createCompanySettingDto.companyId;
 
-    return await this.orderRepository.save(ins);
+    return await this.CompanySettingRepository.save(ins);
   }
 
   async findAll(companyId: string) {
-    return await this.orderRepository.find({
+    return await this.CompanySettingRepository.find({
       //where: {company:{id: companyId}}
     });
   }
 
   async findOne(id: string) {
-    return await this.orderRepository.findOne(
+    return await this.CompanySettingRepository.findOne(
       {
       where: {id: id}
   });

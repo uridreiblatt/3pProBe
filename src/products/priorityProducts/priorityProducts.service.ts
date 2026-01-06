@@ -163,11 +163,11 @@ export class priorityProductsService {
   async findChildByParentPart(id: string) {
     const sqlQuery =
 
-      `SELECT     PP.PARTNAME,    PL.location,    PL.stockDate,    PL.quantity,    Z.zoneName ` +
+      `SELECT     PP.PARTNAME, PP.BARCODE,   PL.location,    PL.stockDate,    PL.quantity,    Z.zoneName ` +
 ` FROM priorityProducts AS P LEFT JOIN priorityProductsHierarchy AS C    ON P.PART = C.PART LEFT JOIN priorityProducts AS PP    ON PP.PART = C.SON LEFT JOIN priorityProductsLocation AS PL     ON PL.priorityProductsId = PP.id LEFT JOIN zone AS Z    ON Z.id = PL.zoneId `+
 ` WHERE P.PARTNAME = '`+id+ `'`  +
 ` ORDER BY PP.PARTNAME, Z.priority`;
-console.log(sqlQuery);
+//console.log(sqlQuery);
     const res = await this.PartRepository.query(sqlQuery);
     return res;
   }

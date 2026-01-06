@@ -239,6 +239,12 @@ export class GetOrderInfoService {
             if (updateOrderAddress)
             {
               console.log('update shipping address')
+              const updAddress = {
+                ADDRESS : updateOrderAddress.ADDRESS ,
+                ADDRESS2 : updateOrderAddress.ADDRESS2,
+                ADDRESS3 : updateOrderAddress.ADDRESS3,
+      };
+                await this._orderService.updateData(orders[0].id, updAddress);
             }
 
             const NewOrder = orders.find((or) => {
