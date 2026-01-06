@@ -63,7 +63,7 @@ export class UsersService {
       userName: user.userName,
       userMail: user.userMail,
       userMobile: user.userMobile,            
-      roles: user.usersRoles.map((role)=>{
+      roles: user.usersRoles.sort((a, b) => b.role.id - a.role.id).map((role)=>{
         return        role.role.role}),
         companies: user.userCompany.map((comapny)=>{
         return comapny.company.name}),
