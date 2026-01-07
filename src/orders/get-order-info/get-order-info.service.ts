@@ -32,9 +32,9 @@ import { CompanyService } from 'src/usersCompanies/company/company.service';
 @Injectable()
 export class GetOrderInfoService {
   private readonly logger = new Logger(GetOrderInfoService.name);
-  private readonly username: string;
-  private readonly pwd: string;
-  private readonly priorityShipRushUrl: string;
+  // private readonly username: string;
+  // private readonly pwd: string;
+  // private readonly priorityShipRushUrl: string;
 
   private readonly comapny: string;
   private readonly _orderService: OrderService;
@@ -410,7 +410,7 @@ export class GetOrderInfoService {
   sleep(time: number) {
     return new Promise((resolve) => setTimeout(resolve, time));
   }
-  async createShipRushDelivery(Id: string) {
+  async createShipRushDelivery(Id: string, companyId:string) {
     try {
       let userResult: ShipmentClientRes = {
         isSuccess: 'new',
@@ -463,6 +463,7 @@ export class GetOrderInfoService {
 
       const resPriorityCreateDoc = await this.createPriorityShippingDoc(
         order.ORDNAME,
+        companyId
         //shipRushRes.ShipResponse.ShipTransaction.Shipment.ShipmentNumber || '',
       );
       //console.log('resPriorityCreateDoc', resPriorityCreateDoc);
@@ -474,7 +475,7 @@ export class GetOrderInfoService {
       //console.log(updDOC);
       await this._orderService.updateData(Id, updDOC);
       //return updDOC;
-      const ShipRushXml = await this.BuilddataToShipRush(order, shp);
+      const ShipRushXml = await this.BuilddataToShipRush(order, shp, companyId);
       //console.log('ShipRushXml', ShipRushXml);
       const shipRushResXml = await this.sendToShipRush(
         ShipRushXml,
@@ -603,6 +604,7 @@ export class GetOrderInfoService {
         //order.ORDNAME,
         //resPriorityCreateDoc['DOC'].toString()
         resPriorityCreateDoc['DOC'].toString(),
+        companyId
       );
       //console.log('resPriorityGetDoc', resPriorityGetDoc.value);
       const docData = resPriorityGetDoc.value
@@ -615,6 +617,7 @@ export class GetOrderInfoService {
         docData,
         //'shipRushRes.ShipResponse.ShipTransaction.Shipment.ShipmentNumber',
         '',
+        companyId
       );
       //console.log('resPriorityUpdateDoc', resPriorityUpdateDoc);
       // if (userResult.isSuccess === 'true') {
@@ -641,7 +644,7 @@ export class GetOrderInfoService {
     //return shipRushRes;
   }
 
-  async createPrioritySh(Id: string) {
+  async createPrioritySh(Id: string, companyId: string) {
     try {
       let userResult: ShipmentClientRes = {
         isSuccess: 'new',
@@ -694,6 +697,7 @@ export class GetOrderInfoService {
 
       const resPriorityCreateDoc = await this.createPriorityShippingDoc(
         order.ORDNAME,
+        companyId
       );
       //console.log('resPriorityCreateDoc', resPriorityCreateDoc);
       const updDOC = {
@@ -714,6 +718,7 @@ export class GetOrderInfoService {
 
       const resPriorityGetDoc = await this.GetPriorityShippingDoc(
         resPriorityCreateDoc['DOC'].toString(),
+        companyId
       );
       //console.log('resPriorityGetDoc', resPriorityGetDoc.value);
       const docData = resPriorityGetDoc.value
@@ -726,6 +731,7 @@ export class GetOrderInfoService {
         docData,
         //'shipRushRes.ShipResponse.ShipTransaction.Shipment.ShipmentNumber',
         '',
+        companyId
       );
       //console.log('resPriorityUpdateDoc', resPriorityUpdateDoc);
       userResult = {
@@ -753,13 +759,28 @@ export class GetOrderInfoService {
 
     //return shipRushRes;
   }
-  async createPriorityShippingDoc(OrdName: string) {
+  async createPriorityShippingDoc(OrdName: string, companyId: string) {
     //https://win01.maclocks.com/odata/Priority/tabula.ini/cb3007/DOCUMENTS_D
+    // const url =
+    //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+    //   this.comapny +
+    //   `/DOCUMENTS_D`;
+    // const credentials = btoa(this.username + ':' + this.pwd);
+
+
+
+const resCompantSettings = await this._CompanyService.findOne(companyId)
+
     const url =
-      `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-      this.comapny +
+      //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+      resCompantSettings.companySetting.priorityApiUrl +
+      resCompantSettings.companySetting.priorityApiCompany +
       `/DOCUMENTS_D`;
-    const credentials = btoa(this.username + ':' + this.pwd);
+    //url = `https://win01.maclocks.com/odata/Priority/tabula.ini/clpln18/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,STCODE,STDES,ORDSTATUSDES&$top=200&$filter=ORDNAME eq 'SO24E04168'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
+   
+    const credentials = btoa(resCompantSettings.companySetting.priorityApiUser + ':' + resCompantSettings.companySetting.priorityApiPassword);
+
+
     const basicAuth = 'Basic ' + credentials;
     const dt = {
       ORDNAME: OrdName,
@@ -789,15 +810,29 @@ export class GetOrderInfoService {
     return data;
   }
 
-  async GetPriorityShippingDoc(DOC: string): Promise<any> {
+  async GetPriorityShippingDoc(DOC: string, companyId: string): Promise<any> {
+    // const url =
+    //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+    //   this.comapny +
+    //   `/DOCUMENTS_D?$filter=DOC eq ` +
+    //   DOC +
+    //   `&$expand=TRANSORDER_D_SUBFORM`;
+    // //console.log(url);
+    // const credentials = btoa(this.username + ':' + this.pwd);
+
+
+    const resCompantSettings = await this._CompanyService.findOne(companyId)
+
+
     const url =
-      `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-      this.comapny +
-      `/DOCUMENTS_D?$filter=DOC eq ` +
+      //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+      resCompantSettings.companySetting.priorityApiUrl +
+      resCompantSettings.companySetting.priorityApiCompany +
+         `/DOCUMENTS_D?$filter=DOC eq ` +
       DOC +
-      `&$expand=TRANSORDER_D_SUBFORM`;
-    //console.log(url);
-    const credentials = btoa(this.username + ':' + this.pwd);
+      `&$expand=TRANSORDER_D_SUBFORM`;    
+   
+    const credentials = btoa(resCompantSettings.companySetting.priorityApiUser + ':' + resCompantSettings.companySetting.priorityApiPassword);
     const basicAuth = 'Basic ' + credentials;
     const data = await lastValueFrom(
       this.httpService
@@ -824,18 +859,23 @@ export class GetOrderInfoService {
     order: Order,
     ExisitingOrdName: any,
     trackingNumber: any,  
+    companyId: string,
   ) {
-    console.log('check company id !!!!!!!!!!!!!!!');
-    console.log('check company id!!!!!!!!!!!!!!!');
-    console.log('check company id!!!!!!!!!!!!!!!');
-    console.log('check company id!!!!!!!!!!!!!!!');
-    console.log('check company idv');
+    const resCompantSettings = await this._CompanyService.findOne(companyId)
+    
 
-    const url =
-      `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-      this.comapny +
-      `/DOCUMENTS_D`;
-    const credentials = btoa(this.username + ':' + this.pwd);
+    // const url =
+    //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+    //   this.comapny +
+    //   `/DOCUMENTS_D`;
+    // const credentials = btoa(this.username + ':' + this.pwd);
+     const url =
+      //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+      resCompantSettings.companySetting.priorityApiUrl +
+      resCompantSettings.companySetting.priorityApiCompany +
+         `/DOCUMENTS_D`;  
+   
+    const credentials = btoa(resCompantSettings.companySetting.priorityApiUser + ':' + resCompantSettings.companySetting.priorityApiPassword);
     const basicAuth = 'Basic ' + credentials;
     const CqauntData = await this._PartCqauntService.findAll('1');
     const dt = {
@@ -992,7 +1032,9 @@ export class GetOrderInfoService {
   async BuilddataToShipRush(
     order: Order,
     shipmentPriority: ShipmentPriority,
+    companyId: string
   ): Promise<string> {
+    const resCompantSettings = await this._CompanyService.findOne(companyId)
     const shipRushConfigs = await this._shipRushService.findOneBySite(this.comapny);
     let shipRushConfig = null;
     if (shipRushConfigs) {
@@ -1024,7 +1066,8 @@ export class GetOrderInfoService {
             HasDeliveryNotification: 1,
             DeliveryNotificationEmail: order.FAX,
             HasShipNotification: 1,
-            PostbackUrl: this.priorityShipRushUrl, //'https://compl.com',
+            //PostbackUrl: this.priorityShipRushUrl, //'https://compl.com',
+            PostbackUrl: resCompantSettings.companySetting.shipmentCallBack,
             PostbackContentType: 'Unknown',
             UnitsOfMeasureLinear: shipRushConfig.uomLength, //IN
             CustomerReference: order.ORDNAME,

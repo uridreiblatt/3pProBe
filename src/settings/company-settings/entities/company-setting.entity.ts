@@ -33,6 +33,14 @@ export class CompanySetting extends Tablestamp {
 
   @Column({ default: false, nullable: true })
   qcRequired: boolean;
+  @Column({ default: '', nullable: true })
+  shipmentUrl: string;
+  @Column({ default: '', nullable: true })
+  shipmentUser: string;
+  @Column({ default: '', nullable: true })
+  shipmentPassword: string;
+  @Column({ default: '', nullable: true })
+  shipmentCallBack: string;
 
   @Column({ default: "" })
   priorityPoStatus: string;

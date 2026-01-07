@@ -14,16 +14,16 @@ export class GetOrderInfoController {
   }
 
   @Patch('createShipRushDelivery/:orderId')
-  async createShipRushDelivery(
+  async createShipRushDelivery(@Request() req,
     @Param('orderId') orderId: string,
   ): Promise<any> {
-    const res = await this.getOrderInfoService.createShipRushDelivery(orderId);
+    const res = await this.getOrderInfoService.createShipRushDelivery(orderId, req.user.selectCompany);
     return res;
   }
 
   @Patch('createPrioritySh/:orderId')
-  async createPrioritySh(@Param('orderId') orderId: string): Promise<any> {
-    const res = await this.getOrderInfoService.createPrioritySh(orderId);
+  async createPrioritySh(@Request() req,@Param('orderId') orderId: string,): Promise<any> {
+    const res = await this.getOrderInfoService.createPrioritySh(orderId, req.user.selectCompany);
     return res;
   }
 

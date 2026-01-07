@@ -8,7 +8,7 @@ export class CreateCompanySettingDto {
   @ApiProperty()
   @IsString()
   priorityApiCompany: string;
-  
+
   @ApiProperty()
   @IsString()
   priorityApiUser: string;
@@ -29,11 +29,23 @@ export class CreateCompanySettingDto {
   companyId: string;
   @ApiProperty()
   @IsString()
-  priorityProductStatus:string;
+  priorityProductStatus: string;
   @ApiProperty()
   @IsBoolean()
   addtionalPickingInfo: boolean;
-@ApiProperty()
+  @ApiProperty()
   @IsBoolean()
   qcRequired: boolean;
+  @ApiProperty()
+  @IsString()
+  shipmentUrl: string;
+  @ApiProperty()
+  @IsString()
+  shipmentUser: string;
+  @ApiProperty()
+  @IsString()
+  shipmentPassword: string;
+  @ApiProperty()
+  @IsString()
+  shipmentCallBack: string;
 }
