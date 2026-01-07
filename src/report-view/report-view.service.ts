@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 
-import { ReportView } from './entities/report-view.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { ReportView } from "./entities/report-view.entity";
+import { Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
 export class ReportViewService {
   constructor(
     @InjectRepository(ReportView)
-    private reportViewRepository: Repository<ReportView>,
+    private reportViewRepository: Repository<ReportView>
   ) {}
 
   async findAll() {
@@ -16,9 +16,9 @@ export class ReportViewService {
   }
 
   async DashBoard() {
-    const queryTasks = 'SELECT  * FROM  [V_DashBoardTasks] ';
+    const queryTasks = "SELECT  * FROM  [V_DashBoardTasks] ";
     const dataTasks = await this.reportViewRepository.query(queryTasks);
-    const queryOrders = 'SELECT  * FROM  [V_DashBoardOrders] ';
+    const queryOrders = "SELECT  * FROM  [V_DashBoardOrders] ";
     const dataOrders = await this.reportViewRepository.query(queryOrders);
     const allData = {
       tasks: dataTasks,
@@ -28,15 +28,25 @@ export class ReportViewService {
   }
 
   async findOne(id: string) {
-    const queryViewFields =
-      'SELECT c.name   FROM [sys].[all_views] v ' +
-      ' inner join [sys].[all_columns] c on v.object_id = c.object_id ' +
-      " where v.name ='" +
-      id +
-      "'";
-    const queryView = 'SELECT  * FROM ' + id;
-    const dtFields = await this.reportViewRepository.query(queryViewFields);
-    const data = await this.reportViewRepository.query(queryView);
+    const queryViewFields = `
+  SELECT 
+  COLUMN_NAME
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_SCHEMA = DATABASE()
+  AND TABLE_NAME = ?
+ORDER BY ORDINAL_POSITION;`;
+
+    const dtFields = await this.reportViewRepository.query(queryViewFields, [
+      id,
+    ]);
+
+    const sql = `
+  SELECT *
+  FROM ${id}
+  WHERE comapnyId = ?`;
+
+    const data = await this.reportViewRepository.query(sql, ["aaa-aaa-aaa"]);
+
     const allData = {
       fields: dtFields,
       data: data,
