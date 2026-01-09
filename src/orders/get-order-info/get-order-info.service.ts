@@ -98,7 +98,7 @@ export class GetOrderInfoService {
       //`/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq 'In Progress'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
     //url = `https://win01.maclocks.com/odata/Priority/tabula.ini/clpln18/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,STCODE,STDES,ORDSTATUSDES&$top=200&$filter=ORDNAME eq 'SO24E04168'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
    
-    console.log(url)
+
     const credentials = btoa(resCompantSettings.companySetting.priorityApiUser + ':' + resCompantSettings.companySetting.priorityApiPassword);
     const basicAuth = 'Basic ' + credentials;
     const data = await lastValueFrom(
@@ -1158,12 +1158,7 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
     let FinalXml = `${Headertmp}${ret}</Request>`;
     FinalXml = FinalXml.replace('<root>', '');
     FinalXml = FinalXml.replace('</root>', '');
-    console.log(
-      '******shipRush Xml***********',
-      '*********************',
-      FinalXml,
-      '*****************',
-    );
+    console.log(      '******shipRush Xml***********',      '*********************',      FinalXml,      '*****************',    );
     return FinalXml;
   }
 

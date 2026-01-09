@@ -66,10 +66,7 @@ export class priorityProductsService {
     );
     const orderInfo: any = data;
     //this._DbLogService.create({
-    console.log(
-      "priority parts ",
-      "start import parts " + orderInfo.value.length.toString()
-    );
+    console.log(      "priority parts ",      "start import parts " + orderInfo.value.length.toString()    );
     let LinesInserted = 0;
 
     orderInfo.value.forEach(async (element) => {

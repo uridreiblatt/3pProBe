@@ -129,7 +129,7 @@ export class OrderLinesService {
         //       taskUser.taskType.id = TaskTypesEnum.Good_received;
         //       taskUser.taskStatus = new TaskStatus();
         //       taskUser.taskStatus.id = TaskStatusEnum.New;
-        console.log(createAssemblyTask  )
+
       await this.taskUsersRepository.save(createAssemblyTask);
       await this._taskUserService.updateTaskAssignedOrder(orderLine.order.id);
     }

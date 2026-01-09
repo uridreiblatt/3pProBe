@@ -117,7 +117,7 @@ export class PriorityProductsLocationsService {
     // if (updatePriorityProductsLocationDto.stockDate?.toString() === '') {
     //   updatePriorityProductsLocationDto.stockDate = null;
     // }
-    console.log(id, updatePriorityProductsLocationDto)
+
     const upt =  new PriorityProductsLocation();
     upt.location = updatePriorityProductsLocationDto.location;
     upt.quantity = updatePriorityProductsLocationDto.quantity;

@@ -332,7 +332,7 @@ export class OrderService {
           const resCompantSettings = await this._companyService.findOne(
             updateOrderDto.companyId
           );
-          console.log("resCompantSettings", resCompantSettings);
+    
           if (!resCompantSettings.companySetting.qcRequired) {
                   newRole = newRole + 1; // add qc stage line 341 will set it to shipper
           }

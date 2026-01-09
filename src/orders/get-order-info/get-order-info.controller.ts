@@ -8,7 +8,6 @@ export class GetOrderInfoController {
 
   @Get()
   async GetAll(@Request() req): Promise<boolean> {
-    console.log('request user', req.user.selectCompany);
     const res = await this.getOrderInfoService.GetAll(req.user.selectCompany);
     return res;
   }

@@ -68,7 +68,7 @@ export class TaskUserService {
 
     this.isLocked = true;
     const resCompantSettings = await this._CompanyService.findOne(companyId);
-    console.log(resCompantSettings.companySetting)
+
     //const urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`;
     const urlEndPoint = `/PORDERS?$filter=STATDES eq  '${resCompantSettings.companySetting.priorityPoStatus}' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`;
     const url =
@@ -141,7 +141,7 @@ export class TaskUserService {
 
         if (foundOne === null) {
           LinesInserted += 1;
-          //console.log(foundOne);
+ 
           const newPo = await this.taskUsersRepository.save(taskUser);
           element.PORDERITEMS_SUBFORM.forEach(async (subForm) => {
             const ins = new TaskGrv();
@@ -173,7 +173,7 @@ export class TaskUserService {
     const res = await this.taskUsersRepository.find({
       where: {
         company: { id: companyId },
-        //taskStatus: { id: Not(TaskStatusEnum.Complete) },
+        taskStatus: { id: Not(TaskStatusEnum.Complete) },
       },
       relations: {
         taskStatus: true,
@@ -195,7 +195,7 @@ export class TaskUserService {
   }
 
   async findOne(id: string) {
-    console.log(id);
+
     const res = await this.taskUsersRepository.findOne({
       where: {
         id: id,
@@ -291,7 +291,8 @@ export class TaskUserService {
       where: {
         orderid: taskUser.orderid,
         //taskStatus: { id: Not(Equal(OrderStatusEnum.AssistantPending)) },
-        taskStatus: { id: OrderStatusEnum.AssistantPending },
+        taskStatus: { id: Not(Equal(OrderStatusEnum.Complete)) },
+        
       },
     });
     if (tasksUser.length > 0) return true;
