@@ -94,9 +94,11 @@ export class GetOrderInfoService {
       //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
-      `/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq 'In Progress'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
+      `/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq '${resCompantSettings.companySetting.priorityOrderStatus}'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
+      //`/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq 'In Progress'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
     //url = `https://win01.maclocks.com/odata/Priority/tabula.ini/clpln18/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,STCODE,STDES,ORDSTATUSDES&$top=200&$filter=ORDNAME eq 'SO24E04168'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
    
+    console.log(url)
     const credentials = btoa(resCompantSettings.companySetting.priorityApiUser + ':' + resCompantSettings.companySetting.priorityApiPassword);
     const basicAuth = 'Basic ' + credentials;
     const data = await lastValueFrom(
@@ -133,9 +135,9 @@ export class GetOrderInfoService {
       ) {
         const createOrderDto: CreateOrderDto = new CreateOrderDto();
         createOrderDto.CUSTNO = element.CUSTNAME;
-        createOrderDto.CUSTNAME = element.CDES;
+        createOrderDto.CUSTNAME = element.CDES || '';
         createOrderDto.ORDNAME = element.ORDNAME;
-        createOrderDto.STCODE = element.STCODE;
+        createOrderDto.STCODE = element.STCODE || '';
         createOrderDto.DETAILS = element.DETAILS;
         createOrderDto.accountId = element.FBES_ACCOUNT;
         createOrderDto.accountZip = element.FBES_ZIP;
@@ -145,10 +147,10 @@ export class GetOrderInfoService {
           createOrderDto.STCODE,
         );
         createOrderDto.shipmentOrder = shp?.priority || false;
-        createOrderDto.STDES = element.STDES;
+        createOrderDto.STDES = element.STDES || '';
         createOrderDto.FAX = element.SHIPTO2_SUBFORM?.FAX;
-        createOrderDto.NAME = element.SHIPTO2_SUBFORM?.NAME;
-        createOrderDto.CUSTDES = element.SHIPTO2_SUBFORM?.CUSTDES;
+        createOrderDto.NAME = element.SHIPTO2_SUBFORM?.NAME || '';
+        createOrderDto.CUSTDES = element.SHIPTO2_SUBFORM?.CUSTDES|| '';
         createOrderDto.PHONENUM = element.SHIPTO2_SUBFORM?.PHONENUM;
         createOrderDto.ADDRESS = element.SHIPTO2_SUBFORM?.ADDRESS;
         createOrderDto.ADDRESS2 = element.SHIPTO2_SUBFORM?.ADDRESS2;
@@ -185,7 +187,7 @@ export class GetOrderInfoService {
         createOrderDto.ordertext = tmpText;
         createOrderDto.CURDATE = element.CURDATE;
         createOrderDto.userId = EOrderUser.unAssigned;
-        createOrderDto.taskStatusId = 1;//EOrderUser.unAssigned;
+        createOrderDto.taskStatusId = OrderStatusEnum.New;//EOrderUser.unAssigned;
         let checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {
           if (ln.TBALANCE > 0 )
             return true;

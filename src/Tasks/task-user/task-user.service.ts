@@ -36,7 +36,7 @@ export class TaskUserService {
   private isLocked = false;
   //private comapny = "cb3007"; // add call from database settings;
   //private urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS`;
-  private urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`
+  
   private readonly logger = new Logger(TaskUserService.name);
   //private readonly username: string;
   //private readonly pwd: string;
@@ -68,11 +68,15 @@ export class TaskUserService {
 
     this.isLocked = true;
     const resCompantSettings = await this._CompanyService.findOne(companyId);
+    console.log(resCompantSettings.companySetting)
+    //const urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`;
+    const urlEndPoint = `/PORDERS?$filter=STATDES eq  '${resCompantSettings.companySetting.priorityPoStatus}' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`;
     const url =
       //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
-      this.urlEndPoint;
+      urlEndPoint;
+      console.log(url)
     // const url =
     //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
     //   this.comapny +
@@ -129,7 +133,7 @@ export class TaskUserService {
         taskUser.taskStatus = new TaskStatus();
         taskUser.taskStatus.id = TaskStatusEnum.New;
         taskUser.company = new Company();
-        taskUser.company.id = "1";
+        taskUser.company.id = companyId;
 
         const foundOne = await this.taskUsersRepository.findOne({
           where: { orderName: taskUser.orderName },
@@ -143,12 +147,12 @@ export class TaskUserService {
             const ins = new TaskGrv();
             ins.taskUser = new TaskUser();
             ins.taskUser.id = EOrderUser.unAssigned;
-            ins.PartNumber= subForm.PARTNAME;
-            ins.DataInfo= subForm.PDES;
+            ins.PartNumber = subForm.PARTNAME;
+            ins.DataInfo = subForm.PDES;
             //ins.Location= subForm.CDES;
             ins.Total = Number(subForm.TQUANT);
-            ins.taskUser =  new TaskUser();
-            ins.taskUser.id = newPo.id;            
+            ins.taskUser = new TaskUser();
+            ins.taskUser.id = newPo.id;
             await this.taskGrvRepository.save(ins);
           });
         }
@@ -166,7 +170,7 @@ export class TaskUserService {
   }
 
   async findAll(companyId: string) {
-    const res =  await this.taskUsersRepository.find({
+    const res = await this.taskUsersRepository.find({
       where: {
         company: { id: companyId },
         //taskStatus: { id: Not(TaskStatusEnum.Complete) },
@@ -182,9 +186,9 @@ export class TaskUserService {
       const { user, taskStatus, taskType, ...rest } = task;
       return {
         ...rest,
-        userName: user ? `${user.userName}` : 'Unassigned',
-        taskType: taskType ? `${taskType.role }` : 'Unassigned',
-        taskStatus: taskStatus ? `${taskStatus.status }` : 'Unassigned',
+        userName: user ? `${user.userName}` : "Unassigned",
+        taskType: taskType ? `${taskType.role}` : "Unassigned",
+        taskStatus: taskStatus ? `${taskStatus.status}` : "Unassigned",
       };
     });
     return result;
@@ -199,19 +203,18 @@ export class TaskUserService {
       relations: {
         taskStatus: true,
         taskType: true,
-        user: true ,
+        user: true,
       },
     });
-    
-      const { user, taskStatus, taskType, ...rest } = res;
-      return {
-        ...rest,
-        //...user,
-        userName: user ? `${user.userName}` : 'Unassigned',
-        taskType: taskType ? `${taskType.role }` : 'Unassigned',
-        taskStatus: taskStatus ? `${taskStatus.status }` : 'Unassigned',
-      };    
-    
+
+    const { user, taskStatus, taskType, ...rest } = res;
+    return {
+      ...rest,
+      //...user,
+      userName: user ? `${user.userName}` : "Unassigned",
+      taskType: taskType ? `${taskType.role}` : "Unassigned",
+      taskStatus: taskStatus ? `${taskStatus.status}` : "Unassigned",
+    };
   }
 
   async findTasksOpenByOrder(orderId: string) {
@@ -260,9 +263,9 @@ export class TaskUserService {
     const { companyId, userId, ...rest } = updateTaskUserDto;
     const data = {
       ...rest,
-      user: {id: userId},
-      taskStatus: {id: TaskStatusEnum.Complete}
-    }
+      user: { id: userId },
+      taskStatus: { id: TaskStatusEnum.Complete },
+    };
     const res = await this.taskUsersRepository.update(id, data);
     await this.updateorderStatus(id);
     return res;
@@ -281,7 +284,9 @@ export class TaskUserService {
         id: id,
       },
     });
-    if (taskUser === undefined || taskUser.orderlineId === null) return true;
+    if (!taskUser || taskUser.orderlineId === null) {
+      return true;
+    }
     const tasksUser = await this.taskUsersRepository.find({
       where: {
         orderid: taskUser.orderid,

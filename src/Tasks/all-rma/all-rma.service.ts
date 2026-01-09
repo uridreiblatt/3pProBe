@@ -15,7 +15,6 @@ import { RootRmaPriority } from "./dto/create-all-rma.dto";
 @Injectable()
 export class AllRmaService {
   private isLocked = false;
-  private urlEndPoint = `/DOCUMENTS_m?$filter=STATDES eq 'Open' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
   private readonly logger = new Logger(AllRmaService.name);
   private readonly _CompanyService: CompanyService;
   private readonly _DbLogService: DbLogService;
@@ -37,12 +36,15 @@ export class AllRmaService {
     }
     this.isLocked = true;
     const resCompantSettings = await this._CompanyService.findOne(companyId);
+    //const urlEndPoint = `/DOCUMENTS_m?$filter=STATDES eq 'Open' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
+    const urlEndPoint = `/DOCUMENTS_m?$filter=STATDES eq '${resCompantSettings.companySetting.priorityRmaStatus}' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
+  
     
     const url =
       //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
-      this.urlEndPoint;
+      urlEndPoint;
      
     const credentials = btoa(
       resCompantSettings.companySetting.priorityApiUser +
