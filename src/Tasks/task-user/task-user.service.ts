@@ -264,8 +264,9 @@ export class TaskUserService {
     const data = {
       ...rest,
       user: { id: userId },
-      taskStatus: { id: TaskStatusEnum.Complete },
+      //taskStatus: { id: TaskStatusEnum.Complete },
     };
+    console.log("update task user ", updateTaskUserDto,'data',data);
     const res = await this.taskUsersRepository.update(id, data);
     await this.updateorderStatus(id);
     return res;

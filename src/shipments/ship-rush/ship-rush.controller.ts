@@ -15,7 +15,7 @@ export class ShipRushController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return await this.shipRushService.findOne(+id);
+    return await this.shipRushService.findOne(id);
   }
   // @Post()
   // async handleXml(@Req() req: Request) {
@@ -69,12 +69,12 @@ export class ShipRushController {
     
       @Patch(':id')
       update(@Param('id') id: string, @Body() shipRushDto: ShipRushDto) {
-        return this.shipRushService.update(+id, shipRushDto);
+        return this.shipRushService.update(id, shipRushDto);
       }
     
       @Delete(':id')
       remove(@Param('id') id: string) {
-        return this.shipRushService.remove(+id);
+        return this.shipRushService.remove(id);
       }
 
 }

@@ -2,8 +2,8 @@ import { Company } from 'src/usersCompanies/company/entities/company.entity';
 import { PrimaryGeneratedColumn, Column, Entity, ManyToOne } from 'typeorm';
 @Entity('ShipRush')
 export class ShipRush {
-  @PrimaryGeneratedColumn()
-  id: number;
+ @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column({ nullable: false })
   siteName: string;
@@ -15,17 +15,17 @@ export class ShipRush {
   upsAcountNumber: string;
   @Column()
   accountId: string;
-  @Column()
+  @Column({ nullable: true , default: ''})
   PickupReadyTime: string;
   @Column()
   LatestPickupTime: string;
-  @Column()
+  @Column({ nullable: true , default: ''})
   FirstName: string;
   @Column()
   Company: string;
   @Column()
   Address1: string;
-  @Column()
+  @Column({ nullable: true , default: ''})
   Address2: string;
   @Column({ name: 'City' })
   City: string;

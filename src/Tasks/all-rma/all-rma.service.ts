@@ -204,16 +204,23 @@ export class AllRmaService {
     return resAll;
   }
 
-  async update(id: number, updateAllRmaDto: any) {
-    let allRma = new AllRma();
-    allRma = updateAllRmaDto;
-    allRma.user = new User();
-    allRma.user.id = "1";
-    allRma.taskStatus = new TaskStatus();
-    allRma.taskStatus.id = updateAllRmaDto.taskStatusId;
-    allRma.company = new Company();
-    allRma.company.id = updateAllRmaDto.companyId;
-    return await this.allRmaRepository.update(id, updateAllRmaDto);
+  async update(id: string, updateAllRmaDto: any) {
+    // let allRma = new AllRma();
+    // allRma = updateAllRmaDto;
+    // allRma.user = new User();
+    // allRma.user.id = "1";
+    // allRma.taskStatus = new TaskStatus();
+    // allRma.taskStatus.id = updateAllRmaDto.taskStatusId;
+    // allRma.company = new Company();
+    // allRma.company.id = updateAllRmaDto.companyId;
+
+    const { companyId, userId, ...rest } = updateAllRmaDto;
+    const data = {
+      ...rest,
+      user: { id: userId },
+      //taskStatus: { id: TaskStatusEnum.Complete },
+    }; 
+    return await this.allRmaRepository.update(id, data);
   }
 
   async remove(id: string) {

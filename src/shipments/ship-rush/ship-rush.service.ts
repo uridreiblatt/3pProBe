@@ -43,7 +43,7 @@ export class ShipRushService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.ShipRushRepository.find({
       where: {
         id: id,
@@ -136,7 +136,7 @@ export class ShipRushService {
     return await this.ShipRushRepository.save(ins);
 
   }
-  async update(id: number ,shipRushDto: ShipRushDto) {
+  async update(id: string ,shipRushDto: ShipRushDto) {
     const ins = new ShipRush();
     ins.Address1 = shipRushDto.Address1;
     ins.Address2 = shipRushDto.Address2;
@@ -158,7 +158,7 @@ export class ShipRushService {
     ins.company.id = shipRushDto.companyId;
     return await this.ShipRushRepository.update(id, ins);
   }
-  async remove(id: number) {
+  async remove(id: string) {
 
     return await this.ShipRushRepository.delete(id);
   }

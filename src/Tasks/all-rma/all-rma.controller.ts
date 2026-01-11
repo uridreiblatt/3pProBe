@@ -34,7 +34,7 @@ export class AllRmaController {
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateAllRmaDto: UpdateAllRmaDto) {
-    return await this.allRmaService.update(+id, updateAllRmaDto);
+    return await this.allRmaService.update(id, updateAllRmaDto);
   }
 
   @Delete(':id')
