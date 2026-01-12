@@ -57,4 +57,6 @@ export class JwtDetails {
   companies: comapny[];
   @ApiProperty()
   roles: role[];
+  @ApiProperty()
+  addtionalPickingInfo: boolean;
 }

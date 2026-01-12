@@ -17,14 +17,16 @@ export class OrderBoxesService {
     private OrderBoxesRepository: Repository<OrderBoxes>,
   ) {}
   async create(createOrderBoxDto: CreateOrderBoxDto) {
+    
 //    delete createOrderBoxDto['id'];
       const ordB =  new OrderBoxes();
-      ordB.boxNo = createOrderBoxDto.boxNo;      
+      //ordB.boxNo = createOrderBoxDto.boxNo;      
       ordB.boxweight = createOrderBoxDto.boxweight;
       ordB.boxSize = new Boxsize();
       ordB.boxSize.id = createOrderBoxDto.boxId;
       ordB.order =  new  Order();
-      ordB.order.id = createOrderBoxDto.orderId;      
+      ordB.order.id = createOrderBoxDto.orderId;    
+      ordB.lineRemarks = createOrderBoxDto.lineRemarks;  
 
     return await this.OrderBoxesRepository.save(ordB);
   }
@@ -65,6 +67,7 @@ export class OrderBoxesService {
         id:ordBox.id,
         boxweight: ordBox.boxweight,
         boxNo: ordBox.boxNo,
+        lineRemarks: ordBox.lineRemarks,
         box: {
           id: ordBox.boxSize.id,
           sizeDesc: ordBox.boxSize.sizeDesc

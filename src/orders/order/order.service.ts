@@ -113,7 +113,7 @@ export class OrderService {
     //   'SELECT * FROM v_orders v order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) ';
     // return await this.orderRepository.query(queryViewFields);
     const res = await this.orderRepository.find({
-      where: { taskStatus: { id: Not(3) }, comapny: { id: companyId } },
+      where: { taskStatus: { id: Not(OrderStatusEnum.Complete) }, comapny: { id: companyId } },
       relations: {
         taskStatus: true,
         orderLines: true,

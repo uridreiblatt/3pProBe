@@ -28,6 +28,7 @@ export class AuthService {
       selectCompany: data.userComapny,
       roles: data.roles,
       companies:  data.companies,
+      addtionalPickingInfo: data.addtionalPickingInfo,
     };
     return {
       access_token: await this.jwtService.signAsync(payload),

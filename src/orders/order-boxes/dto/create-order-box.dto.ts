@@ -8,10 +8,10 @@ export class CreateOrderBoxDto {
   @ApiProperty({ default: 1 })
   @IsNumber()
   boxweight: number;
-  @IsNumber()
-  @ApiProperty({ default: 1 })
-  @IsNumber()
-  boxNo: number;
+  //@IsNumber()
+  // @ApiProperty({ default: 1 })
+  // @IsNumber()
+  // boxNo: number;
   @ApiProperty({ default: '' })
   @IsString()
   boxId: string ;
@@ -21,4 +21,7 @@ export class CreateOrderBoxDto {
    @ApiProperty({ default: '' })
    @IsString()
   orderId: string;
+  @ApiProperty({ default: '' })
+   @IsString()
+  lineRemarks: string;
 }

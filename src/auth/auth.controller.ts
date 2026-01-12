@@ -58,6 +58,8 @@ export class AuthController {
       return { id: o.company.id, name: o.company.name };
     });
 
+jwtDetails.addtionalPickingInfo = resUser.userCompany[0].company.companySetting.addtionalPickingInfo;
+        
     const jwtToken = await this.authService.signAsyncCookie(jwtDetails);
     response.cookie("access_token", jwtToken.access_token, {
       httpOnly: true,
@@ -78,6 +80,7 @@ export class AuthController {
         return { id: o.role.id, role: o.role.role };
       }),
       userSelectedCompany: resUser.userCompany[0]?.company.id || 0,
+      addtionalPickingInfo: resUser.userCompany[0]?.company.companySetting.addtionalPickingInfo,
       userRoleName: resUser.usersRoles.find((ur) => {
         if (ur.role.id === maxValueOfY) return true;
       }).role.role,
@@ -151,6 +154,7 @@ export class AuthController {
           };
         }),
       userSelectedCompany: switchCompanyDto.companyId,
+      addtionalPickingInfo: resUser.userCompany[0]?.company.companySetting.addtionalPickingInfo,
       userRoleName: resUser.usersRoles.find((ur) => {
         if (ur.role.id === maxValueOfY) return true;
       }).role.role,
