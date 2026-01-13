@@ -18,7 +18,7 @@ import { OrderLinesService } from "src/orders/order-lines/order-lines.service";
 import { OrderBoxesService } from "src/orders/order-boxes/order-boxes.service";
 import { OrderBasketService } from "src/orders/order-basket/order-basket.service";
 import { TaskUserService } from "src/Tasks/task-user/task-user.service";
-import { CreateShipRushDto } from "src/shipments/ship-rush/dto/create-ship-rush.dto";
+import { CreateDeliverySettingDto } from "src/shipments/delivery-setting/dto/create-delivery-setting.dto";
 import { Company } from "src/usersCompanies/company/entities/company.entity";
 import { role } from "src/auth/dto/create-auth.dto";
 import { EOrderUser, OrderStatusEnum } from "./enums/enum";
@@ -240,16 +240,16 @@ export class OrderService {
   }
 
   async updateTrackingNumberFromShipRush(
-    createShipRushDto: CreateShipRushDto
+  createDeliverySettingDto: CreateDeliverySettingDto
   ): Promise<any> {
     const res = await this.orderRepository.findOne({
       select: ["id"],
       where: {
-        shipRushShipmentId: createShipRushDto.shipmentId,
+        shipRushShipmentId: createDeliverySettingDto.shipmentId,
       },
     });
     const setTarckingNumber = {
-      trackingNumber: createShipRushDto.trackingNumber,
+      trackingNumber: createDeliverySettingDto.trackingNumber,
       shipRushStatus: "Complete",
     };
     return await this.orderRepository.update(res.id, setTarckingNumber);

@@ -1,7 +1,7 @@
 import { Boxsize } from "src/maintenence/boxes/entities/box.entity";
 import { Cylinder } from "src/maintenence/cylinder/entities/cylinder.entity";
 import { PartCqaunt } from "src/settings/part-cqaunt/entities/part-cqaunt.entity";
-import { ShipRush } from "src/shipments/ship-rush/entities/ship-rush.entity";
+import { DeliverySetting } from "src/shipments/delivery-setting/entities/delivery-setting.entity";
 import { ShipmentPriority } from "src/maintenence/shipment_priority/entities/shipment_priority.entity";
 import { UserCompany } from "src/usersCompanies/user-company/entities/user-company.entity";
 import {
@@ -54,8 +54,8 @@ export class Company extends Tablestamp {
   cylinder: Cylinder[];
   @OneToMany(() => PartCqaunt, (partCqaunt) => partCqaunt)
   partCqaunt: PartCqaunt[];
-  @OneToMany(() => ShipRush, (shipRush) => shipRush)
-  shipRush: ShipRush[];
+  @OneToMany(() => DeliverySetting, (deliverySetting) => deliverySetting)
+  deliverySetting: DeliverySetting[];
   @OneToMany(() => Zone, (zone) => zone)
   zone: Zone[];
   @OneToMany(() => TaskUser, (taskUser) => taskUser)

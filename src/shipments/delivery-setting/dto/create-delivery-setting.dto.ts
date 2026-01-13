@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateShipRushDto {
+export class CreateDeliverySettingDto {
   @ApiProperty({ default: '' })
   shipmentId: string;
   @ApiProperty({ default: '' })
@@ -11,7 +11,7 @@ export class CreateShipRushDto {
   carrier: string;
 }
 
-export class ShipRushDto {
+export class DeliverySettingDto {
 @ApiProperty({ nullable: false })
   siteName: string;
   @ApiProperty()

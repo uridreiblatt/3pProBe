@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CreateShipRushDto, ShipRushDto } from './dto/create-ship-rush.dto';
+import { CreateDeliverySettingDto, DeliverySettingDto } from './dto/create-delivery-setting.dto';
 import { OrderService } from 'src/orders/order/order.service';
 import { catchError, lastValueFrom, map } from 'rxjs';
 import { Order } from 'src/orders/order/entities/order.entity';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { ShipRush } from './entities/ship-rush.entity';
+import { DeliverySetting } from './entities/delivery-setting.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Company } from 'src/usersCompanies/company/entities/company.entity';
@@ -15,8 +15,8 @@ import { Company } from 'src/usersCompanies/company/entities/company.entity';
 //Shiprush token:
 //0436c904-615c-4bb3-b41e-fcf7cd6282b8
 @Injectable()
-export class ShipRushService {
-  private readonly logger = new Logger(ShipRushService.name);
+export class DeliverySettingService {
+  private readonly logger = new Logger(DeliverySettingService.name);
   private readonly _orderService: OrderService;
   comapny: string;
   username: string;
@@ -26,8 +26,8 @@ export class ShipRushService {
     private orderService: OrderService,
     private httpService: HttpService,
     private configService: ConfigService,
-    @InjectRepository(ShipRush)
-    private ShipRushRepository: Repository<ShipRush>,
+    @InjectRepository(DeliverySetting)
+    private ShipRushRepository: Repository<DeliverySetting>,
   ) {
     this._orderService = orderService;
     this.comapny = this.configService.get<string>('COMPANY') || '';
@@ -50,19 +50,19 @@ export class ShipRushService {
       },
     });
   }
-  async createShipRus(createShipRushDto: CreateShipRushDto) {
-    console.log('createShipRushDto', createShipRushDto);
+  async createShipRus(createDeliverySettingDto: CreateDeliverySettingDto) {
+    console.log('createdeliverySettingDto', createDeliverySettingDto);
     const order = await this._orderService.getOrderByShipmentIdFromShipRush(
-      createShipRushDto.shipmentId,
+      createDeliverySettingDto.shipmentId,
     );
 
     const resPriorityUpdateDoc = await this.UpdatePriorityShippingDoc(
       order,
-      createShipRushDto,
+      createDeliverySettingDto,
     );
     console.log('resPriorityUpdateDoc', resPriorityUpdateDoc);
     const updOrderPriority = {
-      trackingNumber: createShipRushDto.trackingNumber.toString(),
+      trackingNumber: createDeliverySettingDto.trackingNumber.toString(),
       shipRushStatus: 'Final',
     };
     console.log(updOrderPriority);
@@ -71,7 +71,7 @@ export class ShipRushService {
 
   async UpdatePriorityShippingDoc(
     order: Order,
-    createShipRushDto: CreateShipRushDto,
+    createDeliverySettingDto: CreateDeliverySettingDto,
   ) {
     const url =
       `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
@@ -83,7 +83,7 @@ export class ShipRushService {
       DOCNO: order.DOCUMENT_DOCNO, // order.ORDNAME,
       DOC: Number(order.DOCUMENT_DOC), //order.DOCUMENT_DOCNO,
       STATDES: 'Final',
-      AIRWAYBILL: createShipRushDto.trackingNumber.toString(),
+      AIRWAYBILL: createDeliverySettingDto.trackingNumber.toString(),
     };
     console.log('priorityt close sh', dt);
     const data = await lastValueFrom(
@@ -108,54 +108,54 @@ export class ShipRushService {
 
     return await this.ShipRushRepository.find({
       where: {company: {id:companyId}},
-      relations: {company: true}
+      //relations: {company: true}
     });
   }
 
-  async create(shipRushDto: ShipRushDto) {
-    const ins = new ShipRush();
-    ins.Address1 = shipRushDto.Address1;
-    ins.Address2 = shipRushDto.Address2;
-    ins.City = shipRushDto.City;    
-    ins.Company = shipRushDto.Company;
-    ins.Country = shipRushDto.Country;
-    ins.FirstName = shipRushDto.FirstName;
-    ins.Phone = shipRushDto.Phone;
-    ins.PickupReadyTime = shipRushDto.PickupReadyTime;
-    ins.PostalCode = shipRushDto.PostalCode;
-    ins.State = shipRushDto.State;
-    ins.LatestPickupTime = shipRushDto.LatestPickupTime;
-    ins.accountId = shipRushDto.accountId;
-    ins.siteName = shipRushDto.siteName;
-    ins.uomLength = shipRushDto.uomLength;
-    ins.uomweight = shipRushDto.uomweight;
-    ins.upsAcountNumber = shipRushDto.upsAcountNumber;
+  async create(deliverySettingDto: DeliverySettingDto) {
+    const ins = new DeliverySetting();
+    ins.Address1 = deliverySettingDto.Address1;
+    ins.Address2 = deliverySettingDto.Address2;
+    ins.City = deliverySettingDto.City;    
+    ins.Company = deliverySettingDto.Company;
+    ins.Country = deliverySettingDto.Country;
+    ins.FirstName = deliverySettingDto.FirstName;
+    ins.Phone = deliverySettingDto.Phone;
+    ins.PickupReadyTime = deliverySettingDto.PickupReadyTime;
+    ins.PostalCode = deliverySettingDto.PostalCode;
+    ins.State = deliverySettingDto.State;
+    ins.LatestPickupTime = deliverySettingDto.LatestPickupTime;
+    ins.accountId = deliverySettingDto.accountId;
+    ins.siteName = deliverySettingDto.siteName;
+    ins.uomLength = deliverySettingDto.uomLength;
+    ins.uomweight = deliverySettingDto.uomweight;
+    ins.upsAcountNumber = deliverySettingDto.upsAcountNumber;
     ins.company = new Company();
-    ins.company.id = shipRushDto.companyId;
+    ins.company.id = deliverySettingDto.companyId;
     
     return await this.ShipRushRepository.save(ins);
 
   }
-  async update(id: string ,shipRushDto: ShipRushDto) {
-    const ins = new ShipRush();
-    ins.Address1 = shipRushDto.Address1;
-    ins.Address2 = shipRushDto.Address2;
-    ins.City = shipRushDto.City;    
-    ins.Company = shipRushDto.Company;
-    ins.Country = shipRushDto.Country;
-    ins.FirstName = shipRushDto.FirstName;
-    ins.Phone = shipRushDto.Phone;
-    ins.PickupReadyTime = shipRushDto.PickupReadyTime;
-    ins.PostalCode = shipRushDto.PostalCode;
-    ins.State = shipRushDto.State;
-    ins.LatestPickupTime = shipRushDto.LatestPickupTime;
-    ins.accountId = shipRushDto.accountId;
-    ins.siteName = shipRushDto.siteName;
-    ins.uomLength = shipRushDto.uomLength;
-    ins.uomweight = shipRushDto.uomweight;
-    ins.upsAcountNumber = shipRushDto.upsAcountNumber;
+  async update(id: string ,deliverySettingDto: DeliverySettingDto) {
+    const ins = new DeliverySetting();
+    ins.Address1 = deliverySettingDto.Address1;
+    ins.Address2 = deliverySettingDto.Address2;
+    ins.City = deliverySettingDto.City;    
+    ins.Company = deliverySettingDto.Company;
+    ins.Country = deliverySettingDto.Country;
+    ins.FirstName = deliverySettingDto.FirstName;
+    ins.Phone = deliverySettingDto.Phone;
+    ins.PickupReadyTime = deliverySettingDto.PickupReadyTime;
+    ins.PostalCode = deliverySettingDto.PostalCode;
+    ins.State = deliverySettingDto.State;
+    ins.LatestPickupTime = deliverySettingDto.LatestPickupTime;
+    ins.accountId = deliverySettingDto.accountId;
+    ins.siteName = deliverySettingDto.siteName;
+    ins.uomLength = deliverySettingDto.uomLength;
+    ins.uomweight = deliverySettingDto.uomweight;
+    ins.upsAcountNumber = deliverySettingDto.upsAcountNumber;
     ins.company = new Company();
-    ins.company.id = shipRushDto.companyId;
+    ins.company.id = deliverySettingDto.companyId;
     return await this.ShipRushRepository.update(id, ins);
   }
   async remove(id: string) {

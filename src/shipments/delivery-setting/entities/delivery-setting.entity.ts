@@ -1,7 +1,7 @@
 import { Company } from 'src/usersCompanies/company/entities/company.entity';
 import { PrimaryGeneratedColumn, Column, Entity, ManyToOne } from 'typeorm';
-@Entity('ShipRush')
-export class ShipRush {
+@Entity('deliverysetting')
+export class DeliverySetting {
  @PrimaryGeneratedColumn("uuid")
   id: string;
 

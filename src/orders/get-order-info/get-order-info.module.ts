@@ -6,7 +6,7 @@ import { OrderLinesModule } from 'src/orders/order-lines/order-lines.module';
 import { OrderModule } from 'src/orders/order/order.module';
 import { ShipmentPriorityModule } from 'src/maintenence/shipment_priority/shipment_priority.module';
 import { DbLogModule } from 'src/db-log/db-log.module';
-import { ShipRushModule } from 'src/shipments/ship-rush/ship-rush.module';
+import { DeliverySettingModule } from 'src/shipments/delivery-setting/delivery-setting.module';
 import { PartCqauntModule } from 'src/settings/part-cqaunt/part-cqaunt.module';
 import { CompanyModule } from 'src/usersCompanies/company/company.module';
 
@@ -18,7 +18,7 @@ import { CompanyModule } from 'src/usersCompanies/company/company.module';
     CompanyModule,
     ShipmentPriorityModule,
     DbLogModule,
-    ShipRushModule,
+    DeliverySettingModule,
     PartCqauntModule,
   ],
   controllers: [GetOrderInfoController],

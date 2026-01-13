@@ -27,7 +27,11 @@ export class ReportViewService {
     return allData;
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
+    const rpt =  await this.reportViewRepository.findOne({
+      where: { id: id },
+    });
+
     const queryViewFields = `
   SELECT 
   COLUMN_NAME
@@ -37,17 +41,18 @@ WHERE TABLE_SCHEMA = DATABASE()
 ORDER BY ORDINAL_POSITION;`;
 
     const dtFields = await this.reportViewRepository.query(queryViewFields, [
-      id,
+      rpt.reportTitleName,
     ]);
 
     const sql = `
   SELECT *
-  FROM ${id}
+  FROM ${rpt.reportTitleName}
   WHERE comapnyId = ?`;
 
     const data = await this.reportViewRepository.query(sql, ["aaa-aaa-aaa"]);
 
     const allData = {
+      currentReport: rpt,      
       fields: dtFields,
       data: data,
     };

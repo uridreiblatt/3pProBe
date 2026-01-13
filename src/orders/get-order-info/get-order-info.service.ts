@@ -22,7 +22,7 @@ import {
 } from './dto/shipRushResponse.dto';
 import { promisify } from 'util';
 import { XMLParser } from 'fast-xml-parser';
-import { ShipRushService } from 'src/shipments/ship-rush/ship-rush.service';
+import { DeliverySettingService } from 'src/shipments/delivery-setting/delivery-setting.service';
 import { ShipmentPriority } from 'src/maintenence/shipment_priority/entities/shipment_priority.entity';
 import { PartCqauntService } from 'src/settings/part-cqaunt/part-cqaunt.service';
 import { PartCqaunt } from 'src/settings/part-cqaunt/entities/part-cqaunt.entity';
@@ -39,7 +39,7 @@ export class GetOrderInfoService {
   private readonly comapny: string;
   private readonly _orderService: OrderService;
   private readonly _orderLinesService: OrderLinesService;
-  private readonly _shipRushService: ShipRushService;
+  private readonly _deliverySettingService: DeliverySettingService;
   private readonly _ShipmentPriorityService: ShipmentPriorityService;
   private readonly _CompanyService: CompanyService;
   private readonly _DbLogService: DbLogService;
@@ -53,7 +53,7 @@ export class GetOrderInfoService {
     private orderLinesService: OrderLinesService,
     private ShipmentPriorityService: ShipmentPriorityService,
     private DbLogService: DbLogService,
-    private ShipRushService: ShipRushService,
+    private DeliverySettingService: DeliverySettingService,
     private PartCqauntService: PartCqauntService,
     private CompanyService: CompanyService,
   ) {
@@ -69,7 +69,7 @@ export class GetOrderInfoService {
     this._orderLinesService = orderLinesService;
     this._ShipmentPriorityService = ShipmentPriorityService;
     this._DbLogService = DbLogService;
-    this._shipRushService = ShipRushService;
+    this._deliverySettingService = DeliverySettingService;
     this._PartCqauntService = PartCqauntService;
     this._PartCqauntService = PartCqauntService;
     this._CompanyService = CompanyService;
@@ -1037,7 +1037,7 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
     companyId: string
   ): Promise<string> {
     const resCompantSettings = await this._CompanyService.findOne(companyId)
-    const shipRushConfigs = await this._shipRushService.findOneBySite(this.comapny);
+    const shipRushConfigs = await this._deliverySettingService.findOneBySite(this.comapny);
     let shipRushConfig = null;
     if (shipRushConfigs) {
       shipRushConfig = shipRushConfigs[0];

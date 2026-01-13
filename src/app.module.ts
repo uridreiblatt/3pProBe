@@ -25,7 +25,7 @@ import { PriorityProductsHierarchyModule } from "./products/priorityProductsHier
 import { OrderBasketModule } from "./orders/order-basket/order-basket.module";
 import { PriorityProductsLocationsModule } from "./products/priority-products-locations/priority-products-locations.module";
 import { CylinderModule } from "./maintenence/cylinder/cylinder.module";
-import { ShipRushModule } from "./shipments/ship-rush/ship-rush.module";
+import { DeliverySettingModule } from "./shipments/delivery-setting/delivery-setting.module";
 import { PartCqauntModule } from "./settings/part-cqaunt/part-cqaunt.module";
 import { CompanyModule } from "./usersCompanies/company/company.module";
 import { UserCompanyModule } from "./usersCompanies/user-company/user-company.module";
@@ -105,7 +105,7 @@ const cookieMatchOpts: CookieMatchOptions = {
     OrderBasketModule,
     PriorityProductsLocationsModule,
     CylinderModule,
-    ShipRushModule,
+    DeliverySettingModule,
     PartCqauntModule,
     TaskInventoryCountModule,
     TaskRmaModule,

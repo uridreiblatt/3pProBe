@@ -8,4 +8,13 @@ export class ReportView {
   reportName: string;
   @Column({ nullable: true })
   reportTitleName: string;
+  @Column({ nullable: true })
+  publish: string;
+@Column({ nullable: true })
+  createdAt: Date;
+
+
+  
+
+  
 }

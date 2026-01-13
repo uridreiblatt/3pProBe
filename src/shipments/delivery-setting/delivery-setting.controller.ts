@@ -1,21 +1,22 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Request } from '@nestjs/common';
 import { IncomingMessage } from 'http';
-import { ShipRushService } from './ship-rush.service';
+import { DeliverySettingService } from './delivery-setting.service';
 //import { CreateShipRushDto } from './dto/create-ship-rush.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { XMLParser } from 'fast-xml-parser';
-import { CreateShipRushDto, ShipRushDto } from './dto/create-ship-rush.dto';
+
 import { CreatePartCqauntDto } from 'src/settings/part-cqaunt/dto/create-part-cqaunt.dto';
 import { UpdateRoleDto } from 'src/usersCompanies/role/dto/update-role.dto';
-@ApiTags('shiprush')
-@Controller('ship-rush')
-export class ShipRushController {
+import { DeliverySettingDto } from './dto/create-delivery-setting.dto';
+@ApiTags('delivery-setting')
+@Controller('delivery-setting')
+export class DeliverySettingController {
   private readonly parser = new XMLParser();
-  constructor(private readonly shipRushService: ShipRushService) {}
+  constructor(private readonly deliverySettingService: DeliverySettingService) {}
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return await this.shipRushService.findOne(id);
+    return await this.deliverySettingService.findOne(id);
   }
   // @Post()
   // async handleXml(@Req() req: Request) {
@@ -52,12 +53,12 @@ export class ShipRushController {
 
   @Get()
     findAll(@Request() req) {
-      return this.shipRushService.findAll(req.user.selectCompany);
+      return this.deliverySettingService.findAll(req.user.selectCompany);
     }
   
     @Post()
-      create(@Body() shipRushDto: ShipRushDto) {
-        return this.shipRushService.create(shipRushDto);
+      create(@Body() deliverySettingDto: DeliverySettingDto) {
+        return this.deliverySettingService.create(deliverySettingDto);
       }
     
       
@@ -68,13 +69,13 @@ export class ShipRushController {
       // }
     
       @Patch(':id')
-      update(@Param('id') id: string, @Body() shipRushDto: ShipRushDto) {
-        return this.shipRushService.update(id, shipRushDto);
+      update(@Param('id') id: string, @Body() deliverySettingDto: DeliverySettingDto) {
+        return this.deliverySettingService.update(id, deliverySettingDto);
       }
     
       @Delete(':id')
       remove(@Param('id') id: string) {
-        return this.shipRushService.remove(id);
+        return this.deliverySettingService.remove(id);
       }
 
 }
