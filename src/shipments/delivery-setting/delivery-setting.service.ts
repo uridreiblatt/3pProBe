@@ -106,7 +106,7 @@ export class DeliverySettingService {
 
   async findAll(companyId: string) {
 
-    return await this.ShipRushRepository.find({
+    return await this.ShipRushRepository.findOne({
       where: {company: {id:companyId}},
       //relations: {company: true}
     });
