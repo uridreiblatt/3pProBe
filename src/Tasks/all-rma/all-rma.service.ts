@@ -11,6 +11,7 @@ import { lastValueFrom, map, catchError } from "rxjs";
 import { DbLogService } from "src/db-log/db-log.service";
 import { CompanyService } from "src/usersCompanies/company/company.service";
 import { RootRmaPriority } from "./dto/create-all-rma.dto";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()
 export class AllRmaService {
@@ -30,22 +31,30 @@ export class AllRmaService {
     this._CompanyService = CompanyService;
   }
 
-  async getAllNewRmaFromPriority(companyId: string): Promise<any> {
+  @Cron(CronExpression.EVERY_2ND_HOUR)
+  async handleCron() {
+    this.logger.log("crone Called getAllNewRmaFromPriority EVERY_2ND_HOUR");
+    const allCompanies = await this._CompanyService.findAll();
+    allCompanies.forEach(async (company) => {
+      if (company.companySetting) await this.getAllNewRmaFromPriority(company);
+    });
+  }
+
+  async getAllNewRmaFromPriority(resCompantSettings: Company): Promise<any> {
     if (this.isLocked) {
       return "is locked";
     }
     this.isLocked = true;
-    const resCompantSettings = await this._CompanyService.findOne(companyId);
+    //const resCompantSettings = await this._CompanyService.findOne(companyId);
     //const urlEndPoint = `/DOCUMENTS_m?$filter=STATDES eq 'Open' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
     const urlEndPoint = `/DOCUMENTS_m?$filter=STATDES eq '${resCompantSettings.companySetting.priorityRmaStatus}' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
-  
-    
+
     const url =
       //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
       urlEndPoint;
-     
+
     const credentials = btoa(
       resCompantSettings.companySetting.priorityApiUser +
         ":" +
@@ -71,17 +80,16 @@ export class AllRmaService {
         )
     );
     const RmaInfo: RootRmaPriority = data;
-   
+
     this._DbLogService.create({
       subject: "priority rmas",
       message: "start import rmas " + RmaInfo.value.length.toString(),
       level: "",
       context: "",
       metadata: "",
-      companyId: companyId ,
+      companyId: resCompantSettings.id,
     });
-    let LinesInserted = 0;    
-
+    let LinesInserted = 0;
 
     RmaInfo.value.forEach(async (element) => {
       if (element !== null) {
@@ -93,17 +101,17 @@ export class AllRmaService {
         rma.STATDES = element.STATDES;
         rma.DETAILS = element.DETAILS || "";
         rma.FBCM_RETREASONCODE = element.FBCM_RETREASONCODE || "";
-        rma.FBCM_RETREASONDES = element.FBCM_RETREASONDES || "";        
-        rma.taskPriority = 10;        
+        rma.FBCM_RETREASONDES = element.FBCM_RETREASONDES || "";
+        rma.taskPriority = 10;
         rma.user = new User();
         rma.user.id = "aaa-bbb-ccc"; // unAssigned
         rma.taskStatus = new TaskStatus();
-        rma.Title= '';
-        rma.trackingNumber= '';
-        rma.remarks= '';
+        rma.Title = "";
+        rma.trackingNumber = "";
+        rma.remarks = "";
         rma.taskStatus.id = 1;
         rma.company = new Company();
-        rma.company.id = companyId;
+        rma.company.id = resCompantSettings.id;
         const foundOne = await this.allRmaRepository.findOne({
           where: { DOCNO: rma.DOCNO },
         });
@@ -120,7 +128,7 @@ export class AllRmaService {
       level: "",
       context: "",
       metadata: "",
-      companyId: companyId,
+      companyId: resCompantSettings.id,
     });
     this.isLocked = false;
   }
@@ -140,55 +148,54 @@ export class AllRmaService {
   async findAll(companyId: string) {
     const res = await this.allRmaRepository.find({
       where: { company: { id: companyId } },
-      relations:{
+      relations: {
         user: true,
         taskStatus: true,
-
-      }
+      },
     });
-    const resAll = res.map((rma)=>{
-      return {
-      id: rma.id,
-      CURDATE:  rma.CURDATE,
-      CUSTDES:  rma.CUSTDES,
-      CUSTNAME:  rma.CUSTNAME,
-      DOCNO:  rma.DOCNO,
-      DETAILS:  rma.DETAILS,
-      FBCM_RETREASONCODE:  rma.FBCM_RETREASONCODE,
-      FBCM_RETREASONDES:  rma.FBCM_RETREASONDES,
 
-      status: rma.taskStatus.status,
-      userName: rma.user.userName,
-      }
+    const resAll = res.map((rma) => {
+      return {
+        id: rma.id,
+        CURDATE: rma.CURDATE,
+        CUSTDES: rma.CUSTDES,
+        CUSTNAME: rma.CUSTNAME,
+        DOCNO: rma.DOCNO,
+        DETAILS: rma.DETAILS,
+        FBCM_RETREASONCODE: rma.FBCM_RETREASONCODE,
+        FBCM_RETREASONDES: rma.FBCM_RETREASONDES,
+        taskPriority: rma.taskPriority,
+        status: rma.taskStatus.status,
+        userName: rma.user?.userName || "UnAssigned",
+      };
     });
     return resAll;
-   
   }
 
   async findOne(id: string) {
+     console.log(id);
     const res = await this.allRmaRepository.findOne({
       where: { id: id },
-            relations:{
+      relations: {
         user: true,
         taskStatus: true,
         taskRma: true,
-        
-
       },
-    });  
+    });
+    
     const resAll = {
       id: res.id,
-      CURDATE:  res.CURDATE,
-      CUSTDES:  res.CUSTDES,
-      CUSTNAME:  res.CUSTNAME,
-      DOCNO:  res.DOCNO,
-      DETAILS:  res.DETAILS,
-      FBCM_RETREASONCODE:  res.FBCM_RETREASONCODE,
-      FBCM_RETREASONDES:  res.FBCM_RETREASONDES,
+      CURDATE: res.CURDATE,
+      CUSTDES: res.CUSTDES,
+      CUSTNAME: res.CUSTNAME,
+      DOCNO: res.DOCNO,
+      DETAILS: res.DETAILS,
+      FBCM_RETREASONCODE: res.FBCM_RETREASONCODE,
+      FBCM_RETREASONDES: res.FBCM_RETREASONDES,
 
       status: res.taskStatus.status,
       userName: res.user.userName,
-      taskRma: res.taskRma.map((rma)=>{
+      taskRma: res.taskRma.map((rma) => {
         return {
           id: rma.id,
           PartNumber: rma.PartNumber,
@@ -197,9 +204,8 @@ export class AllRmaService {
           backToInventory: rma.backToInventory,
           cylinder: rma.cylinder,
           remarks: rma.remarks,
-
-
-      }}),
+        };
+      }),
     };
     return resAll;
   }
@@ -214,12 +220,12 @@ export class AllRmaService {
     // allRma.company = new Company();
     // allRma.company.id = updateAllRmaDto.companyId;
 
-    const { companyId, userId, ...rest } = updateAllRmaDto;
+    const { companyId, userId, taskStatusId, ...rest } = updateAllRmaDto;
     const data = {
       ...rest,
-      user: { id: userId },
-      //taskStatus: { id: TaskStatusEnum.Complete },
-    }; 
+      ...(taskStatusId && { taskStatus: { id: taskStatusId } }),
+      ...(userId && { user: { id: userId } }),
+    };
     return await this.allRmaRepository.update(id, data);
   }
 

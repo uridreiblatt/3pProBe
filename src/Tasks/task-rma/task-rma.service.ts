@@ -51,12 +51,12 @@ export class TaskRmaService {
         allRma: true,
       },
     });
-    const { allRma, ...rest } = res;
-
-    return {
-      ...rest,
-      rmaId: allRma.id,
-    };
+    
+    // const { allRma, ...rest } = res;
+    // return {
+    //   ...rest,
+    //   rmaId: allRma.id,
+    // };
   }
 
   async update(id: string, updateTaskRmaDto: UpdateTaskRmaDto) {

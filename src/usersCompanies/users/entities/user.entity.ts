@@ -14,7 +14,7 @@ export class User extends Tablestamp{
   id: string;
   @Column({default: ''})
   userName: string;
-  @Column()
+  @Column({default: ''})
   userSurname: string;
   @Column()
   userUuid: string;

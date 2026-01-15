@@ -29,6 +29,7 @@ export class UsersService {
     ins.userMobile = createUserDto.userMobile;    
     ins.userPasswordEnc = createUserDto.userPasswordEnc;  
     ins.isActive = createUserDto.isActive;  
+    ins.userSurname = createUserDto.userSurname || 'not required';
     ins.selectedCompany = createUserDto.companyId;
     const res  =  await this.userRepository.save(ins);
 

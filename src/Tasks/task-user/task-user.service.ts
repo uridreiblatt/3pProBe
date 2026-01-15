@@ -259,14 +259,13 @@ export class TaskUserService {
     return await this.taskUsersRepository.save(taskUser);
   }
 
-  async update(id: string, updateTaskUserDto: UpdateTaskUserDto) {
-    const { companyId, userId, ...rest } = updateTaskUserDto;
+  async update(id: string, updateTaskUserDto: UpdateTaskUserDto) {    
+    const { companyId, userId, taskStatusId, ...rest } = updateTaskUserDto;
     const data = {
       ...rest,
-      user: { id: userId },
-      //taskStatus: { id: TaskStatusEnum.Complete },
-    };
-    console.log("update task user ", updateTaskUserDto,'data',data);
+      ...(taskStatusId && { taskStatus: { id: taskStatusId } }),
+      ...(userId && { user: { id: userId } }),
+    };    
     const res = await this.taskUsersRepository.update(id, data);
     await this.updateorderStatus(id);
     return res;
