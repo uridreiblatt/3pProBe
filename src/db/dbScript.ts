@@ -119,3 +119,10 @@
 // INSERT INTO `p3pro`.`zone` (`id`, `zoneName`, `color`, `priority`, `companyId`) VALUES ('aaa-xzzz', 'Zone B', 'red', '0', 'aaa-aaa-aaa');
 
 
+// SET SQL_SAFE_UPDATES = 0;
+// DELETE FROM p3pro.task_rma;
+// delete FROM p3pro.all_rma;
+// DELETE FROM p3pro.order_line;
+// delete from p3pro.order_boxes;
+// delete from p3pro.order;
+// SET SQL_SAFE_UPDATES = 1;

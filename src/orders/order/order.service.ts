@@ -199,6 +199,7 @@ export class OrderService {
       STDES: res.STDES,
       status: res.taskStatus.status,
       orderNote: res.orderNote,
+      ordertext: res.ordertext,       
       orderLines: res.orderLines,
       role: res.role.roleDisplayName,
       taskStatus: {

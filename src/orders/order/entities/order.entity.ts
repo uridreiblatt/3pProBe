@@ -53,12 +53,6 @@ export class Order {
   ordertext: string;
   @Column({ nullable: true })
   orderRemarks: string;
-  @Column({ nullable: true })
-  orderPhotoBase64: string;
-  @Column({ nullable: true })
-  orderPhotoBase64_1: string;
-  @Column({ nullable: true })
-  orderPhotoBase64_2: string;
   @Column({})
   priorityOrder: number;
   @Column({})
@@ -91,7 +85,7 @@ export class Order {
   accountId: string;
   @Column({ nullable: true, default:'' })
   accountZip: string;
-  @Column({ nullable: true, default:'' })
+  @Column({ nullable: true, default:'', length: 2000 })
   orderNote: string;
   @ManyToOne(() => User, (user) => user.id)
   user: User;
