@@ -12,6 +12,15 @@ export class CreateTaskUserDto {
   @ApiProperty()
   @IsString()
   PartNumber: string;
+  @ApiProperty()
+  @IsString()
+  productName: string;
+
+
+  @ApiProperty()
+  @IsString()
+  productDescription:string;
+
   @ApiProperty({ default: 0 })
   @IsInt()
   QTYtoassemble: number;
@@ -69,7 +78,7 @@ export class CreateTaskUserDto {
   // @ApiProperty()
   // @IsString()
   // orderName: string;
-  @ApiProperty({ default: 'aaa-bbb-ccc' })
+  @ApiProperty({ default: "aaa-bbb-ccc" })
   @IsString()
   userId: string;
   @ApiProperty({ default: 1 })
@@ -105,7 +114,7 @@ export class CreateTaskUserDto {
   @ApiProperty()
   @IsString()
   cylinder: string;
-  
+
   @ApiProperty({ default: "aaa-aaa-aaa" })
   @IsString()
   companyId: string; // required if you expect it in the body
@@ -129,7 +138,3 @@ export interface PORDERITEMSLines {
   PDES: string;
   TQUANT: string;
 }
-
-
-
-

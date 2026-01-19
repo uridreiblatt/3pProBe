@@ -19,6 +19,9 @@ export class TaskRmaService {
     const ins = new TaskRma();
     ins.allRma = new AllRma();
     ins.PartNumber = createTaskRmaDto.PartNumber;
+    ins.productName = createTaskRmaDto.productName;
+    ins.productDescription = createTaskRmaDto.productDescription;
+
     ins.partQount = createTaskRmaDto.partQount;
     ins.backToInventory = createTaskRmaDto.backToInventory;
     ins.productStatus = createTaskRmaDto.productStatus;
@@ -45,18 +48,19 @@ export class TaskRmaService {
   }
 
   async findOne(id: string) {
+    console.log('taskRma', id)
     const res = await this.taskRmaRepository.findOne({
       where: { id: id },
       relations: {
         allRma: true,
       },
-    });
+    });    
     
-    // const { allRma, ...rest } = res;
-    // return {
-    //   ...rest,
-    //   rmaId: allRma.id,
-    // };
+    
+    return {
+      ...res,
+      rmaId: res.allRma.id,
+    };
   }
 
   async update(id: string, updateTaskRmaDto: UpdateTaskRmaDto) {
@@ -67,6 +71,8 @@ export class TaskRmaService {
     ins.productStatus = updateTaskRmaDto.productStatus;
     ins.cylinder = updateTaskRmaDto.cylinder;
     ins.remarks = updateTaskRmaDto.remarks;
+    ins.productDescription = updateTaskRmaDto.productDescription;
+    ins.productName = updateTaskRmaDto.productName;
     return await this.taskRmaRepository.update(id, ins);
   }
 

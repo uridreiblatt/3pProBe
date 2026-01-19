@@ -131,6 +131,7 @@ export class priorityProductsService {
   }
 
   async findOne(id: string) {
+    
     return await this.PartRepository.findOne({
       where: {
         id: id,

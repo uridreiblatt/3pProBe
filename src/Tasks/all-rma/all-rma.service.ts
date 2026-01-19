@@ -204,6 +204,7 @@ export class AllRmaService {
           backToInventory: rma.backToInventory,
           cylinder: rma.cylinder,
           remarks: rma.remarks,
+          productName: rma.productName,
         };
       }),
     };

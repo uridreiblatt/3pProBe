@@ -25,6 +25,12 @@ export class TaskRma extends Tablestamp {
   backToInventory: boolean;
   @Column({ default: false })
   productStatus: boolean;
+  @Column({ default: '' })
+  productName:string;
+  @Column({ default: '' })
+  productDescription:string;
+
+  
 
   @Column({ default: '', nullable: true })
   cylinder: string;

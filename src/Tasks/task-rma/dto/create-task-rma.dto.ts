@@ -6,6 +6,12 @@ export class CreateTaskRmaDto {
   @IsString()
   PartNumber: string;
   @ApiProperty()
+  @IsString()
+  productName: string;
+  @ApiProperty()
+  @IsString()
+  productDescription: string;
+  @ApiProperty()
   @IsInt()
   partQount: number;
   @ApiProperty()
@@ -23,7 +29,7 @@ export class CreateTaskRmaDto {
   @ApiProperty()
   @IsString()
   rmaId: string;
-  @ApiProperty()  
+  @ApiProperty()
   @IsString()
   companyId: string;
 }

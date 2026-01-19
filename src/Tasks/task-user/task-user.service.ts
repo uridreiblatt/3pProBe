@@ -255,6 +255,8 @@ export class TaskUserService {
     taskUser.taskStatus.id = createTaskUserDto.taskStatusId;
     taskUser.company = new Company();
     taskUser.company.id = createTaskUserDto.companyId;
+    taskUser.productName = createTaskUserDto.productName;
+    taskUser.productDescription = createTaskUserDto.productDescription;
 
     return await this.taskUsersRepository.save(taskUser);
   }
