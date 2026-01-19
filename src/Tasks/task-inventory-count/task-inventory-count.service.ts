@@ -46,30 +46,40 @@ export class TaskInventoryCountService {
     taskInventoryCount = createTaskInventoryCountDto;
     taskInventoryCount.taskUser = new TaskUser();
     taskInventoryCount.taskUser.id = createTaskInventoryCountDto.taskUserId;
+    taskInventoryCount.productName = createTaskInventoryCountDto.productName;
+    taskInventoryCount.productDescription = createTaskInventoryCountDto.productDescription;
+    taskInventoryCount.location = createTaskInventoryCountDto.location;
+
     return await this.taskInventoryCountServiceRepository.save(
       taskInventoryCount
     );
   }
 
-  async update(    id: string,    updateTaskInventoryCountDto: UpdateTaskInventoryCountDto  ) {
+  async update(
+    id: string,
+    updateTaskInventoryCountDto: UpdateTaskInventoryCountDto
+  ) {
     const ins = new TaskInventoryCount();
-        ins.DataInfo = updateTaskInventoryCountDto.DataInfo;
-        ins.NoOfItems= updateTaskInventoryCountDto.NoOfItems;
-        ins.NoOfBoxes = updateTaskInventoryCountDto.NoOfBoxes;
-        ins.NoOfItems_1= updateTaskInventoryCountDto.NoOfItems_1;
-        ins.NoOfBoxes_1 = updateTaskInventoryCountDto.NoOfBoxes_1;
-        ins.NoOfItems_2= updateTaskInventoryCountDto.NoOfItems_2;
-        ins.NoOfBoxes_2 = updateTaskInventoryCountDto.NoOfBoxes_2;
-        ins.NoOfItems_3= updateTaskInventoryCountDto.NoOfItems_3;
-        ins.NoOfBoxes_3 = updateTaskInventoryCountDto.NoOfBoxes_3;
-        ins.NoOfItems_4= updateTaskInventoryCountDto.NoOfItems_4;
-        ins.NoOfBoxes_4 = updateTaskInventoryCountDto.NoOfBoxes_4;
-        ins.NoOfItems_5= updateTaskInventoryCountDto.NoOfItems_5;
-        ins.NoOfBoxes_5 = updateTaskInventoryCountDto.NoOfBoxes_5;
-        ins.bulkQauntity= updateTaskInventoryCountDto.bulkQauntity;
-        ins.Total= updateTaskInventoryCountDto.Total;    
-        ins.taskUser= new TaskUser();
-        ins.taskUser.id = updateTaskInventoryCountDto.taskUserId;
+    ins.DataInfo = updateTaskInventoryCountDto.DataInfo;
+    ins.NoOfItems = updateTaskInventoryCountDto.NoOfItems;
+    ins.NoOfBoxes = updateTaskInventoryCountDto.NoOfBoxes;
+    ins.NoOfItems_1 = updateTaskInventoryCountDto.NoOfItems_1;
+    ins.NoOfBoxes_1 = updateTaskInventoryCountDto.NoOfBoxes_1;
+    ins.NoOfItems_2 = updateTaskInventoryCountDto.NoOfItems_2;
+    ins.NoOfBoxes_2 = updateTaskInventoryCountDto.NoOfBoxes_2;
+    ins.NoOfItems_3 = updateTaskInventoryCountDto.NoOfItems_3;
+    ins.NoOfBoxes_3 = updateTaskInventoryCountDto.NoOfBoxes_3;
+    ins.NoOfItems_4 = updateTaskInventoryCountDto.NoOfItems_4;
+    ins.NoOfBoxes_4 = updateTaskInventoryCountDto.NoOfBoxes_4;
+    ins.NoOfItems_5 = updateTaskInventoryCountDto.NoOfItems_5;
+    ins.NoOfBoxes_5 = updateTaskInventoryCountDto.NoOfBoxes_5;
+    ins.bulkQauntity = updateTaskInventoryCountDto.bulkQauntity;
+    ins.productName = updateTaskInventoryCountDto.productName;
+    ins.productDescription = updateTaskInventoryCountDto.productDescription;
+    ins.location = updateTaskInventoryCountDto.location;
+    ins.Total = updateTaskInventoryCountDto.Total;
+    ins.taskUser = new TaskUser();
+    ins.taskUser.id = updateTaskInventoryCountDto.taskUserId;
     const res = await this.taskInventoryCountServiceRepository.update(id, ins);
     return res;
   }

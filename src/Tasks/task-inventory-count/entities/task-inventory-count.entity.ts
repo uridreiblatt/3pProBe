@@ -15,6 +15,15 @@ export class TaskInventoryCount extends Tablestamp {
   DataInfo: string;
   @Column()
   PartNumber: string;
+  @Column()
+  productName: string;
+  @Column()
+  productDescription: string;
+  @Column()
+  location: string;
+
+
+  
 
   @Column({default: 0})
   NoOfBoxes: number;

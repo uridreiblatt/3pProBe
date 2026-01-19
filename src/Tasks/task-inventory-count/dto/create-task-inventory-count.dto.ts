@@ -6,10 +6,18 @@ export class CreateTaskInventoryCountDto {
   @ApiProperty({ default: "DataInfo" })
   @IsString()
   DataInfo: string;
-  @ApiProperty({ default: "PartNumber" })
+  @ApiProperty({ default: "" })
   @IsString()
   PartNumber: string;
-
+  @ApiProperty({ default: "" })
+  @IsString()
+  productName: string;
+  @ApiProperty({ default: "" })
+  @IsString()
+  productDescription: string;
+  @ApiProperty({ default: "" })
+  @IsString()
+  location: string;
   @ApiProperty({ default: 0 })
   @IsInt()
   NoOfBoxes: number;
