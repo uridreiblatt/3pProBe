@@ -59,4 +59,13 @@ export class JwtDetails {
   roles: role[];
   @ApiProperty()
   addtionalPickingInfo: boolean;
+  @ApiProperty()
+  users: user[];
+  
+}
+export class user {
+  @ApiProperty()
+  id: string; 
+  @ApiProperty()
+  userName: string;  
 }

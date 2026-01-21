@@ -12,8 +12,16 @@ export class AuthService {
     //private workerService: WorkerService,
   ) {}
 
-  async signIn(signInDto: CreateAuthDto): Promise<User> {
-    return await this.usersService.signIn(signInDto);
+  async signIn(signInDto: CreateAuthDto): Promise<{ user: User; users: User[] }> {
+    const user =  await this.usersService.signIn(signInDto);
+    let cmp =user.selectedCompany;
+    if (cmp === "0")
+      cmp = user.userCompany[0].company.id
+      
+
+    const users = await this.usersService.findAll(cmp);
+
+    return {user, users};
   }
   async SwitchCompany(switchCompanyDto: CreateAuthSwitchCompanyDto): Promise<User> {
     return await this.usersService.switchCompany(switchCompanyDto.UserUuid);

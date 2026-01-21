@@ -32,7 +32,8 @@ export class AuthController {
     @Body() signInDto: CreateAuthDto,
     @Res({ passthrough: true }) response: Response
   ) {
-    const resUser = await this.authService.signIn(signInDto);
+    const resUserAll = await this.authService.signIn(signInDto);
+    const resUser = resUserAll.user;
     if (resUser === undefined || resUser === null) {
       throw new HttpException("Forbidden", HttpStatus.UNAUTHORIZED);
     }
@@ -43,6 +44,8 @@ export class AuthController {
       ...resUser.usersRoles.map((o) => o.role["id"]),
       0
     );
+    
+    //const user = 
     jwtDetails.userEmail = resUser.userMail;
     jwtDetails.userRole = maxValueOfY.toString();
     jwtDetails.uuid = resUser.id;
@@ -57,9 +60,13 @@ export class AuthController {
     jwtDetails.companies = resUser.userCompany.map((o) => {
       return { id: o.company.id, name: o.company.name };
     });
-
-jwtDetails.addtionalPickingInfo = resUser.userCompany[0].company.companySetting.addtionalPickingInfo;
-        
+    jwtDetails.addtionalPickingInfo = resUser.userCompany[0].company.companySetting.addtionalPickingInfo;
+    jwtDetails.users = [];
+    if( maxValueOfY > 5 ) 
+      jwtDetails.users = resUserAll.users.map((u)=>{
+        return {id:u.id, userName: u.userName}
+      });
+    
     const jwtToken = await this.authService.signAsyncCookie(jwtDetails);
     response.cookie("access_token", jwtToken.access_token, {
       httpOnly: true,
@@ -89,6 +96,9 @@ jwtDetails.addtionalPickingInfo = resUser.userCompany[0].company.companySetting.
       }),
       color: resUser.color,
       userRoleId: maxValueOfY,
+      users: maxValueOfY > 5 ? resUserAll.users.map((u)=>{
+        return {id:u.id, userName: u.userName}
+      }) : []
     };
     return resLogin;
   }
