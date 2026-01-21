@@ -65,7 +65,7 @@ jwtDetails.addtionalPickingInfo = resUser.userCompany[0].company.companySetting.
       httpOnly: true,
       secure: false,
       sameSite: "lax",
-      maxAge: 12600000,
+      maxAge: 25200000,
     });
     const resLogin = {
       id: resUser.id,
@@ -137,7 +137,7 @@ jwtDetails.addtionalPickingInfo = resUser.userCompany[0].company.companySetting.
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      maxAge: 288000,
+      maxAge: 25200000,
     });
     const resLogin = {
       id: resUser.id,
