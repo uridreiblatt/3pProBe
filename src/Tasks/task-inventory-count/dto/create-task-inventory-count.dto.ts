@@ -20,10 +20,10 @@ export class CreateTaskInventoryCountDto {
   location: string;
   @ApiProperty({ default: 0 })
   @IsInt()
-  NoOfBoxes: number;
+  NoOfBoxes_0: number;
   @ApiProperty({ default: 0 })
   @IsInt()
-  NoOfItems: number;
+  NoOfItems_0: number;
   @ApiProperty({ default: 0 })
   @IsInt()
   NoOfBoxes_1: number;

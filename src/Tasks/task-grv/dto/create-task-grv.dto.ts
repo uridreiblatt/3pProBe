@@ -17,13 +17,18 @@ export class CreateTaskGrvDto {
   @ApiProperty()
   @IsString()
   PartNumber: string;
-
+  @ApiProperty({ default: "" })
+  @IsString()
+  productName: string;
+  @ApiProperty({ default: "" })
+  @IsString()
+  productDescription: string;
   @ApiProperty()
   @IsInt()
-  NoOfBoxes: number;
+  NoOfBoxes_0: number;
   @ApiProperty()
   @IsInt()
-  NoOfItems: number;
+  NoOfItems_0: number;
   @ApiProperty()
   @IsInt()
   NoOfBoxes_1: number;

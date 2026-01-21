@@ -26,9 +26,9 @@ export class TaskInventoryCount extends Tablestamp {
   
 
   @Column({default: 0})
-  NoOfBoxes: number;
+  NoOfBoxes_0: number;
   @Column({default: 0})
-  NoOfItems: number;
+  NoOfItems_0: number;
   @Column({default: 0})
   NoOfBoxes_1: number;
   @Column({default: 0})

@@ -61,8 +61,8 @@ export class TaskInventoryCountService {
   ) {
     const ins = new TaskInventoryCount();
     ins.DataInfo = updateTaskInventoryCountDto.DataInfo;
-    ins.NoOfItems = updateTaskInventoryCountDto.NoOfItems;
-    ins.NoOfBoxes = updateTaskInventoryCountDto.NoOfBoxes;
+    ins.NoOfItems_0 = updateTaskInventoryCountDto.NoOfItems_0;
+    ins.NoOfBoxes_0 = updateTaskInventoryCountDto.NoOfBoxes_0;
     ins.NoOfItems_1 = updateTaskInventoryCountDto.NoOfItems_1;
     ins.NoOfBoxes_1 = updateTaskInventoryCountDto.NoOfBoxes_1;
     ins.NoOfItems_2 = updateTaskInventoryCountDto.NoOfItems_2;

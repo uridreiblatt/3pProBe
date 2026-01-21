@@ -18,8 +18,10 @@ export class TaskGrvService {
   async create(createTaskGrvDto: CreateTaskGrvDto) {
         const ins = new TaskGrv();
     ins.DataInfo = createTaskGrvDto.DataInfo;
-    ins.NoOfItems= createTaskGrvDto.NoOfItems;
-    ins.NoOfBoxes = createTaskGrvDto.NoOfBoxes;
+    ins.productName= createTaskGrvDto.productName;
+    ins.productDescription= createTaskGrvDto.productDescription;
+    ins.NoOfItems_0= createTaskGrvDto.NoOfItems_0;
+    ins.NoOfBoxes_0 = createTaskGrvDto.NoOfBoxes_0;
     ins.NoOfItems_1= createTaskGrvDto.NoOfItems_1;
     ins.NoOfBoxes_1 = createTaskGrvDto.NoOfBoxes_1;
     ins.NoOfItems_2= createTaskGrvDto.NoOfItems_2;
@@ -63,8 +65,11 @@ export class TaskGrvService {
   async update(id: string, updateTaskGrvDto: UpdateTaskGrvDto) {
     const ins = new TaskGrv();
     ins.DataInfo = updateTaskGrvDto.DataInfo;
-    ins.NoOfItems= updateTaskGrvDto.NoOfItems;
-    ins.NoOfBoxes = updateTaskGrvDto.NoOfBoxes;
+
+    ins.NoOfItems_0= updateTaskGrvDto.NoOfItems_0;
+    ins.productName= updateTaskGrvDto.productName;
+    ins.productDescription= updateTaskGrvDto.productDescription;
+    ins.NoOfBoxes_0 = updateTaskGrvDto.NoOfBoxes_0;
     ins.NoOfItems_1= updateTaskGrvDto.NoOfItems_1;
     ins.NoOfBoxes_1 = updateTaskGrvDto.NoOfBoxes_1;
     ins.NoOfItems_2= updateTaskGrvDto.NoOfItems_2;
