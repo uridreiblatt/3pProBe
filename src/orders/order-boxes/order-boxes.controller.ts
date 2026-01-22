@@ -20,7 +20,6 @@ export class OrderBoxesController {
 
   @Post()
   async create(@Body() createOrderBoxDto: CreateOrderBoxDto) {
-     console.log(createOrderBoxDto)
     return await this.orderBoxesService.create(createOrderBoxDto);
   }
 

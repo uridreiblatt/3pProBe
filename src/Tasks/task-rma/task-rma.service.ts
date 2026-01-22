@@ -48,7 +48,6 @@ export class TaskRmaService {
   }
 
   async findOne(id: string) {
-    console.log('taskRma', id)
     const res = await this.taskRmaRepository.findOne({
       where: { id: id },
       relations: {

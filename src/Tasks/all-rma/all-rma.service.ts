@@ -173,7 +173,6 @@ export class AllRmaService {
   }
 
   async findOne(id: string) {
-     console.log(id);
     const res = await this.allRmaRepository.findOne({
       where: { id: id },
       relations: {

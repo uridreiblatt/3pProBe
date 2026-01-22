@@ -51,7 +51,6 @@ export class DeliverySettingService {
     });
   }
   async createShipRus(createDeliverySettingDto: CreateDeliverySettingDto) {
-    console.log('createdeliverySettingDto', createDeliverySettingDto);
     const order = await this._orderService.getOrderByShipmentIdFromShipRush(
       createDeliverySettingDto.shipmentId,
     );
@@ -60,12 +59,11 @@ export class DeliverySettingService {
       order,
       createDeliverySettingDto,
     );
-    console.log('resPriorityUpdateDoc', resPriorityUpdateDoc);
     const updOrderPriority = {
       trackingNumber: createDeliverySettingDto.trackingNumber.toString(),
       shipRushStatus: 'Final',
     };
-    console.log(updOrderPriority);
+
     await this._orderService.updateData(order.id, updOrderPriority);
   }
 
@@ -85,7 +83,6 @@ export class DeliverySettingService {
       STATDES: 'Final',
       AIRWAYBILL: createDeliverySettingDto.trackingNumber.toString(),
     };
-    console.log('priorityt close sh', dt);
     const data = await lastValueFrom(
       this.httpService
         .patch(url, dt, {

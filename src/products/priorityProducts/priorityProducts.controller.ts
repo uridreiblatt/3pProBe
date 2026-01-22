@@ -38,7 +38,6 @@ export class PriorityProductsController {
   @Get('findBarcode/:barcode')
   async findBarcode(@Param('barcode') id: string) {
     const res = await this.partsService.findBarcode(id);
-    console.log(res);
     return res;
   }
 

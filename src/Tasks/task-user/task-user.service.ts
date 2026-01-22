@@ -76,7 +76,6 @@ export class TaskUserService {
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
       urlEndPoint;
-      console.log(url)
     // const url =
     //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
     //   this.comapny +

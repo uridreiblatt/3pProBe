@@ -37,6 +37,7 @@ export class AuthService {
       roles: data.roles,
       companies:  data.companies,
       addtionalPickingInfo: data.addtionalPickingInfo,
+      users: data.users,
     };
     return {
       access_token: await this.jwtService.signAsync(payload),

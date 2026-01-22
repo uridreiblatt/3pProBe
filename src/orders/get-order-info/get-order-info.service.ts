@@ -347,7 +347,6 @@ export class GetOrderInfoService {
                   try {
                     await this._orderLinesService.create(createOrderLineDto);
                   } catch (error) {
-                    console.log('createOrderLineDto error',error)
                     await this._DbLogService.create({
                       subject: 'priority orders - Line create ' +
                         createOrderDto.ORDNAME,
