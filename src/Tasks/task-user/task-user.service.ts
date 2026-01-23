@@ -36,7 +36,7 @@ export class TaskUserService {
   private isLocked = false;
   //private comapny = "cb3007"; // add call from database settings;
   //private urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS`;
-  
+
   private readonly logger = new Logger(TaskUserService.name);
   //private readonly username: string;
   //private readonly pwd: string;
@@ -66,106 +66,120 @@ export class TaskUserService {
       return "is locked";
     }
 
-    this.isLocked = true;
-    const resCompantSettings = await this._CompanyService.findOne(companyId);
+    try {
+      this.isLocked = true;
+      const resCompantSettings = await this._CompanyService.findOne(companyId);
 
-    //const urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`;
-    const urlEndPoint = `/PORDERS?$filter=STATDES eq  '${resCompantSettings.companySetting.priorityPoStatus}' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`;
-    const url =
-      //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-      resCompantSettings.companySetting.priorityApiUrl +
-      resCompantSettings.companySetting.priorityApiCompany +
-      urlEndPoint;
-    // const url =
-    //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-    //   this.comapny +
-    //   this.urlEndPoint;
-    //const credentials = btoa(this.username + ":" + this.pwd);
-    const credentials = btoa(
-      resCompantSettings.companySetting.priorityApiUser +
-        ":" +
-        resCompantSettings.companySetting.priorityApiPassword
-    );
-    const basicAuth = "Basic " + credentials;
+      //const urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`;
+      const urlEndPoint = `/PORDERS?$filter=STATDES eq  '${resCompantSettings.companySetting.priorityPoStatus}' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`;
+      const url =
+        //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+        resCompantSettings.companySetting.priorityApiUrl +
+        resCompantSettings.companySetting.priorityApiCompany +
+        urlEndPoint;
+      // const url =
+      //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+      //   this.comapny +
+      //   this.urlEndPoint;
+      //const credentials = btoa(this.username + ":" + this.pwd);
+      const credentials = btoa(
+        resCompantSettings.companySetting.priorityApiUser +
+          ":" +
+          resCompantSettings.companySetting.priorityApiPassword
+      );
+      const basicAuth = "Basic " + credentials;
 
-    const data = await lastValueFrom(
-      this.httpService
-        .get(url, {
-          headers: {
-            Authorization: basicAuth,
-          },
-        })
-        .pipe(map((resp) => resp.data))
-        .pipe(
-          catchError((error) => {
-            this.isLocked = false;
-            console.log(
-              `An error happened. Msg: ${JSON.stringify(error.request)}`
-            );
-            throw `An error happened. Msg: ${JSON.stringify(error.request)}`;
+      const data = await lastValueFrom(
+        this.httpService
+          .get(url, {
+            headers: {
+              Authorization: basicAuth,
+            },
           })
-        )
-    );
-    const RmaInfo: RootPoPriority = data;
-    this._DbLogService.create({
-      subject: "priority Po",
-      message: "start import Po: " + RmaInfo.value.length.toString(),
-      level: "",
-      context: "",
-      metadata: "",
-      companyId: companyId,
-    });
-    let LinesInserted = 0;
+          .pipe(map((resp) => resp.data))
+          .pipe(
+            catchError((error) => {
+              this.isLocked = false;
+              console.log(
+                `An error happened. Msg: ${JSON.stringify(error.request)}`
+              );
+              throw `An error happened. Msg: ${JSON.stringify(error.request)}`;
+            })
+          )
+      );
+      const GrvInfo: RootPoPriority = data;
+      console.log(GrvInfo.value)
+      this._DbLogService.create({
+        subject: "priority Po",
+        message: "start import Po: " + GrvInfo.value.length.toString(),
+        level: "",
+        context: "",
+        metadata: "",
+        companyId: companyId,
+      });
+      let LinesInserted = 0;
 
-    RmaInfo.value.forEach(async (element) => {
-      if (element !== null) {
-        let taskUser = new TaskUser();
-        taskUser.orderName = element.ORDNAME;
-        taskUser.DataInfo = element.CDES;
-        taskUser.Supplier = element.SUPNAME;
-        taskUser.taskInfo = element.DETAILS;
-        taskUser.PartNumber = "";
-        taskUser.user = new User();
-        taskUser.user.id = EOrderUser.unAssigned;
-        taskUser.taskType = new TaskType();
-        taskUser.taskType.id = TaskTypesEnum.Good_received;
-        taskUser.taskStatus = new TaskStatus();
-        taskUser.taskStatus.id = TaskStatusEnum.New;
-        taskUser.company = new Company();
-        taskUser.company.id = companyId;
+      GrvInfo.value.forEach(async (element) => {
+        if (element !== null) {
+          let taskUser = new TaskUser();
+          taskUser.orderName = element.ORDNAME;
+          taskUser.DataInfo = element.CDES;
+          taskUser.Supplier = element.SUPNAME;
+          taskUser.taskInfo = element.DETAILS;
+          taskUser.PartNumber = "";
+          taskUser.user = new User();
+          taskUser.user.id = EOrderUser.unAssigned;
+          taskUser.taskType = new TaskType();
+          taskUser.taskType.id = TaskTypesEnum.Good_received;
+          taskUser.taskStatus = new TaskStatus();
+          taskUser.taskStatus.id = TaskStatusEnum.New;
+          taskUser.company = new Company();
+          taskUser.company.id = companyId;
 
-        const foundOne = await this.taskUsersRepository.findOne({
-          where: { orderName: taskUser.orderName },
-        });
-
-        if (foundOne === null) {
-          LinesInserted += 1;
- 
-          const newPo = await this.taskUsersRepository.save(taskUser);
-          element.PORDERITEMS_SUBFORM.forEach(async (subForm) => {
-            const ins = new TaskGrv();
-            ins.taskUser = new TaskUser();
-            ins.taskUser.id = EOrderUser.unAssigned;
-            ins.PartNumber = subForm.PARTNAME;
-            ins.DataInfo = subForm.PDES;
-            //ins.Location= subForm.CDES;
-            ins.Total = Number(subForm.TQUANT);
-            ins.taskUser = new TaskUser();
-            ins.taskUser.id = newPo.id;
-            await this.taskGrvRepository.save(ins);
+          const foundOne = await this.taskUsersRepository.findOne({
+            where: { orderName: taskUser.orderName },
           });
+
+          if (foundOne === null) {
+            LinesInserted += 1;
+
+            const newPo = await this.taskUsersRepository.save(taskUser);
+            element.PORDERITEMS_SUBFORM.forEach(async (subForm) => {
+              const ins = new TaskGrv();
+              ins.taskUser = new TaskUser();
+              ins.taskUser.id = EOrderUser.unAssigned;
+              ins.PartNumber = subForm.PARTNAME;
+              ins.DataInfo = subForm.PDES;
+              //ins.Location= subForm.CDES;
+              ins.Total = Number(subForm.TQUANT);
+              ins.taskUser = new TaskUser();
+              ins.taskUser.id = newPo.id;
+              await this.taskGrvRepository.save(ins);
+            });
+          }
         }
-      }
-    });
-    this._DbLogService.create({
-      subject: "priority Po",
-      message: "end import Po inserted lines: " + LinesInserted.toString(),
-      level: "Info",
-      context: "",
-      metadata: "",
-      companyId: companyId,
-    });
-    this.isLocked = false;
+      });
+      this._DbLogService.create({
+        subject: "priority Po",
+        message: "end import Po inserted lines: " + LinesInserted.toString(),
+        level: "Info",
+        context: "",
+        metadata: "",
+        companyId: companyId,
+      });
+      this.isLocked = false;
+    } catch (error) {
+      this.isLocked = false;
+      console.log("getAllNewPoFromPriority", error.message, error.stack);
+      this._DbLogService.create({
+        subject: "priority Po",
+        message: error.message,
+        level: "error",
+        context: "getAllNewPoFromPriority",
+        metadata: "",
+        companyId: companyId,
+      });
+    }
   }
 
   async findAll(companyId: string) {
@@ -194,7 +208,6 @@ export class TaskUserService {
   }
 
   async findOne(id: string) {
-
     const res = await this.taskUsersRepository.findOne({
       where: {
         id: id,
@@ -260,13 +273,13 @@ export class TaskUserService {
     return await this.taskUsersRepository.save(taskUser);
   }
 
-  async update(id: string, updateTaskUserDto: UpdateTaskUserDto) {    
+  async update(id: string, updateTaskUserDto: UpdateTaskUserDto) {
     const { companyId, userId, taskStatusId, ...rest } = updateTaskUserDto;
     const data = {
       ...rest,
       ...(taskStatusId && { taskStatus: { id: taskStatusId } }),
       ...(userId && { user: { id: userId } }),
-    };    
+    };
     const res = await this.taskUsersRepository.update(id, data);
     await this.updateorderStatus(id);
     return res;
@@ -293,7 +306,6 @@ export class TaskUserService {
         orderid: taskUser.orderid,
         //taskStatus: { id: Not(Equal(OrderStatusEnum.AssistantPending)) },
         taskStatus: { id: Not(Equal(OrderStatusEnum.Complete)) },
-        
       },
     });
     if (tasksUser.length > 0) return true;

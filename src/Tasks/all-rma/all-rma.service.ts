@@ -44,6 +44,9 @@ export class AllRmaService {
     if (this.isLocked) {
       return "is locked";
     }
+    try {
+      
+    
     this.isLocked = true;
     //const resCompantSettings = await this._CompanyService.findOne(companyId);
     //const urlEndPoint = `/DOCUMENTS_m?$filter=STATDES eq 'Open' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
@@ -131,6 +134,18 @@ export class AllRmaService {
       companyId: resCompantSettings.id,
     });
     this.isLocked = false;
+    } catch (error) {
+      this.isLocked = false;
+      console.log(error.message)     
+      this._DbLogService.create({
+      subject: "priority rmas error",
+      message:  error.message,
+      level: "",
+      context: "",
+      metadata: "",
+      companyId: resCompantSettings.id,
+    });
+    }
   }
 
   async create(createAllRmaDto: any) {

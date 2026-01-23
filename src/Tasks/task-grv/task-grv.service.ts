@@ -19,6 +19,7 @@ export class TaskGrvService {
         const ins = new TaskGrv();
     ins.DataInfo = createTaskGrvDto.DataInfo;
     ins.productName= createTaskGrvDto.productName;
+    ins.PartNumber = createTaskGrvDto.PartNumber;
     ins.productDescription= createTaskGrvDto.productDescription;
     ins.NoOfItems_0= createTaskGrvDto.NoOfItems_0;
     ins.NoOfBoxes_0 = createTaskGrvDto.NoOfBoxes_0;
@@ -67,6 +68,7 @@ export class TaskGrvService {
     ins.DataInfo = updateTaskGrvDto.DataInfo;
 
     ins.NoOfItems_0= updateTaskGrvDto.NoOfItems_0;
+    ins.PartNumber= updateTaskGrvDto.PartNumber;
     ins.productName= updateTaskGrvDto.productName;
     ins.productDescription= updateTaskGrvDto.productDescription;
     ins.NoOfBoxes_0 = updateTaskGrvDto.NoOfBoxes_0;

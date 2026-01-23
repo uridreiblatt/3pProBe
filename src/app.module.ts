@@ -40,17 +40,17 @@ import {
   CookieMatchOptions,
 } from "src/auth/cookie-body-match.guard"; // 'src/auth/cookie-body-match.guard';
 import { TaskInventoryCountModule } from "./Tasks/task-inventory-count/task-inventory-count.module";
-import { TaskRmaModule } from './Tasks/task-rma/task-rma.module';
-import { TaskGrvModule } from './Tasks/task-grv/task-grv.module';
-import { AllRmaModule } from './Tasks/all-rma/all-rma.module';
+import { TaskRmaModule } from "./Tasks/task-rma/task-rma.module";
+import { TaskGrvModule } from "./Tasks/task-grv/task-grv.module";
+import { AllRmaModule } from "./Tasks/all-rma/all-rma.module";
 import { CompanySettingsModule } from "./settings/company-settings/company-settings.module";
 
 const cookieMatchOpts: CookieMatchOptions = {
   cookieName: "companyId",
   bodyFieldPath: "companyId",
-  bodyMethods: ["POST","PUT", "PATCH"],
+  bodyMethods: ["POST", "PUT", "PATCH"],
   paramName: "companyId",
-  paramMethods: ["GET",  "DELETE"],
+  paramMethods: ["GET", "DELETE"],
 };
 
 @Module({
@@ -82,36 +82,45 @@ const cookieMatchOpts: CookieMatchOptions = {
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([Log]), // ✅ Required
-    CompanyModule,
-    UserCompanyModule,
-    BoxesModule,
-    ZoneModule,
-    RoleModule,
-    UserRoleModule,
-    OrderModule,
-    SmsModule,
-    EsModule,
+    //********************* */
     TaskStatusModule,
     TaskUserModule,
-    OrderLinesModule,
-    ReportViewModule,
-    GetOrderInfoModule,
-    OrderBoxesModule,
-    ShipmentPriorityModule,
-    DbLogModule,
     TaskTypeModule,
-    PartsModule,
-    PriorityProductsHierarchyModule,
-    OrderBasketModule,
-    PriorityProductsLocationsModule,
-    CylinderModule,
-    DeliverySettingModule,
-    PartCqauntModule,
     TaskInventoryCountModule,
     TaskRmaModule,
     TaskGrvModule,
     AllRmaModule,
+    CompanyModule,
+    UserCompanyModule,
+    RoleModule,
+    UserRoleModule,
     CompanySettingsModule,
+    //**********************/
+    BoxesModule,
+    ZoneModule,
+    CylinderModule,
+    DeliverySettingModule,
+    //********************* */
+    OrderModule,
+    OrderLinesModule,
+    GetOrderInfoModule,
+    OrderBoxesModule,
+    OrderBasketModule,
+    //********************* */
+    SmsModule,
+    EsModule,
+    ShipmentPriorityModule,
+
+    //********************* */
+    ReportViewModule,
+    //********************* */
+
+    PartsModule,
+    PriorityProductsHierarchyModule,
+    PriorityProductsLocationsModule,
+    PartCqauntModule,
+
+    DbLogModule,
   ],
   controllers: [],
   providers: [
