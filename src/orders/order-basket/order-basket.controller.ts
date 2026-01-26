@@ -27,6 +27,13 @@ export class OrderBasketController {
     async findAll(@Request() req) {
       return await this.localService.findAll(req.user.selectCompany);
     }
+
+@Get('getOrderBasket/:idOrder')
+  async getOrderBoxes(@Param('idOrder') idOrder: string) {
+    return await this.localService.getOrderBasket(idOrder);
+  }
+
+
     @Get(":id")
     async findOne(@Request() req, @Param("id") id: string) {
       const res = await this.localService.findOne(id);

@@ -120,9 +120,12 @@
 
 
 // SET SQL_SAFE_UPDATES = 0;
+// SET FOREIGN_KEY_CHECKS = 0;
 // DELETE FROM p3pro.task_rma;
-// delete FROM p3pro.all_rma;
+// DELETE FROM p3pro.all_rma;
 // DELETE FROM p3pro.order_line;
-// delete from p3pro.order_boxes;
-// delete from p3pro.order;
+// DELETE FROM p3pro.order_basket;
+// DELETE FROM p3pro.order_boxes;
+// DELETE FROM p3pro.order;
+// SET FOREIGN_KEY_CHECKS = 1;
 // SET SQL_SAFE_UPDATES = 1;

@@ -4,6 +4,7 @@ import { UpdateOrderBasketDto } from './dto/update-order-basket.dto';
 import { OrderBasket } from './entities/order-basket.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Order } from '../order/entities/order.entity';
 
 @Injectable()
 export class OrderBasketService {
@@ -24,19 +25,36 @@ export class OrderBasketService {
     });
     if (existingBox !== null) {
       throw new BadRequestException(
-        'Basket in Use on order ' + existingBox.order.ORDNAME,
+        'Basket in Use on order ' + existingBox.order?.ORDNAME,
         {
           cause: new Error(),
           description: 'Basket in Use',
       });
     }
-    return await this.OrderBasketsRepository.save(createOrderBasketDto);
+
+    const ins = new  OrderBasket();
+          ins.basketId = createOrderBasketDto.basketId;
+          ins.basketRemarks = createOrderBasketDto.basketRemarks;
+          ins.order = new Order();
+          ins.order.id = createOrderBasketDto.orderId;
+         console.log('OrderBasket', ins)
+    return await this.OrderBasketsRepository.save(ins);
   }
 
-  async findAll(companyId:  number) {
+  async findAll(companyId:  string) {
     return await this.OrderBasketsRepository.find({
     });
   }
+
+
+async getOrderBasket(orderId:  string) {
+    return await this.OrderBasketsRepository.find({
+      where: {
+        order:{id: orderId}
+      }
+    });
+  }
+  
 
   async findOne(id: string) {
     return await this.OrderBasketsRepository.findOne({

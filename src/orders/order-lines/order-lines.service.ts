@@ -112,7 +112,10 @@ export class OrderLinesService {
       createAssemblyTask.orderid = orderLine.order.id;
       createAssemblyTask.orderlineId = orderLine.id;
       createAssemblyTask.DataInfo = orderLine.order.ORDNAME;
-      createAssemblyTask.PartNumber = orderLine.PARTNAME;
+      createAssemblyTask.productName = orderLine.PARTNAME;
+      createAssemblyTask.PartNumber = orderLine.BARCODE;
+      createAssemblyTask.productDescription = orderLine.PARTDES;
+
       createAssemblyTask.QTYtoassemble = orderLine.TBALANCE;
       createAssemblyTask.user = new User();
       createAssemblyTask.user.id = EOrderUser.unAssigned;
@@ -153,7 +156,9 @@ export class OrderLinesService {
       createAssemblyTask.orderid = orderLine.order.id;
       createAssemblyTask.orderlineId = orderLine.id;
       createAssemblyTask.DataInfo = orderLine.order.ORDNAME;
-      createAssemblyTask.PartNumber = orderLine.PARTNAME;
+      createAssemblyTask.productName = orderLine.PARTNAME;
+      createAssemblyTask.PartNumber = orderLine.BARCODE;
+      createAssemblyTask.productDescription = orderLine.PARTDES;
       createAssemblyTask.QTYtoassemble = updateOrderLineAssemblyAidDto.assemblyQty;
       createAssemblyTask.user = new User();
       createAssemblyTask.user.id = EOrderUser.unAssigned;
