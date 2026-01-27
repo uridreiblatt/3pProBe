@@ -36,11 +36,15 @@ export class AllRmaService {
     this.logger.log("crone Called getAllNewRmaFromPriority EVERY_2ND_HOUR");
     const allCompanies = await this._CompanyService.findAll();
     allCompanies.forEach(async (company) => {
-      if (company.companySetting) await this.getAllNewRmaFromPriority(company);
+      if (company.companySetting) await this.syncAllNewRmaFromPriority(company);
     });
   }
 
-  async getAllNewRmaFromPriority(resCompantSettings: Company): Promise<any> {
+  async getAllNewRmaFromPriority(companyId:string): Promise<any>{
+    return await this._CompanyService.findOne(companyId);
+
+  }
+  async syncAllNewRmaFromPriority(resCompantSettings: Company): Promise<any> {
     if (this.isLocked) {
       return "is locked";
     }

@@ -29,6 +29,8 @@ import { ConfigService } from "@nestjs/config";
 import { EOrderUser, OrderStatusEnum } from "src/orders/order/enums/enum";
 import { TaskGrv } from "../task-grv/entities/task-grv.entity";
 import { CompanyService } from "src/usersCompanies/company/company.service";
+import { syncBuiltinESMExports } from "module";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()
 export class TaskUserService {
@@ -61,7 +63,23 @@ export class TaskUserService {
     this._CompanyService = CompanyService;
   }
 
+
+    @Cron(CronExpression.EVERY_DAY_AT_10AM)
+    async handleCron() {
+      this.logger.log('crone Called EVERY_DAY_AT_10AM getAllNewPoFromPriority');
+      const companies = await this._CompanyService.findAll();
+      companies.map(async (e)=>{
+         await this.SyncAllNewPoFromPriority(e.id);
+
+      })
+    }
+
   async getAllNewPoFromPriority(companyId: string): Promise<any> {
+    
+    return await this.SyncAllNewPoFromPriority(companyId);
+  }
+
+  async SyncAllNewPoFromPriority(companyId: string): Promise<any> {
     if (this.isLocked) {
       return "is locked";
     }

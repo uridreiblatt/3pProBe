@@ -8,6 +8,7 @@ import { HttpService } from "@nestjs/axios";
 import { Company } from "src/usersCompanies/company/entities/company.entity";
 import { PriorityProductsHierarchy } from "../priorityProductsHierarchy/entities/priority-products-hierarchy.entity";
 import { CompanyService } from "src/usersCompanies/company/company.service";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()
 export class priorityProductsService {
@@ -33,7 +34,21 @@ export class priorityProductsService {
     this._CompanyService = CompanyService;
   }
 
-  async getPriorityParts(companyId: string) {
+    @Cron(CronExpression.EVERY_DAY_AT_10AM)
+      async handleCron() {
+        this.logger.log('crone Called EVERY_DAY_AT_10AM getAllNewPoFromPriority');
+        const companies = await this._CompanyService.findAll();
+        companies.map(async (e)=>{
+           await this.SyncPriorityParts(e.id);
+  
+        })
+      }
+
+
+  async getPriorityParts(companyId: string){
+    return await this.SyncPriorityParts(companyId);
+  }
+  async SyncPriorityParts(companyId: string) {
     //https://win01.maclocks.com/odata/Priority/tabula.ini/cb3007/LOGPART?$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES
     if (this.isLocked) {
       return "is locked";
