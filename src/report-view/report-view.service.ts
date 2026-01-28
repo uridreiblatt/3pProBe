@@ -47,7 +47,7 @@ ORDER BY ORDINAL_POSITION;`;
     const sql = `
   SELECT *
   FROM ${rpt.reportTitleName}
-  WHERE comapnyId = ?`;
+  WHERE companyId = ?`;
 
     const data = await this.reportViewRepository.query(sql, ["aaa-aaa-aaa"]);
 
