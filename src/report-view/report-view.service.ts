@@ -15,20 +15,62 @@ export class ReportViewService {
     return await this.reportViewRepository.find();
   }
 
-  async DashBoard() {
-    const queryTasks = "SELECT  * FROM  [V_DashBoardTasks] ";
+  async DashBoard(companyId: string, roleId: number, userId: string) {
+    console.log(companyId, roleId, userId);
+    const queryTasks =
+      "select " +
+      " (select u.userName from user u where u.id = userId) as userName " +
+      " ,(select u.status from task_status u where u.id = taskStatusId) as status " +
+      " ,(select u.role from task_type u where u.id = taskTypeId) as task_type " +
+      " , taskTypeId " +
+      " ,userId " +
+      " , count(*)  as count " +
+      " ,userId " +
+      " from task_user tu " +
+      " where tu.companyId = '" +
+      companyId +
+      "' " +
+      " group by taskStatusId,  userId,taskTypeId; ";
     const dataTasks = await this.reportViewRepository.query(queryTasks);
-    const queryOrders = "SELECT  * FROM  [V_DashBoardOrders] ";
+    const queryOrders =
+      "SELECT  " +
+      " (select u.userName from user u where u.id = userId) as userName " +
+      " ,(select u.status from task_status u where u.id = taskStatusId) as status " +
+      " ,(select u.roleDisplayName from role u where u.id = roleId) as role " +
+      " ,userId " +
+      " ,roleId " +
+      " , count(*)  as count " +
+      " ,userId " +
+      " FROM p3pro.order o " +
+      " where o.comapnyId = 'aaa-aaa-aaa' " +
+      //" and roleId = 1 " +
+      //and userId in ('aaa-bbb-ccc','94cb0799-a7d0-4c84-9ab9-ca36ed161d32')
+      " group by taskStatusId, roleId, userId; ";
     const dataOrders = await this.reportViewRepository.query(queryOrders);
+    const queryRma =
+      " select " +
+      " (select u.userName from user u where u.id = userId) as userName" +
+      " ,(select u.status from task_status u where u.id = taskStatusId) as status" +
+      " ,'rma' as task_type" +
+      " ,userId" +
+      " , count(*) as count" +
+      " ,userId " +
+      " from all_rma ar" +
+      " where ar.companyId = '" +
+      companyId +
+      "' " +
+      " group by taskStatusId, userId; ";
+    const dataRma = await this.reportViewRepository.query(queryRma);
     const allData = {
       tasks: dataTasks,
       orders: dataOrders,
+      rma: dataRma,
     };
     return allData;
   }
 
   async findOne(id: number) {
-    const rpt =  await this.reportViewRepository.findOne({
+    const rpt = await this.reportViewRepository.findOne({
       where: { id: id },
     });
 
@@ -52,7 +94,7 @@ ORDER BY ORDINAL_POSITION;`;
     const data = await this.reportViewRepository.query(sql, ["aaa-aaa-aaa"]);
 
     const allData = {
-      currentReport: rpt,      
+      currentReport: rpt,
       fields: dtFields,
       data: data,
     };

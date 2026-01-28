@@ -1,8 +1,9 @@
-import { Controller, Get, Header, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Header, Param, UseGuards , Request} from '@nestjs/common';
 import { ReportViewService } from './report-view.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 @ApiTags('report-view')
+@UseGuards(AuthGuard)
 @Controller('report-view')
 export class ReportViewController {
   constructor(private readonly reportViewService: ReportViewService) {}
@@ -10,8 +11,9 @@ export class ReportViewController {
   //@UseGuards(AuthGuard)
   @Get('DashBoard')
   @Header('Cache-Control', 'max-age=0')
-  async DashBoard() {
-    return await this.reportViewService.DashBoard();
+  async DashBoard(@Request() req) {
+    //console.log(req.user)
+    return await this.reportViewService.DashBoard(req.user.selectCompany, req.user.role, req.user.userUuid);
   }
   @Get()
   async findAll() {
