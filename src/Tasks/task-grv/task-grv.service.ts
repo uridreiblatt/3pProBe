@@ -34,6 +34,7 @@ export class TaskGrvService {
     ins.NoOfItems_5= createTaskGrvDto.NoOfItems_5;
     ins.NoOfBoxes_5 = createTaskGrvDto.NoOfBoxes_5;
     ins.bulkQauntity= createTaskGrvDto.bulkQauntity;
+    ins.quantityRequired =  createTaskGrvDto.quantityRequired;
     ins.Total= createTaskGrvDto.Total;    
     ins.taskUser= new TaskUser();
     ins.taskUser.id = createTaskGrvDto.taskUserId;
@@ -83,6 +84,7 @@ export class TaskGrvService {
     ins.NoOfItems_5= updateTaskGrvDto.NoOfItems_5;
     ins.NoOfBoxes_5 = updateTaskGrvDto.NoOfBoxes_5;
     ins.bulkQauntity= updateTaskGrvDto.bulkQauntity;
+    ins.quantityRequired =  updateTaskGrvDto.quantityRequired;
     ins.Total= updateTaskGrvDto.Total;    
     ins.taskUser= new TaskUser();
     ins.taskUser.id = updateTaskGrvDto.taskUserId;

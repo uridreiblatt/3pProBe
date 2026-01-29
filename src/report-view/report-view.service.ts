@@ -19,18 +19,17 @@ export class ReportViewService {
     console.log(companyId, roleId, userId);
     const queryTasks =
       "select " +
-      " (select u.userName from user u where u.id = userId) as userName " +
-      " ,(select u.status from task_status u where u.id = taskStatusId) as status " +
-      " ,(select u.role from task_type u where u.id = taskTypeId) as task_type " +
+      // " (select u.userName from user u where u.id = userId) as userName " +
+      // " ,(select u.status from task_status u where u.id = taskStatusId) as status " +
+      " (select u.role from task_type u where u.id = taskTypeId) as task_type " +
       " , taskTypeId " +
-      " ,userId " +
+      // " ,userId " +
       " , count(*)  as count " +
-      " ,userId " +
       " from task_user tu " +
       " where tu.companyId = '" +
       companyId +
       "' " +
-      " group by taskStatusId,  userId,taskTypeId; ";
+      " group by   taskTypeId; "; //taskStatusId, userId
     const dataTasks = await this.reportViewRepository.query(queryTasks);
     const queryOrders =
       "SELECT  " +
@@ -61,12 +60,25 @@ export class ReportViewService {
       "' " +
       " group by taskStatusId, userId; ";
     const dataRma = await this.reportViewRepository.query(queryRma);
+
+
+    const queryOrderalert = "SELECT count(*) as count FROM p3pro.order p WHERE  taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )";
+    const orderalert = await this.reportViewRepository.query(queryOrderalert);
+    const queryRmaalert = "SELECT count(*) as count FROM p3pro.all_rma p WHERE  taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )";
+    const rmaAlert = await this.reportViewRepository.query(queryRmaalert);
+    const queryTaskalert = "SELECT count(*) as count FROM p3pro.task_user p WHERE  taskStatusId = 4   OR (    created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )";
+    const taskAlert = await this.reportViewRepository.query(queryTaskalert);
     const allData = {
       tasks: dataTasks,
       orders: dataOrders,
       rma: dataRma,
+      orderalert: orderalert?.[0].count || 0,
+      rmaAlert:rmaAlert?.[0].count || 0,
+      taskAlert:taskAlert?.[0].count || 0,
+
     };
     return allData;
+    
   }
 
   async findOne(id: number) {

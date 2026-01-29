@@ -49,6 +49,8 @@ export class TaskGrv extends Tablestamp {
   bulkQauntity: number;
   @Column({ default: 0 })
   Total: number;
+  @Column({ default: 0 })
+  quantityRequired: number;
   @ManyToOne(() => TaskUser, (taskUser) => taskUser.id)
   taskUser: TaskUser;
 }

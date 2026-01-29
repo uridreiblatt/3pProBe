@@ -10,6 +10,8 @@ export class ReportView {
   reportTitleName: string;
   @Column({ nullable: true })
   publish: string;
+   @Column({ default: 'Order' })
+  reportType: string;
 @Column({ nullable: true })
   createdAt: Date;
 

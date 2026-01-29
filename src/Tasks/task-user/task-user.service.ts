@@ -64,7 +64,7 @@ export class TaskUserService {
   }
 
 
-    @Cron(CronExpression.EVERY_DAY_AT_10AM)
+    @Cron(CronExpression.EVERY_10_MINUTES)
     async handleCron() {
       this.logger.log('crone Called EVERY_DAY_AT_10AM getAllNewPoFromPriority');
       const companies = await this._CompanyService.findAll();
@@ -89,7 +89,7 @@ export class TaskUserService {
       const resCompantSettings = await this._CompanyService.findOne(companyId);
 
       //const urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`;
-      const urlEndPoint = `/PORDERS?$filter=STATDES eq  '${resCompantSettings.companySetting.priorityPoStatus}' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`;
+      const urlEndPoint = `/PORDERS?$filter=STATDES eq  '${resCompantSettings.companySetting.priorityPoStatus}' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT,BARCODE)`;
       const url =
         //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
         resCompantSettings.companySetting.priorityApiUrl +
@@ -166,10 +166,11 @@ export class TaskUserService {
               const ins = new TaskGrv();
               ins.taskUser = new TaskUser();
               ins.taskUser.id = EOrderUser.unAssigned;
-              ins.PartNumber = subForm.PARTNAME;
-              ins.DataInfo = subForm.PDES;
-              //ins.Location= subForm.CDES;
-              ins.Total = Number(subForm.TQUANT);
+              ins.PartNumber = subForm.BARCODE;
+              ins.DataInfo = '';
+              ins.productName = subForm.PARTNAME;
+              ins.productDescription = subForm.PDES;
+              ins.quantityRequired = Number(subForm.TQUANT);
               ins.taskUser = new TaskUser();
               ins.taskUser.id = newPo.id;
               await this.taskGrvRepository.save(ins);

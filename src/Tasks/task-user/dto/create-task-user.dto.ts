@@ -137,4 +137,5 @@ export interface PORDERITEMSLines {
   //CDES: string;
   PDES: string;
   TQUANT: string;
+  BARCODE: string;
 }
