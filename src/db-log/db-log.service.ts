@@ -14,9 +14,13 @@ export class DbLogService {
 
   async create(createDbLogDto: CreateDbLogDto): Promise<any> {
     try {
+      if(createDbLogDto.subject.length > 999)
+      {
+        createDbLogDto.subject= createDbLogDto.subject.substring(1,998);
+      }
       return await this.DbLogRepository.save(createDbLogDto);
     } catch (error) {
-      this.logger.error('ffffffffffffffffffffffffff' + error);
+      this.logger.error( error);
     }
   }
 
