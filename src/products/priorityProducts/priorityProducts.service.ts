@@ -88,7 +88,7 @@ export class priorityProductsService {
       const createPartDto = new PriorityProducts();
       createPartDto.PARTNAME = element.PARTNAME;
       createPartDto.BARCODE = element.BARCODE || "";
-      createPartDto.PARTDES = element.STATDES;
+      createPartDto.PARTDES = element.PARTDES;
       createPartDto.PART = element.PART;
       createPartDto.TYPE = element.TYPE;
       createPartDto.company = new Company();
