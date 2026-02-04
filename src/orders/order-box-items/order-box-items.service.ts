@@ -20,7 +20,7 @@ export class OrderBoxItemsService {
     ins.productName = createOrderBoxItemDto.productName;
     ins.productDescription = createOrderBoxItemDto.productDescription;
     ins.itemsCount = createOrderBoxItemDto.itemsCount;
-    ins.orderId=createOrderBoxItemDto.orderId;
+    ins.orderId = createOrderBoxItemDto.orderId;
     return await this.OrderBoxesItemsRepository.save(ins);
   }
 
@@ -31,9 +31,23 @@ export class OrderBoxItemsService {
   }
 
   async findAllCompareOrderLines(orderId: string) {
-    return await this.OrderBoxesItemsRepository.find({
-      where: { orderId: orderId },
-    });
+    const sql =
+      `  SELECT orderId,BARCODE, ` +
+      ` sum(ol.TBALANCE) orderQty, ` +
+      ` (select IFNULL (sum(obi.itemsCount),0) FROM p3pro.order_boxes_items obi  where  ol.orderId= obi.orderId ) as collected ` +
+      ` FROM p3pro.order_line ol ` +
+      ` where orderId= '` + orderId + `' ` +
+      ` group by orderId,BARCODE`;
+
+    const lineDiff = await this.OrderBoxesItemsRepository.query(sql);
+    return lineDiff
+  .filter((e: any) => Number(e.orderQty) !== Number(e.collected))
+  .map((e: any) => ({
+    countStatus: "Invalid Qty",
+    partNumber: e.BARCODE,
+    orderQty: Number(e.orderQty),
+    collected: Number(e.collected),
+  }));
   }
 
   async findOne(id: string) {

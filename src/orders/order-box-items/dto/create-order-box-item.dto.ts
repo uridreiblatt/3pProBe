@@ -20,4 +20,7 @@ export class CreateOrderBoxItemDto {
   @ApiProperty()
   @IsString() 
   orderId: string;
+  @ApiProperty()
+  @IsString() 
+  companyId: string;
 }

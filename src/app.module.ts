@@ -44,7 +44,7 @@ import { TaskRmaModule } from "./Tasks/task-rma/task-rma.module";
 import { TaskGrvModule } from "./Tasks/task-grv/task-grv.module";
 import { AllRmaModule } from "./Tasks/all-rma/all-rma.module";
 import { CompanySettingsModule } from "./settings/company-settings/company-settings.module";
-import { OrderBoxItemsModule } from './orders/order-box-items/order-box-items.module';
+import { OrderBoxItemsModule } from "./orders/order-box-items/order-box-items.module";
 
 const cookieMatchOpts: CookieMatchOptions = {
   cookieName: "companyId",
@@ -64,7 +64,7 @@ const cookieMatchOpts: CookieMatchOptions = {
     AuthModule,
     UsersModule,
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule, ScheduleModule.forRoot()],
+      imports: [ConfigModule, ],
       useFactory: (configService: ConfigService) => ({
         type: "mysql",
         host: "127.0.0.1",
@@ -84,6 +84,14 @@ const cookieMatchOpts: CookieMatchOptions = {
     }),
     TypeOrmModule.forFeature([Log]), // ✅ Required
     //********************* */
+        OrderBoxItemsModule,
+    OrderBoxesModule,
+
+    OrderModule,
+    OrderLinesModule,
+    GetOrderInfoModule,
+    OrderBasketModule,
+    //********************* */
     TaskStatusModule,
     TaskUserModule,
     TaskTypeModule,
@@ -101,12 +109,7 @@ const cookieMatchOpts: CookieMatchOptions = {
     ZoneModule,
     CylinderModule,
     DeliverySettingModule,
-    //********************* */
-    OrderModule,
-    OrderLinesModule,
-    GetOrderInfoModule,
-    OrderBoxesModule,
-    OrderBasketModule,
+
     //********************* */
     SmsModule,
     EsModule,
@@ -122,8 +125,6 @@ const cookieMatchOpts: CookieMatchOptions = {
     PartCqauntModule,
 
     DbLogModule,
-
-    OrderBoxItemsModule,
   ],
   controllers: [],
   providers: [

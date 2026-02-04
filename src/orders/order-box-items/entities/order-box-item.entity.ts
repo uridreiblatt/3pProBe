@@ -7,11 +7,12 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  ManyToOne,
+  ManyToOne,  
   JoinColumn,
   //OneToMany,
   //JoinColumn,
 } from 'typeorm';
+@Entity({ name: "order_boxes_items" }) // <-- set your real table name
 export class OrderBoxesItems extends Tablestamp {
   @PrimaryGeneratedColumn("uuid")
   id: string;

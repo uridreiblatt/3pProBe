@@ -7,7 +7,7 @@ export class Boxsize extends Tablestamp{
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ default: "1-1-1" })
+  @Column({ default: "1*1*1" })
   sizeDesc: string;
 
 

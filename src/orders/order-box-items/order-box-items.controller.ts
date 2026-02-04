@@ -2,7 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { OrderBoxItemsService } from './order-box-items.service';
 import { CreateOrderBoxItemDto } from './dto/create-order-box-item.dto';
 import { UpdateOrderBoxItemDto } from './dto/update-order-box-item.dto';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('order-box-items')
 @Controller('order-box-items')
 export class OrderBoxItemsController {
   constructor(private readonly orderBoxItemsService: OrderBoxItemsService) {}
@@ -12,7 +13,7 @@ export class OrderBoxItemsController {
     return this.orderBoxItemsService.create(createOrderBoxItemDto);
   }
 
-  @Get(':orderId')
+  @Get('findOrder:orderId')
   findAll(@Param('orderId') orderId: string) {
     return this.orderBoxItemsService.findAll(orderId);
   }
@@ -20,6 +21,15 @@ export class OrderBoxItemsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.orderBoxItemsService.findOne(id);
+  }
+
+  //
+  @Get('order/findAllCompareOrderLines:orderId')
+  findAllCompareOrderLines(@Param('orderId') orderId: string) {
+
+
+
+    return this.orderBoxItemsService.findAllCompareOrderLines(orderId);
   }
 
   @Patch(':id')
