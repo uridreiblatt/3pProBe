@@ -1,5 +1,6 @@
 import { float } from '@elastic/elasticsearch/lib/api/types';
 import { Boxsize } from 'src/maintenence/boxes/entities/box.entity';
+import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
 import { Order } from 'src/orders/order/entities/order.entity';
 import {
   Entity,
@@ -11,7 +12,7 @@ import {
   //JoinColumn,
 } from 'typeorm';
 @Entity()
-export class OrderBoxes {
+export class OrderBoxes extends Tablestamp {
   @PrimaryGeneratedColumn('uuid')
   id: string;
   @Column({ nullable: true })
@@ -20,7 +21,8 @@ export class OrderBoxes {
   boxweight: float;
   @Column({ nullable: true })
   boxNo: number;
-
+  @Column({ nullable: true, default :  0})
+  itemsCount: number;
   @ManyToOne(() => Boxsize, (boxSize) => boxSize.id)
   @JoinColumn({ name: 'boxSizeId' })
   boxSize: Boxsize;

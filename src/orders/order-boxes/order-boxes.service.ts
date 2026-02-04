@@ -67,6 +67,7 @@ export class OrderBoxesService {
         id:ordBox.id,
         boxweight: ordBox.boxweight,
         boxNo: ordBox.boxNo,
+        itemsCount: ordBox.itemsCount,
         lineRemarks: ordBox.lineRemarks,
         box: {
           id: ordBox.boxSize.id,
