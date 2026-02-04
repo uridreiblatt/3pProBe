@@ -29,7 +29,7 @@ export class OrderBasketController {
     }
 
 @Get('getOrderBasket/:idOrder')
-  async getOrderBoxes(@Param('idOrder') idOrder: string) {
+  async getOrderBasket(@Param('idOrder') idOrder: string) {
     return await this.localService.getOrderBasket(idOrder);
   }
 
