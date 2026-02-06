@@ -16,7 +16,6 @@ export class ReportViewService {
   }
 
   async DashBoard(companyId: string, roleId: number, userId: string) {
-    console.log(companyId, roleId, userId);
     const queryTasks =
       "select " +
       // " (select u.userName from user u where u.id = userId) as userName " +

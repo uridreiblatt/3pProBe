@@ -1,10 +1,15 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
-import { Boxsize } from 'src/maintenence/boxes/entities/box.entity';
-import { Order } from 'src/orders/order/entities/order.entity';
+import { ApiProperty } from "@nestjs/swagger";
+import {
+  IsNumber,
+  IsString,
+  IsArray,
+  ValidateNested,
+  IsOptional,
+} from "class-validator";
+import { Type } from 'class-transformer';
+import { CreateOrderBoxItemDto } from "src/orders/order-box-items/dto/create-order-box-item.dto";
 
 export class CreateOrderBoxDto {
-
   @ApiProperty({ default: 1 })
   @IsNumber()
   boxweight: number;
@@ -12,16 +17,22 @@ export class CreateOrderBoxDto {
   // @ApiProperty({ default: 1 })
   // @IsNumber()
   // boxNo: number;
-  @ApiProperty({ default: '' })
+  @ApiProperty({ default: "" })
   @IsString()
-  boxId: string ;
-  @ApiProperty({ default: '' })
+  boxId: string;
+  @ApiProperty({ default: "" })
   @IsString()
   companyId: string;
-   @ApiProperty({ default: '' })
-   @IsString()
+  @ApiProperty({ default: "" })
+  @IsString()
   orderId: string;
-  @ApiProperty({ default: '' })
-   @IsString()
+  @ApiProperty({ default: "" })
+  @IsString()
   lineRemarks: string;
+  @ApiProperty({ type: [CreateOrderBoxItemDto] })
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreateOrderBoxItemDto)
+  orderBoxLines: CreateOrderBoxItemDto[];
 }

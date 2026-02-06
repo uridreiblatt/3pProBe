@@ -13,7 +13,7 @@ export class OrderBoxItemsController {
     return this.orderBoxItemsService.create(createOrderBoxItemDto);
   }
 
-  @Get('findOrder:orderId')
+  @Get('findOrder/:orderId')
   findAll(@Param('orderId') orderId: string) {
     return this.orderBoxItemsService.findAll(orderId);
   }

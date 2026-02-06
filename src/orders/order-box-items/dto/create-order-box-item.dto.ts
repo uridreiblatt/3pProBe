@@ -4,6 +4,9 @@ import { IsNumber, IsString } from "class-validator";
 export class CreateOrderBoxItemDto {
   @ApiProperty()
   @IsString()
+  id: string;
+  @ApiProperty()
+  @IsString()
   partNumber: string;
   @ApiProperty()
   @IsString()
@@ -16,11 +19,11 @@ export class CreateOrderBoxItemDto {
   itemsCount: number;
   @ApiProperty()
   @IsString()
-  orderBoxesId : string;
+  orderBoxesId: string;
   @ApiProperty()
-  @IsString() 
+  @IsString()
   orderId: string;
   @ApiProperty()
-  @IsString() 
+  @IsString()
   companyId: string;
 }

@@ -126,7 +126,6 @@ export class TaskUserService {
           )
       );
       const GrvInfo: RootPoPriority = data;
-      console.log(GrvInfo.value)
       this._DbLogService.create({
         subject: "priority Po",
         message: "start import Po: " + GrvInfo.value.length.toString(),
@@ -189,7 +188,6 @@ export class TaskUserService {
       this.isLocked = false;
     } catch (error) {
       this.isLocked = false;
-      console.log("getAllNewPoFromPriority", error.message, error.stack);
       this._DbLogService.create({
         subject: "priority Po",
         message: error.message,

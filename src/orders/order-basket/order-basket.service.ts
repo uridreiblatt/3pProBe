@@ -37,7 +37,6 @@ export class OrderBasketService {
           ins.basketRemarks = createOrderBasketDto.basketRemarks;
           ins.order = new Order();
           ins.order.id = createOrderBasketDto.orderId;
-         console.log('OrderBasket', ins)
     return await this.OrderBasketsRepository.save(ins);
   }
 
