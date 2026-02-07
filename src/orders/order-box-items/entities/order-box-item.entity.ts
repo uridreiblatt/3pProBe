@@ -29,4 +29,6 @@ export class OrderBoxesItems extends Tablestamp {
   orderBoxes: OrderBoxes;
   @Column({ nullable: true })
   orderId: string; 
+@Column({ default: 0 })
+  orderLineItemsCount:number;
 }

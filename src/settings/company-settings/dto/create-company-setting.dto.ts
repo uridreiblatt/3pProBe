@@ -48,4 +48,7 @@ export class CreateCompanySettingDto {
   @ApiProperty()
   @IsString()
   shipmentCallBack: string;
+  @ApiProperty()
+  @IsBoolean()
+  boxItemsCount: boolean;
 }

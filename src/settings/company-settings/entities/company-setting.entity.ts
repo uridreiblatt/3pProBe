@@ -53,4 +53,6 @@ export class CompanySetting extends Tablestamp {
   company: Company;
   @JoinColumn()
   CompanyId: string;
+  @Column({ default: 0 })
+  boxItemsCount:boolean;
 }

@@ -43,6 +43,7 @@ export class AuthService {
       roles: data.roles,
       companies: data.companies,
       addtionalPickingInfo: data.addtionalPickingInfo,
+      boxItemsCount:data.boxItemsCount,
       users: data.users,
       //exp: Math.floor(Date.now() / 1000) + 60 * 60 * 9 // 24h
     };

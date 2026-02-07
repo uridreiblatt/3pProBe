@@ -26,4 +26,7 @@ export class CreateOrderBoxItemDto {
   @ApiProperty()
   @IsString()
   companyId: string;
+  @ApiProperty()
+  @IsNumber()
+  orderLineItemsCount:number;
 }

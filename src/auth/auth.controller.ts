@@ -61,6 +61,7 @@ export class AuthController {
       return { id: o.company.id, name: o.company.name };
     });
     jwtDetails.addtionalPickingInfo = resUser.userCompany[0].company.companySetting.addtionalPickingInfo;
+    jwtDetails.boxItemsCount = resUser.userCompany[0].company.companySetting.boxItemsCount;
     jwtDetails.users = [];
     if( maxValueOfY > 5 ) 
       jwtDetails.users = resUserAll.users.map((u)=>{
@@ -88,6 +89,7 @@ export class AuthController {
       }),
       userSelectedCompany: resUser.userCompany[0]?.company.id || 0,
       addtionalPickingInfo: resUser.userCompany[0]?.company.companySetting.addtionalPickingInfo,
+      boxItemsCount:resUser.userCompany[0]?.company.companySetting.boxItemsCount,
       userRoleName: resUser.usersRoles.find((ur) => {
         if (ur.role.id === maxValueOfY) return true;
       }).role.role,
@@ -165,6 +167,7 @@ export class AuthController {
         }),
       userSelectedCompany: switchCompanyDto.companyId,
       addtionalPickingInfo: resUser.userCompany[0]?.company.companySetting.addtionalPickingInfo,
+      boxItemsCount: resUser.userCompany[0]?.company.companySetting.boxItemsCount,
       userRoleName: resUser.usersRoles.find((ur) => {
         if (ur.role.id === maxValueOfY) return true;
       }).role.role,

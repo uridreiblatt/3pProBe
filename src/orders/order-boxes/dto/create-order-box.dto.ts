@@ -32,7 +32,7 @@ export class CreateOrderBoxDto {
   @ApiProperty({ type: [CreateOrderBoxItemDto] })
   @IsArray()
   @IsOptional()
-  @ValidateNested({ each: true })
+  @ValidateNested({ each: true })  
   @Type(() => CreateOrderBoxItemDto)
   orderBoxLines: CreateOrderBoxItemDto[];
 }

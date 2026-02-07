@@ -20,13 +20,14 @@ export class OrderBoxItemsService {
     ins.productName = createOrderBoxItemDto.productName;
     ins.productDescription = createOrderBoxItemDto.productDescription;
     ins.itemsCount = createOrderBoxItemDto.itemsCount;
+    ins.orderLineItemsCount = createOrderBoxItemDto.orderLineItemsCount;
     ins.orderId = createOrderBoxItemDto.orderId;
     return await this.OrderBoxesItemsRepository.save(ins);
   }
 
-  async findAll(orderId: string) {
+  async findAll(orderBoxId: string) {
     return await this.OrderBoxesItemsRepository.find({
-      where: { orderId: orderId },
+      where: { orderBoxes: { id: orderBoxId }},
     });
   }
 

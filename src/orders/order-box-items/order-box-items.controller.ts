@@ -13,9 +13,9 @@ export class OrderBoxItemsController {
     return this.orderBoxItemsService.create(createOrderBoxItemDto);
   }
 
-  @Get('findOrder/:orderId')
-  findAll(@Param('orderId') orderId: string) {
-    return this.orderBoxItemsService.findAll(orderId);
+  @Get('findOrder/:orderBoxId')
+  findAll(@Param('orderBoxId') orderBoxId: string) {
+    return this.orderBoxItemsService.findAll(orderBoxId);
   }
 
   @Get(':id')
