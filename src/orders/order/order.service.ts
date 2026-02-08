@@ -24,6 +24,7 @@ import { role } from "src/auth/dto/create-auth.dto";
 import { EOrderUser, OrderStatusEnum } from "./enums/enum";
 import { rolesEnum } from "src/auth/entities/role.enum";
 import { CompanyService } from "src/usersCompanies/company/company.service";
+import { OrderBoxesItems } from "../order-box-items/entities/order-box-item.entity";
 
 @Injectable()
 export class OrderService {
@@ -36,6 +37,9 @@ export class OrderService {
   constructor(
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
+    @InjectRepository(OrderBoxesItems)
+    private orderBoxesItemsRepository: Repository<OrderBoxesItems>,
+
     private orderLinesService: OrderLinesService,
     private orderBoxesService: OrderBoxesService,
     private orderBasketService: OrderBasketService,
@@ -113,7 +117,10 @@ export class OrderService {
     //   'SELECT * FROM v_orders v order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) ';
     // return await this.orderRepository.query(queryViewFields);
     const res = await this.orderRepository.find({
-      where: { taskStatus: { id: Not(OrderStatusEnum.Complete) }, comapny: { id: companyId } },
+      where: {
+        taskStatus: { id: Not(OrderStatusEnum.Complete) },
+        comapny: { id: companyId },
+      },
       relations: {
         taskStatus: true,
         orderLines: true,
@@ -199,7 +206,7 @@ export class OrderService {
       STDES: res.STDES,
       status: res.taskStatus.status,
       orderNote: res.orderNote,
-      ordertext: res.ordertext,       
+      ordertext: res.ordertext,
       orderLines: res.orderLines,
       role: res.role.roleDisplayName,
       taskStatus: {
@@ -241,7 +248,7 @@ export class OrderService {
   }
 
   async updateTrackingNumberFromShipRush(
-  createDeliverySettingDto: CreateDeliverySettingDto
+    createDeliverySettingDto: CreateDeliverySettingDto
   ): Promise<any> {
     const res = await this.orderRepository.findOne({
       select: ["id"],
@@ -265,17 +272,36 @@ export class OrderService {
   }
 
   async updateData(id: string, upd: any): Promise<any> {
-    // const markPending = {
-    //   taskStatus: {
-    //     id: 6, //pending
-    //   },
-    // };
-
     const { companyId, ...rest } = upd;
     return await this.orderRepository.update(id, rest);
   }
 
   async update(orderId: string, updateOrderDto: UpdateOrderDto): Promise<any> {
+    const itmQtyData = await Promise.all(
+      updateOrderDto.orderLines.map(async (ol) => {
+        const itm = await this.orderBoxesItemsRepository.find({
+          where: { orderId: orderId, partNumber: ol.BARCODE },
+        });
+
+        return {
+          itm: ol.BARCODE,
+          cnt: ol.TBALANCE,
+          boxitems: itm.reduce((sum, item) => sum + item.itemsCount, 0),
+        };
+      })
+    );
+    const itemQtyCheck = itmQtyData.filter(
+      (itmError) => itmError.cnt !== itmError.boxitems
+    );
+
+    if (itemQtyCheck.length > 0) {
+      throw new BadRequestException({
+        message: "Incorrect qty in boxes:" + itemQtyCheck
+          .map((x) => `${x.itm}: expected=${x.boxitems}, inBoxes=${x.cnt}`)
+          .join(" , "),
+      });
+    }    
+
     let newRole = updateOrderDto.roleId;
     let orderStatus = updateOrderDto.taskStatus.id; // new  5-complete 2 - inproress
     let userInOrder = updateOrderDto.user.id;
@@ -333,9 +359,9 @@ export class OrderService {
           const resCompantSettings = await this._companyService.findOne(
             updateOrderDto.companyId
           );
-    
+
           if (!resCompantSettings.companySetting.qcRequired) {
-                  newRole = newRole + 1; // add qc stage line 341 will set it to shipper
+            newRole = newRole + 1; // add qc stage line 341 will set it to shipper
           }
         }
 

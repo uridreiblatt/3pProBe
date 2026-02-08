@@ -14,17 +14,17 @@ export class ErrorLogService {
   async logError(error: any, request: Request) {
     try {
       const errorLog = new Log();
-      errorLog.subject= JSON.stringify( {rbody: request.body,});
+      errorLog.subject= error.message || 'Unknown error';
       errorLog.level = 'error';
       errorLog.companyId = 'unknown'  ; // Adjust based on your auth implementation
-      errorLog.message = error.message || 'Unknown error';
+      errorLog.message = JSON.stringify( {rbody: request.body,}).substring(0,3888);
       errorLog.context = `Request: ${request.method} ${request.url}`;
       errorLog.metadata = JSON.stringify( {
         //body: request.body,
         //query: request.query,
         //params: request.params,
         stack: error.stack,
-      }).substring(0,1500);    
+      }).substring(0,3800);    
 
       await this.logRepository.save(errorLog);
     } catch (dbError) {

@@ -3,6 +3,7 @@ import { CreateDbLogDto } from './dto/create-db-log.dto';
 import { Log } from './entities/db-log.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Subject } from 'typeorm/persistence/Subject';
 
 @Injectable()
 export class DbLogService {
@@ -14,10 +15,11 @@ export class DbLogService {
 
   async create(createDbLogDto: CreateDbLogDto): Promise<any> {
     try {
-      if(createDbLogDto.subject.length > 999)
-      {
-        createDbLogDto.subject= createDbLogDto.subject.substring(1,998);
-      }
+      if(createDbLogDto.subject.length > 999)      
+        createDbLogDto.subject= createDbLogDto.subject.substring(0,997);
+      if(createDbLogDto.message.length > 3999)      
+        createDbLogDto.subject= createDbLogDto.subject.substring(0,3997);
+ 
       return await this.DbLogRepository.save(createDbLogDto);
     } catch (error) {
       this.logger.error( error);
