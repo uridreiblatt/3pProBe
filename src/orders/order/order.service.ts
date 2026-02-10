@@ -25,11 +25,13 @@ import { EOrderUser, OrderStatusEnum } from "./enums/enum";
 import { rolesEnum } from "src/auth/entities/role.enum";
 import { CompanyService } from "src/usersCompanies/company/company.service";
 import { OrderBoxesItems } from "../order-box-items/entities/order-box-item.entity";
+import { OrderBoxItemsService } from "../order-box-items/order-box-items.service";
 
 @Injectable()
 export class OrderService {
   private readonly _orderLinesService: OrderLinesService;
   private readonly _orderBoxesService: OrderBoxesService;
+  private readonly _orderBoxItemsService: OrderBoxItemsService;
   private readonly _orderBasketService: OrderBasketService;
   private readonly _taskUserService: TaskUserService;
   private readonly _companyService: CompanyService;
@@ -45,13 +47,15 @@ export class OrderService {
     private orderBasketService: OrderBasketService,
     @Inject(forwardRef(() => TaskUserService))
     private taskUserService: TaskUserService,
-    private companyService: CompanyService
+    private companyService: CompanyService,
+    private orderBoxItemsService: OrderBoxItemsService,
   ) {
     this._orderLinesService = orderLinesService;
     this._orderBoxesService = orderBoxesService;
     this._orderBasketService = orderBasketService;
     this._taskUserService = taskUserService;
     this._companyService = companyService;
+    this._orderBoxItemsService = orderBoxItemsService;
   }
 
   async create(createOrderDto: CreateOrderDto, companyId: string) {
@@ -189,30 +193,46 @@ export class OrderService {
         role: true,
       },
     });
-    const resAll = {
-      id: res.id,
-      ORDNAME: res.ORDNAME,
-      CUSTDES: res.CUSTDES,
-      CUSTNAME: res.CUSTNAME,
+    const orderLines = await Promise.all(
+  res.orderLines.map(async (ol) => {
+    const result = await this.orderRepository.query(
+      `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
+       FROM p3pro.order_boxes_items obi
+       WHERE obi.orderId = ? AND obi.partNumber = ?`,
+      [res.id, ol.BARCODE]
+    );
 
-      createdAt: res.createdAt,
-      user: res.user.userName,
-      COUNTRYNAME: res.COUNTRYNAME,
-      ADDRESS: res.ADDRESS,
-      ADDRESS2: res.ADDRESS2,
-      ADDRESS3: res.ADDRESS3,
-      ZIP: res.ZIP,
-      STATE: res.STATE,
-      STDES: res.STDES,
-      status: res.taskStatus.status,
-      orderNote: res.orderNote,
-      ordertext: res.ordertext,
-      orderLines: res.orderLines,
-      role: res.role.roleDisplayName,
-      taskStatus: {
-        status: res.taskStatus.status,
-      },
+    const collected = result[0]?.total ?? 0;
+
+    return {
+      ...ol,
+      collected,
     };
+  })
+);
+
+const resAll = {
+  id: res.id,
+  ORDNAME: res.ORDNAME,
+  CUSTDES: res.CUSTDES,
+  CUSTNAME: res.CUSTNAME,
+  createdAt: res.createdAt,
+  user: res.user.userName,
+  COUNTRYNAME: res.COUNTRYNAME,
+  ADDRESS: res.ADDRESS,
+  ADDRESS2: res.ADDRESS2,
+  ADDRESS3: res.ADDRESS3,
+  ZIP: res.ZIP,
+  STATE: res.STATE,
+  STDES: res.STDES,
+  status: res.taskStatus.status,
+  orderNote: res.orderNote,
+  ordertext: res.ordertext,
+  orderLines, // ✅ real objects, not promises
+  role: res.role.roleDisplayName,
+  taskStatus: { status: res.taskStatus.status },
+};
+
 
     return resAll;
     //
@@ -429,6 +449,7 @@ export class OrderService {
   }
 
   async remove(id: string) {
+    await this._orderBoxItemsService.removeByOrderId(id);
     await this._orderLinesService.removeByOrderId(id);
     await this._orderBoxesService.removeByOrderId(id);
     await this._orderBasketService.removeByOrderId(id);

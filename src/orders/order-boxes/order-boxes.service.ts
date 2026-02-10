@@ -20,7 +20,10 @@ export class OrderBoxesService {
     private OrderBoxesItemsRepository: Repository<OrderBoxesItems>
   ) {}
   async create(createOrderBoxDto: CreateOrderBoxDto) {
-    //    delete createOrderBoxDto['id'];
+    const itemsCount = createOrderBoxDto.orderBoxLines.reduce(
+  (sum, obl) => sum + (obl.itemsCount ?? 0),
+  0
+);
     const ordB = new OrderBoxes();
     //ordB.boxNo = createOrderBoxDto.boxNo;
     ordB.boxweight = createOrderBoxDto.boxweight;
@@ -29,6 +32,7 @@ export class OrderBoxesService {
     ordB.order = new Order();
     ordB.order.id = createOrderBoxDto.orderId;
     ordB.lineRemarks = createOrderBoxDto.lineRemarks;
+    ordB.itemsCount = itemsCount;
     const res = await this.OrderBoxesRepository.save(ordB);
 
     await Promise.all(
@@ -101,7 +105,7 @@ export class OrderBoxesService {
         itemsCount: ordBox.itemsCount,
         lineRemarks: ordBox.lineRemarks,
         createdAt: ordBox.createdAt,
-        box: {
+        boxSize: {
           id: ordBox.boxSize.id,
           sizeDesc: ordBox.boxSize.sizeDesc,
         },
@@ -112,10 +116,15 @@ export class OrderBoxesService {
 
   async update(id: string, updateOrderBoxDto: UpdateOrderBoxDto) {
     const { boxId, companyId, orderBoxLines, ...rest } = updateOrderBoxDto;
+    const itemsCount = updateOrderBoxDto.orderBoxLines.reduce(
+  (sum, obl) => sum + (obl.itemsCount ?? 0),
+  0
+);
     //console.log("updateOrderBoxDto", updateOrderBoxDto);
     const data = {
       ...rest,
       ...(boxId && { boxSize: { id: boxId } }),
+      itemsCount: itemsCount,
     };
     const res = await this.OrderBoxesRepository.update(id, data);
   
@@ -127,8 +136,7 @@ export class OrderBoxesService {
           
           ...rest,       
           orderBoxes: {id: id},    
-        }
-        console.log("upt", upt);
+        } 
           return this.OrderBoxesItemsRepository.update(upt.id, upt)
 
       }

@@ -8,5 +8,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [TypeOrmModule.forFeature([OrderBoxesItems])],
   controllers: [OrderBoxItemsController],
   providers: [OrderBoxItemsService],
+  exports: [OrderBoxItemsService],
 })
 export class OrderBoxItemsModule {}

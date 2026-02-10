@@ -9,6 +9,7 @@ import { OrderBoxesModule } from 'src/orders/order-boxes/order-boxes.module';
 import { TaskUserModule } from 'src/Tasks/task-user/task-user.module';
 import { CompanyModule } from 'src/usersCompanies/company/company.module';
 import { OrderBoxesItems } from '../order-box-items/entities/order-box-item.entity';
+import { OrderBoxItemsModule } from '../order-box-items/order-box-items.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { OrderBoxesItems } from '../order-box-items/entities/order-box-item.enti
     OrderBoxesModule,
     OrderBasketModule,
     CompanyModule,
+    OrderBoxItemsModule,
     forwardRef(() => TaskUserModule),
   ],
   controllers: [OrderController],

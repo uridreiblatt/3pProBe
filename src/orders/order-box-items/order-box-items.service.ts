@@ -26,29 +26,50 @@ export class OrderBoxItemsService {
   }
 
   async findAll(orderBoxId: string) {
-    return await this.OrderBoxesItemsRepository.find({
-      where: { orderBoxes: { id: orderBoxId }},
+    const res = await this.OrderBoxesItemsRepository.find({
+      where: { orderBoxes: { id: orderBoxId } },
     });
+    const data = await Promise.all(
+      res.map(async (e) => {
+        const result = await this.OrderBoxesItemsRepository.query(
+          `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
+       FROM p3pro.order_boxes_items obi
+       WHERE obi.orderId = ? AND obi.partNumber = ? and obi.id != ?`,
+          [e.orderId, e.partNumber, e.id ]
+        );
+
+        const collected = result[0]?.total ?? 0;
+
+        return {
+          ...e,
+          collected,
+        };
+      })
+    );
+
+    return data;
   }
 
   async findAllCompareOrderLines(orderId: string) {
     const sql =
       `  SELECT orderId,BARCODE, ` +
       ` sum(ol.TBALANCE) orderQty, ` +
-      ` (select IFNULL (sum(obi.itemsCount),0) FROM p3pro.order_boxes_items obi  where  ol.orderId= obi.orderId ) as collected ` +
+      ` (select IFNULL (sum(obi.itemsCount),0) FROM p3pro.order_boxes_items obi  where  ol.orderId= obi.orderId and obi.partNumber = ol.BARCODE ) as collected ` +
       ` FROM p3pro.order_line ol ` +
-      ` where orderId= '` + orderId + `' ` +
+      ` where orderId= '` +
+      orderId +
+      `' ` +
       ` group by orderId,BARCODE`;
 
     const lineDiff = await this.OrderBoxesItemsRepository.query(sql);
     return lineDiff
-  .filter((e: any) => Number(e.orderQty) !== Number(e.collected))
-  .map((e: any) => ({
-    countStatus: "Invalid Qty",
-    partNumber: e.BARCODE,
-    orderQty: Number(e.orderQty),
-    collected: Number(e.collected),
-  }));
+      .filter((e: any) => Number(e.orderQty) !== Number(e.collected))
+      .map((e: any) => ({
+        countStatus: "Invalid Qty",
+        partNumber: e.BARCODE,
+        orderQty: Number(e.orderQty),
+        collected: Number(e.collected),
+      }));
   }
 
   async findOne(id: string) {
