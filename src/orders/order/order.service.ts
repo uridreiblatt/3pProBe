@@ -48,7 +48,7 @@ export class OrderService {
     @Inject(forwardRef(() => TaskUserService))
     private taskUserService: TaskUserService,
     private companyService: CompanyService,
-    private orderBoxItemsService: OrderBoxItemsService,
+    private orderBoxItemsService: OrderBoxItemsService
   ) {
     this._orderLinesService = orderLinesService;
     this._orderBoxesService = orderBoxesService;
@@ -194,45 +194,44 @@ export class OrderService {
       },
     });
     const orderLines = await Promise.all(
-  res.orderLines.map(async (ol) => {
-    const result = await this.orderRepository.query(
-      `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
+      res.orderLines.map(async (ol) => {
+        const result = await this.orderRepository.query(
+          `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
        FROM p3pro.order_boxes_items obi
        WHERE obi.orderId = ? AND obi.partNumber = ?`,
-      [res.id, ol.BARCODE]
+          [res.id, ol.BARCODE]
+        );
+
+        const collected = result[0]?.total ?? 0;
+
+        return {
+          ...ol,
+          collected,
+        };
+      })
     );
 
-    const collected = result[0]?.total ?? 0;
-
-    return {
-      ...ol,
-      collected,
+    const resAll = {
+      id: res.id,
+      ORDNAME: res.ORDNAME,
+      CUSTDES: res.CUSTDES,
+      CUSTNAME: res.CUSTNAME,
+      createdAt: res.createdAt,
+      user: res.user.userName,
+      COUNTRYNAME: res.COUNTRYNAME,
+      ADDRESS: res.ADDRESS,
+      ADDRESS2: res.ADDRESS2,
+      ADDRESS3: res.ADDRESS3,
+      ZIP: res.ZIP,
+      STATE: res.STATE,
+      STDES: res.STDES,
+      status: res.taskStatus.status,
+      orderNote: res.orderNote,
+      ordertext: res.ordertext,
+      orderLines, // ✅ real objects, not promises
+      role: res.role.roleDisplayName,
+      taskStatus: { status: res.taskStatus.status },
     };
-  })
-);
-
-const resAll = {
-  id: res.id,
-  ORDNAME: res.ORDNAME,
-  CUSTDES: res.CUSTDES,
-  CUSTNAME: res.CUSTNAME,
-  createdAt: res.createdAt,
-  user: res.user.userName,
-  COUNTRYNAME: res.COUNTRYNAME,
-  ADDRESS: res.ADDRESS,
-  ADDRESS2: res.ADDRESS2,
-  ADDRESS3: res.ADDRESS3,
-  ZIP: res.ZIP,
-  STATE: res.STATE,
-  STDES: res.STDES,
-  status: res.taskStatus.status,
-  orderNote: res.orderNote,
-  ordertext: res.ordertext,
-  orderLines, // ✅ real objects, not promises
-  role: res.role.roleDisplayName,
-  taskStatus: { status: res.taskStatus.status },
-};
-
 
     return resAll;
     //
@@ -297,35 +296,47 @@ const resAll = {
   }
 
   async update(orderId: string, updateOrderDto: UpdateOrderDto): Promise<any> {
-    const itmQtyData = await Promise.all(
-      updateOrderDto.orderLines.map(async (ol) => {
-        const itm = await this.orderBoxesItemsRepository.find({
-          where: { orderId: orderId, partNumber: ol.BARCODE },
-        });
-
-        return {
-          itm: ol.BARCODE,
-          cnt: ol.TBALANCE,
-          boxitems: itm.reduce((sum, item) => sum + item.itemsCount, 0),
-        };
-      })
-    );
-    const itemQtyCheck = itmQtyData.filter(
-      (itmError) => itmError.cnt !== itmError.boxitems
-    );
-
-    if (itemQtyCheck.length > 0) {
-      throw new BadRequestException({
-        message: "Incorrect qty in boxes:" + itemQtyCheck
-          .map((x) => `${x.itm}: expected=${x.boxitems}, inBoxes=${x.cnt}`)
-          .join(" , "),
-      });
-    }    
-
     let newRole = updateOrderDto.roleId;
-    let orderStatus = updateOrderDto.taskStatus.id; // new  5-complete 2 - inproress
+    let orderStatus = updateOrderDto.taskStatus.id; // new  3-complete 2 - inproress
     let userInOrder = updateOrderDto.user.id;
+    const resCompantSettings = await this._companyService.findOne(
+      updateOrderDto.companyId
+    );
+    if (resCompantSettings.companySetting.boxItemsCount) {
+      if (
+        orderStatus === OrderStatusEnum.Complete &&
+        newRole === rolesEnum.Packer
+      ) {
+        const itmQtyData = await Promise.all(
+          updateOrderDto.orderLines.map(async (ol) => {
+            const itm = await this.orderBoxesItemsRepository.find({
+              where: { orderId: orderId, partNumber: ol.BARCODE },
+            });
 
+            return {
+              itm: ol.BARCODE,
+              cnt: ol.TBALANCE,
+              boxitems: itm.reduce((sum, item) => sum + item.itemsCount, 0),
+            };
+          })
+        );
+        const itemQtyCheck = itmQtyData.filter(
+          (itmError) => itmError.cnt !== itmError.boxitems
+        );
+
+        if (itemQtyCheck.length > 0) {
+          throw new BadRequestException({
+            message:
+              "Incorrect qty in boxes:" +
+              itemQtyCheck
+                .map(
+                  (x) => `${x.itm}: expected=${x.boxitems}, inBoxes=${x.cnt}`
+                )
+                .join(" , "),
+          });
+        }
+      }
+    }
     if (
       orderStatus === OrderStatusEnum.Complete &&
       newRole === rolesEnum.Picker
@@ -375,11 +386,7 @@ const resAll = {
 
     if (orderStatus === OrderStatusEnum.Complete) {
       if (newRole < rolesEnum.Shipper) {
-        if (newRole === rolesEnum.Packer) {
-          const resCompantSettings = await this._companyService.findOne(
-            updateOrderDto.companyId
-          );
-
+        if (newRole === rolesEnum.Picker) {
           if (!resCompantSettings.companySetting.qcRequired) {
             newRole = newRole + 1; // add qc stage line 341 will set it to shipper
           }

@@ -16,6 +16,7 @@ export class GetOrderInfoController {
   async createShipRushDelivery(@Request() req,
     @Param('orderId') orderId: string,
   ): Promise<any> {
+    
     const res = await this.getOrderInfoService.createShipRushDelivery(orderId, req.user.selectCompany);
     return res;
   }

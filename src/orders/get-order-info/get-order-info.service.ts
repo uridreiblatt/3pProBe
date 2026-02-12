@@ -700,14 +700,14 @@ export class GetOrderInfoService {
         order.ORDNAME,
         companyId
       );
-      //console.log('resPriorityCreateDoc', resPriorityCreateDoc);
+      console.log('resPriorityCreateDoc', resPriorityCreateDoc);
       const updDOC = {
         shipRushStatus: 'Pending',
         DOCUMENT_DOC: resPriorityCreateDoc['DOC'].toString(),
         DOCUMENT_DOCNO: resPriorityCreateDoc['DOCNO'].toString(),
         ShData: resPriorityCreateDoc['DOCNO'].toString(),
       };
-      //console.log(updDOC);
+      console.log(updDOC);
       await this._orderService.updateData(Id, updDOC);
       //return updDOC;
       const updShipRushRes = {
@@ -797,6 +797,7 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
         .pipe(map((resp) => resp.data))
         .pipe(
           catchError((error) => {
+            console.log('Create Priority order error', error)
             throw new BadRequestException('Create Priority order error', {
               cause: new Error(),
               description:
