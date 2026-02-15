@@ -31,9 +31,9 @@ export class AllRmaService {
     this._CompanyService = CompanyService;
   }
 
-  @Cron(CronExpression.EVERY_2ND_HOUR)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async handleCron() {
-    this.logger.log("crone Called getAllNewRmaFromPriority EVERY_2ND_HOUR");
+    this.logger.log("crone Called getAllNewRmaFromPriority EVERY_10_MINUTES");
     const allCompanies = await this._CompanyService.findAll();
     allCompanies.forEach(async (company) => {
       if (company.companySetting) await this.syncAllNewRmaFromPriority(company);

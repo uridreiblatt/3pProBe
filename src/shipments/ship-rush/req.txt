@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ShipRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<!-- This example shows the use of the ShipSettings section to control the label type returned. -->
+	<ShipSettings>
+		<PrinterShippingLabel>
+			<AutoprintShippingLabel>false</AutoprintShippingLabel>
+			<LabelType>ZPL</LabelType>
+		</PrinterShippingLabel>
+	</ShipSettings>
+	<ShipTransaction>
+		<Shipment>
+			<IsTest>1</IsTest>
+			<Carrier>1</Carrier>
+              <ShippingAccount>
+                <ShippingAccountId>00000000-0000-0000-0000-000000000000</ShippingAccountId>
+             </ShippingAccount>
+			<UPSServiceType>F92</UPSServiceType>
+			<Package>
+				<PackageActualWeight>1</PackageActualWeight>
+				<PackagingType>02</PackagingType>
+				<InsuranceAmount>50</InsuranceAmount>
+			</Package>
+			<Package>
+				<PackageActualWeight>2</PackageActualWeight>
+				<PackagingType>02</PackagingType>
+				<InsuranceAmount>50</InsuranceAmount>
+			</Package>
+			<DeliveryAddress>
+				<Address>
+					<FirstName>John Doe</FirstName>
+					<Company>Acme Roofing</Company>
+					<Address1>120 Lakeside ave suite 101</Address1>
+					<Address2 />
+					<City>Seattle</City>
+					<State>WA</State>
+					<Country>US</Country>
+					<PostalCode>98122</PostalCode>
+					<Phone>206-300-0000</Phone>
+				</Address>
+			</DeliveryAddress>
+			<ShipperAddress>
+				<Address>
+					<FirstName>Mark White</FirstName>
+					<Company>Cat Food Unlimited</Company>
+					<Address1>3000 Landerholm Cir SE</Address1>
+					<Address2 />
+					<City>Bellevue</City>
+					<State>WA</State>
+					<Country>US</Country>
+					<PostalCode>98007</PostalCode>
+					<Phone>206-400-0000</Phone>
+				</Address>
+			</ShipperAddress>
+		</Shipment>
+	</ShipTransaction>
+</ShipRequest>

@@ -66,7 +66,7 @@ export class TaskUserService {
 
     @Cron(CronExpression.EVERY_10_MINUTES)
     async handleCron() {
-      this.logger.log('crone Called EVERY_DAY_AT_10AM getAllNewPoFromPriority');
+      this.logger.log('crone Called EVERY_10_MINUTES getAllNewPoFromPriority');
       const companies = await this._CompanyService.findAll();
       companies.map(async (e)=>{
          await this.SyncAllNewPoFromPriority(e.id);

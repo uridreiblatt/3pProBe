@@ -1,33 +1,37 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-import { RootPriority } from './dto/priority.dto';
-import { OrderService } from 'src/orders/order/order.service';
-import { CreateOrderDto } from 'src/orders/order/dto/create-order.dto';
-import { parseString, Builder } from 'xml2js';
-import { OrderLinesService } from 'src/orders/order-lines/order-lines.service';
-import { CreateOrderLineDto } from 'src/orders/order-lines/dto/create-order-line.dto';
-import { catchError, lastValueFrom, map } from 'rxjs';
-import { ShipmentPriorityService } from 'src/maintenence/shipment_priority/shipment_priority.service';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { EOrderRole, EOrderUser, OrderStatusEnum } from 'src/orders/order/enums/enum';
-import { Order } from 'src/orders/order/entities/order.entity';
-import { DbLogService } from 'src/db-log/db-log.service';
-import { Headertmp, RootShipRequest } from './dto/shipRushRequest.dto';
+import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import { HttpService } from "@nestjs/axios";
+import { ConfigService } from "@nestjs/config";
+import { RootPriority } from "./dto/priority.dto";
+import { OrderService } from "src/orders/order/order.service";
+import { CreateOrderDto } from "src/orders/order/dto/create-order.dto";
+import { parseString, Builder } from "xml2js";
+import { OrderLinesService } from "src/orders/order-lines/order-lines.service";
+import { CreateOrderLineDto } from "src/orders/order-lines/dto/create-order-line.dto";
+import { catchError, lastValueFrom, map } from "rxjs";
+import { ShipmentPriorityService } from "src/maintenence/shipment_priority/shipment_priority.service";
+import { Cron, CronExpression } from "@nestjs/schedule";
+import {
+  EOrderRole,
+  EOrderUser,
+  OrderStatusEnum,
+} from "src/orders/order/enums/enum";
+import { Order } from "src/orders/order/entities/order.entity";
+import { DbLogService } from "src/db-log/db-log.service";
+import { Headertmp, RootShipRequest } from "./dto/shipRushRequest.dto";
 import {
   RootShipResponse,
   ShipmentClientMsgRes,
   ShipmentClientprintlablesRes,
   ShipmentClientRes,
-} from './dto/shipRushResponse.dto';
-import { promisify } from 'util';
-import { XMLParser } from 'fast-xml-parser';
-import { DeliverySettingService } from 'src/shipments/delivery-setting/delivery-setting.service';
-import { ShipmentPriority } from 'src/maintenence/shipment_priority/entities/shipment_priority.entity';
-import { PartCqauntService } from 'src/settings/part-cqaunt/part-cqaunt.service';
-import { PartCqaunt } from 'src/settings/part-cqaunt/entities/part-cqaunt.entity';
-import { CreateDbLogDto } from 'src/db-log/dto/create-db-log.dto';
-import { CompanyService } from 'src/usersCompanies/company/company.service';
+} from "./dto/shipRushResponse.dto";
+import { promisify } from "util";
+import { XMLParser } from "fast-xml-parser";
+import { DeliverySettingService } from "src/shipments/delivery-setting/delivery-setting.service";
+import { ShipmentPriority } from "src/maintenence/shipment_priority/entities/shipment_priority.entity";
+import { PartCqauntService } from "src/settings/part-cqaunt/part-cqaunt.service";
+import { PartCqaunt } from "src/settings/part-cqaunt/entities/part-cqaunt.entity";
+import { CreateDbLogDto } from "src/db-log/dto/create-db-log.dto";
+import { CompanyService } from "src/usersCompanies/company/company.service";
 
 @Injectable()
 export class GetOrderInfoService {
@@ -55,9 +59,8 @@ export class GetOrderInfoService {
     private DbLogService: DbLogService,
     private DeliverySettingService: DeliverySettingService,
     private PartCqauntService: PartCqauntService,
-    private CompanyService: CompanyService,
+    private CompanyService: CompanyService
   ) {
-    
     //@InjectRepository(MirshamimHeader) private mirshamimHeaderRepository: Repository<MirshamimHeader>,
     //@InjectRepository(MirshamimLines) private mirshamimLinesRepository: Repository<MirshamimLines>
     // this.username = this.configService.get<string>('PRIORITY_USER');
@@ -74,20 +77,25 @@ export class GetOrderInfoService {
     this._PartCqauntService = PartCqauntService;
     this._CompanyService = CompanyService;
   }
-  @Cron(CronExpression.EVERY_DAY_AT_10AM)
-  handleCron() {
-    this.logger.log('crone Called EVERY_DAY_AT_10AM');
+  @Cron(CronExpression.EVERY_10_MINUTES)
+  async handleCron() {
+    this.logger.log("crone get all orders Called EVERY_DAY_AT_10AM");
+    const allCompanies = await this._CompanyService.findAll();
+    allCompanies.forEach(async (company) => {
+      if (company.companySetting) await this.GetAllOrder(company.id);
+    });
   }
 
   async GetAll(companyId: string): Promise<any> {
+    return await this.GetAllOrder(companyId);
+  }
+
+  async GetAllOrder(companyId: string): Promise<any> {
     if (this.isLocked) {
-      return 'is locked';
+      return "is locked";
     }
 
-
-
-    const resCompantSettings = await this._CompanyService.findOne(companyId)
-
+    const resCompantSettings = await this._CompanyService.findOne(companyId);
 
     this.isLocked = true;
     const url =
@@ -95,12 +103,15 @@ export class GetOrderInfoService {
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
       `/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq '${resCompantSettings.companySetting.priorityOrderStatus}'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
-      //`/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq 'In Progress'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
+    //`/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq 'In Progress'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
     //url = `https://win01.maclocks.com/odata/Priority/tabula.ini/clpln18/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,STCODE,STDES,ORDSTATUSDES&$top=200&$filter=ORDNAME eq 'SO24E04168'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
-   
 
-    const credentials = btoa(resCompantSettings.companySetting.priorityApiUser + ':' + resCompantSettings.companySetting.priorityApiPassword);
-    const basicAuth = 'Basic ' + credentials;
+    const credentials = btoa(
+      resCompantSettings.companySetting.priorityApiUser +
+        ":" +
+        resCompantSettings.companySetting.priorityApiPassword
+    );
+    const basicAuth = "Basic " + credentials;
     const data = await lastValueFrom(
       this.httpService
         .get(url, {
@@ -113,17 +124,17 @@ export class GetOrderInfoService {
           catchError((error) => {
             this.isLocked = false;
             throw `An error happened. Msg: ${JSON.stringify(error.request)}`;
-          }),
-        ),
+          })
+        )
     );
     const orderInfo: RootPriority = data;
     this._DbLogService.create({
-      subject: 'priority orders',
-      message: 'start import orders ' + orderInfo.value.length.toString(),
-      level: '',
-      context: '',
-      metadata: '',
-      companyId: companyId
+      subject: "priority orders",
+      message: "start import orders " + orderInfo.value.length.toString(),
+      level: "",
+      context: "",
+      metadata: "",
+      companyId: companyId,
     });
     let LinesInserted = 0;
 
@@ -135,51 +146,49 @@ export class GetOrderInfoService {
       ) {
         const createOrderDto: CreateOrderDto = new CreateOrderDto();
         createOrderDto.CUSTNO = element.CUSTNAME;
-        createOrderDto.CUSTNAME = element.CDES || '';
+        createOrderDto.CUSTNAME = element.CDES || "";
         createOrderDto.ORDNAME = element.ORDNAME;
-        createOrderDto.STCODE = element.STCODE || '';
+        createOrderDto.STCODE = element.STCODE || "";
         createOrderDto.DETAILS = element.DETAILS;
         createOrderDto.accountId = element.FBES_ACCOUNT;
         createOrderDto.accountZip = element.FBES_ZIP;
 
         createOrderDto.shipmentOrder = false;
         const shp = await this._ShipmentPriorityService.findOneByStCode(
-          createOrderDto.STCODE,
+          createOrderDto.STCODE
         );
         createOrderDto.shipmentOrder = shp?.priority || false;
-        createOrderDto.STDES = element.STDES || '';
+        createOrderDto.STDES = element.STDES || "";
         createOrderDto.FAX = element.SHIPTO2_SUBFORM?.FAX;
-        createOrderDto.NAME = element.SHIPTO2_SUBFORM?.NAME || '';
-        createOrderDto.CUSTDES = element.SHIPTO2_SUBFORM?.CUSTDES|| '';
+        createOrderDto.NAME = element.SHIPTO2_SUBFORM?.NAME || "";
+        createOrderDto.CUSTDES = element.SHIPTO2_SUBFORM?.CUSTDES || "";
         createOrderDto.PHONENUM = element.SHIPTO2_SUBFORM?.PHONENUM;
         createOrderDto.ADDRESS = element.SHIPTO2_SUBFORM?.ADDRESS;
         createOrderDto.ADDRESS2 = element.SHIPTO2_SUBFORM?.ADDRESS2;
-        createOrderDto.ADDRESS3 = element.SHIPTO2_SUBFORM?.ADDRESS3 || '';
+        createOrderDto.ADDRESS3 = element.SHIPTO2_SUBFORM?.ADDRESS3 || "";
         createOrderDto.STATE = element.SHIPTO2_SUBFORM?.STATE;
         createOrderDto.STATECODE = element.SHIPTO2_SUBFORM?.STATECODE;
         createOrderDto.STATENAME = element.SHIPTO2_SUBFORM?.STATENAME;
         createOrderDto.ZIP = element.SHIPTO2_SUBFORM?.ZIP;
         createOrderDto.COUNTRYNAME = element.SHIPTO2_SUBFORM?.COUNTRYNAME;
-        createOrderDto.ShData = '';
-        createOrderDto.trackingNumber = '';
-        createOrderDto.shipRushDeliveryId = '';
-        createOrderDto.FAX='';
-        createOrderDto.shipRushShipmentId='';
-        createOrderDto.accountId='';
-        createOrderDto.accountZip='';
-        createOrderDto.DETAILS='';
-        createOrderDto.PHONENUM='';
-        
-      
+        createOrderDto.ShData = "";
+        createOrderDto.trackingNumber = "";
+        createOrderDto.shipRushDeliveryId = "";
+        createOrderDto.FAX = "";
+        createOrderDto.shipRushShipmentId = "";
+        createOrderDto.accountId = "";
+        createOrderDto.accountZip = "";
+        createOrderDto.DETAILS = "";
+        createOrderDto.PHONENUM = "";
 
-        let tmpText = '';
+        let tmpText = "";
         try {
           tmpText = element.ORDERSTEXT_SUBFORM?.TEXT;
-          const ind = tmpText?.lastIndexOf('</style>') || 0;
+          const ind = tmpText?.lastIndexOf("</style>") || 0;
           if (ind > 0) {
-            tmpText = tmpText.substring(tmpText.lastIndexOf('</style>') + 8);
-            tmpText = tmpText.replace(/<[^>]*>/g, ' ');
-            tmpText = tmpText.replaceAll('&nbsp', '');
+            tmpText = tmpText.substring(tmpText.lastIndexOf("</style>") + 8);
+            tmpText = tmpText.replace(/<[^>]*>/g, " ");
+            tmpText = tmpText.replaceAll("&nbsp", "");
           }
         } catch (error) {
           this.logger.error(error);
@@ -187,66 +196,73 @@ export class GetOrderInfoService {
         createOrderDto.ordertext = tmpText;
         createOrderDto.CURDATE = element.CURDATE;
         createOrderDto.userId = EOrderUser.unAssigned;
-        createOrderDto.taskStatusId = OrderStatusEnum.New;//EOrderUser.unAssigned;
+        createOrderDto.taskStatusId = OrderStatusEnum.New; //EOrderUser.unAssigned;
         let checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {
-          if (ln.TBALANCE > 0 )
-            return true;
+          if (ln.TBALANCE > 0) return true;
           return false;
         });
-        if (resCompantSettings.companySetting.priorityOrderLineStatus === null)
-        {
+        if (
+          resCompantSettings.companySetting.priorityOrderLineStatus === null
+        ) {
           checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {
-          if (ln.TBALANCE > 0 && ln.ORDISTATUSDES === resCompantSettings.companySetting.priorityOrderLineStatus)
-            return true;
-          return false;
-        });
+            if (
+              ln.TBALANCE > 0 &&
+              ln.ORDISTATUSDES ===
+                resCompantSettings.companySetting.priorityOrderLineStatus
+            )
+              return true;
+            return false;
+          });
         }
-        
+
         if (checkLines) {
           let order: Order = null;
           const orders = await this._orderService.findByOrderName(
-            createOrderDto.ORDNAME,
+            createOrderDto.ORDNAME
           );
           if (orders.length === 0) {
             try {
-              order = await this._orderService.create(createOrderDto, companyId);
+              order = await this._orderService.create(
+                createOrderDto,
+                companyId
+              );
               LinesInserted += 1;
             } catch (error) {
-              console.log(error)
+              console.log(error);
               await this._DbLogService.create({
-                subject: 'priority orders - create Error ' + createOrderDto.ORDNAME,
+                subject:
+                  "priority orders - create Error " + createOrderDto.ORDNAME,
                 message: JSON.stringify(error).substring(
-                  JSON.stringify(error).lastIndexOf('originalError')
+                  JSON.stringify(error).lastIndexOf("originalError")
                 ),
-                level: '',
-                context: '',
-                metadata: JSON.stringify(error).substring(1000,3000),
+                level: "",
+                context: "",
+                metadata: JSON.stringify(error).substring(1000, 3000),
                 companyId: companyId,
               });
             }
           } else {
             createOrderDto.ADDRESS = element.SHIPTO2_SUBFORM?.ADDRESS;
-        createOrderDto.ADDRESS2 = element.SHIPTO2_SUBFORM?.ADDRESS2;
-        createOrderDto.ADDRESS3 = element.SHIPTO2_SUBFORM?.ADDRESS3 || '';
+            createOrderDto.ADDRESS2 = element.SHIPTO2_SUBFORM?.ADDRESS2;
+            createOrderDto.ADDRESS3 = element.SHIPTO2_SUBFORM?.ADDRESS3 || "";
 
-        const updateOrderAddress = orders.find((or) => {
+            const updateOrderAddress = orders.find((or) => {
               if (
                 or.ADDRESS === element.SHIPTO2_SUBFORM?.ADDRESS &&
                 or.ADDRESS2 === element.SHIPTO2_SUBFORM?.ADDRESS2 &&
-                (or.ADDRESS3 === element.SHIPTO2_SUBFORM?.ADDRESS3 || '')
+                (or.ADDRESS3 === element.SHIPTO2_SUBFORM?.ADDRESS3 || "")
               )
                 return true;
               return false;
             });
-            if (updateOrderAddress)
-            {
-              console.log('update shipping address')
+            if (updateOrderAddress) {
+              console.log("update shipping address");
               const updAddress = {
-                ADDRESS : updateOrderAddress.ADDRESS ,
-                ADDRESS2 : updateOrderAddress.ADDRESS2,
-                ADDRESS3 : updateOrderAddress.ADDRESS3,
-      };
-                await this._orderService.updateData(orders[0].id, updAddress);
+                ADDRESS: updateOrderAddress.ADDRESS,
+                ADDRESS2: updateOrderAddress.ADDRESS2,
+                ADDRESS3: updateOrderAddress.ADDRESS3,
+              };
+              await this._orderService.updateData(orders[0].id, updAddress);
             }
 
             const NewOrder = orders.find((or) => {
@@ -288,18 +304,21 @@ export class GetOrderInfoService {
               NewOrder === undefined
             ) {
               try {
-                order = await this._orderService.create(createOrderDto, companyId);
+                order = await this._orderService.create(
+                  createOrderDto,
+                  companyId
+                );
                 LinesInserted += 1;
               } catch (error) {
-                console.log(error)
+                console.log(error);
                 await this._DbLogService.create({
-                  subject: 'priority orders - create ' + createOrderDto.ORDNAME,
+                  subject: "priority orders - create " + createOrderDto.ORDNAME,
                   message: JSON.stringify(error).substring(
-                    JSON.stringify(error).lastIndexOf('originalError')
+                    JSON.stringify(error).lastIndexOf("originalError")
                   ),
-                  level: '',
-                  context: '',
-                  metadata: '',
+                  level: "",
+                  context: "",
+                  metadata: "",
                   companyId: companyId,
                 });
               }
@@ -312,7 +331,7 @@ export class GetOrderInfoService {
               await this._orderLinesService.findOneByOrder(
                 order.id,
                 subForm.PARTNAME,
-                subForm.KLINE,
+                subForm.KLINE
               );
             if (
               orderLineExixts === null &&
@@ -320,13 +339,16 @@ export class GetOrderInfoService {
             ) {
               let CheckOrderLineStatus = false;
 
-              if((resCompantSettings.companySetting.priorityOrderLineStatus === null && subForm.TBALANCE > 0) ||
-              (subForm.ORDISTATUSDES === resCompantSettings.companySetting.priorityOrderLineStatus)){
+              if (
+                (resCompantSettings.companySetting.priorityOrderLineStatus ===
+                  null &&
+                  subForm.TBALANCE > 0) ||
+                subForm.ORDISTATUSDES ===
+                  resCompantSettings.companySetting.priorityOrderLineStatus
+              ) {
                 CheckOrderLineStatus = true;
-                
               }
-              if ( CheckOrderLineStatus ) 
-                {
+              if (CheckOrderLineStatus) {
                 const createOrderLineDto: CreateOrderLineDto =
                   new CreateOrderLineDto();
                 createOrderLineDto.orderId = order.id;
@@ -339,28 +361,28 @@ export class GetOrderInfoService {
                 createOrderLineDto.prioritykline = subForm?.KLINE;
                 createOrderLineDto.priorityremarks = subForm.REMARK1;
                 createOrderLineDto.ORDI = subForm.ORDI;
-                createOrderLineDto.Fullfilled=0;
-                createOrderLineDto.FullfilledSuperViser=0;
-                createOrderLineDto.priorityremarks='';
+                createOrderLineDto.Fullfilled = 0;
+                createOrderLineDto.FullfilledSuperViser = 0;
+                createOrderLineDto.priorityremarks = "";
 
                 if (createOrderLineDto.BARCODE !== null)
                   try {
                     await this._orderLinesService.create(createOrderLineDto);
                   } catch (error) {
                     await this._DbLogService.create({
-                      subject: 'priority orders - Line create ' +
+                      subject:
+                        "priority orders - Line create " +
                         createOrderDto.ORDNAME,
-                      message: JSON.stringify(error).substring(1,3999),
-                      level: '',
-                      context: '',
-                      metadata: JSON.stringify(error).substring(2000,1000),
+                      message: JSON.stringify(error).substring(1, 3999),
+                      level: "",
+                      context: "",
+                      metadata: JSON.stringify(error).substring(2000, 1000),
                       companyId: companyId,
                     });
                   }
               }
             } else {
-              if (order.user.UserId === EOrderUser.unAssigned) 
-                {
+              if (order.user.UserId === EOrderUser.unAssigned) {
                 if (orderLineExixts.TBALANCE !== subForm.TBALANCE) {
                   const c_Tbalance = {
                     TBALANCE: subForm.TBALANCE,
@@ -369,18 +391,19 @@ export class GetOrderInfoService {
                   try {
                     await this._orderLinesService.update(
                       orderLineExixts.id,
-                      c_Tbalance,
+                      c_Tbalance
                     );
                   } catch (error) {
                     this._DbLogService.create({
-                      subject: 'priority orders - Line create ' +
+                      subject:
+                        "priority orders - Line create " +
                         createOrderDto.ORDNAME,
                       message: JSON.stringify(error).substring(
-                        JSON.stringify(error).lastIndexOf('originalError')
+                        JSON.stringify(error).lastIndexOf("originalError")
                       ),
-                      level: '',
-                      context: '',
-                      metadata: '',
+                      level: "",
+                      context: "",
+                      metadata: "",
                       companyId: companyId,
                     });
                   }
@@ -393,12 +416,12 @@ export class GetOrderInfoService {
     });
 
     await this._DbLogService.create({
-      subject: 'priority orders',
-      message: 'end import orders orders: ' + LinesInserted.toString(),
-      level: '',
-      context: '',
-      metadata: '',
-      companyId:  companyId,
+      subject: "priority orders",
+      message: "end import orders orders: " + LinesInserted.toString(),
+      level: "",
+      context: "",
+      metadata: "",
+      companyId: companyId,
     });
     this.isLocked = false;
     return true;
@@ -411,54 +434,54 @@ export class GetOrderInfoService {
   sleep(time: number) {
     return new Promise((resolve) => setTimeout(resolve, time));
   }
-  async createShipRushDelivery(Id: string, companyId:string) {
+  async createShipRushDelivery(Id: string, companyId: string) {
     try {
       let userResult: ShipmentClientRes = {
-        isSuccess: 'new',
-        ShipmentNumber: '',
-        ShipmentId: '',
+        isSuccess: "new",
+        ShipmentNumber: "",
+        ShipmentId: "",
         messages: [],
         printLables: [],
       };
       //console.log('createShipRushDelivery');
       await this._DbLogService.create({
-        subject: 'shipRush Create ',
-        message: 'orderId ' + Id,
-        level: '',
-        context: '',
-        metadata: '',
-        companyId: '',
+        subject: "shipRush Create ",
+        message: "orderId " + Id,
+        level: "",
+        context: "",
+        metadata: "",
+        companyId: "",
       });
       const order = await this._orderService.findOneGetOrder(Id);
       if (!order) {
-        throw new BadRequestException('order Not Found ', {
+        throw new BadRequestException("order Not Found ", {
           cause: new Error(),
-          description: 'order Not Found',
+          description: "order Not Found",
         });
       }
 
-      if (order.shipRushStatus !== 'new') {
-        throw new BadRequestException('order already in progress ', {
-          cause: new Error(),
-          description: 'order ' + order.ORDNAME + ' - ' + order.shipRushStatus,
+      if (order.shipRushStatus !== "new") {
+        throw new BadRequestException({
+          message: "order already in progress [" + "order " + order.ORDNAME + " - " + order.shipRushStatus + "]",
+          description: "order " + order.ORDNAME + " - " + order.shipRushStatus,
         });
       }
 
       if (order.orderBoxes.length === 0) {
-        throw new BadRequestException('order as no Boxes ', {
-          cause: new Error(),
-          description: 'order ' + order.ORDNAME + ' - as no Boxes',
-        });
+         throw new BadRequestException({
+          message: "order as no Boxes [" + "order " + order.ORDNAME + "]",         
+        });        
       }
-      const shp = await this._ShipmentPriorityService.findOneByStCode(order.STCODE);
+      const shp = await this._ShipmentPriorityService.findOneByStCode(
+        order.STCODE
+      );
       if (shp === null || shp.shipRushCode === null) {
-        throw new BadRequestException('order ship Rush Code not found', {
-          cause: new Error(),
-          description: 'order ' + order.ORDNAME + ' - ' + order.STCODE,
+        throw new BadRequestException( {
+         message: "order ship Rush Code not found [" + "order " + order.ORDNAME + " - " + order.STCODE + "]",
         });
       }
       const updrunning = {
-        shipRushStatus: 'Running',
+        shipRushStatus: "Running",
       };
       await this._orderService.updateData(Id, updrunning);
 
@@ -469,18 +492,19 @@ export class GetOrderInfoService {
       );
       //console.log('resPriorityCreateDoc', resPriorityCreateDoc);
       const updDOC = {
-        shipRushStatus: 'Pending',
-        DOCUMENT_DOC: resPriorityCreateDoc['DOC'].toString(),
-        DOCUMENT_DOCNO: resPriorityCreateDoc['DOCNO'].toString(),
+        shipRushStatus: "Pending",
+        DOCUMENT_DOC: resPriorityCreateDoc["DOC"].toString(),
+        DOCUMENT_DOCNO: resPriorityCreateDoc["DOCNO"].toString(),
       };
       //console.log(updDOC);
       await this._orderService.updateData(Id, updDOC);
       //return updDOC;
       const ShipRushXml = await this.BuilddataToShipRush(order, shp, companyId);
-      //console.log('ShipRushXml', ShipRushXml);
+      console.log('ShipRushXml', ShipRushXml);
       const shipRushResXml = await this.sendToShipRush(
         ShipRushXml,
         order.ORDNAME,
+        companyId
       );
 
       //       <?xml version="1.0" encoding="utf-8"?>
@@ -488,50 +512,51 @@ export class GetOrderInfoService {
       //     <OrderId>fa9eff8a-0b7e-45c9-a20d-b2e000c78f17</OrderId>
       // </AddOrderResponse>
       const shipRushRes = await this.readShipRushXmlResult(shipRushResXml);
-      //console.log('shipRushRes', shipRushRes);
+      console.log('shipRushRes', shipRushRes);
       if (shipRushRes.AddOrderResponse.OrderId) {
         userResult = {
-          isSuccess: 'true', //shipRushRes.ShipResponse.IsSuccess,
+          isSuccess: "true", //shipRushRes.ShipResponse.IsSuccess,
           ShipmentNumber: shipRushRes.AddOrderResponse.OrderId,
-          ShipmentId: shipRushRes.AddOrderResponse.OrderId,
+          ShipmentId: order.ORDNAME,
           messages: [
             {
-              Severity: 'Success',
-              textMessage: 'Shiprush order created',
+              Severity: "Success",
+              textMessage: "Shiprush order created",
             },
           ],
           printLables: [],
         };
 
         const updShipRushRes = {
-          shipRushStatus: 'Pending',
+          shipRushStatus: "Pending",
           shipRushShipmentId: shipRushRes.AddOrderResponse.OrderId,
           //trackingNumber: shipRushRes.AddOrderResponse.OrderId,
         };
         await this._orderService.updateData(Id, updShipRushRes);
       } else {
         const upd = {
-          shipRushStatus: 'error',
+          shipRushStatus: "error",
         };
         await this._orderService.updateData(Id, upd);
 
-        const errLog: CreateDbLogDto  = {
-          subject: 'shipRush Create Error - ' + order.ORDNAME,
-          message: 'failed to create shiprush order',
-          level: '',
-          context: '',
-          metadata: '',
-          companyId: '',        };
+        const errLog: CreateDbLogDto = {
+          subject: "shipRush Create Error - " + order.ORDNAME,
+          message: "failed to create shiprush order",
+          level: "",
+          context: "",
+          metadata: "",
+          companyId: "",
+        };
         await this._DbLogService.create(errLog);
 
         userResult = {
-          isSuccess: 'false',
-          ShipmentNumber: '',
-          ShipmentId: '',
+          isSuccess: "false",
+          ShipmentNumber: "",
+          ShipmentId: "",
           messages: [
             {
-              Severity: 'Error',
-              textMessage: 'Failed to create Shiprush order',
+              Severity: "Error",
+              textMessage: "Failed to create Shiprush order",
             },
           ],
           printLables: [],
@@ -604,7 +629,7 @@ export class GetOrderInfoService {
       const resPriorityGetDoc = await this.GetPriorityShippingDoc(
         //order.ORDNAME,
         //resPriorityCreateDoc['DOC'].toString()
-        resPriorityCreateDoc['DOC'].toString(),
+        resPriorityCreateDoc["DOC"].toString(),
         companyId
       );
       //console.log('resPriorityGetDoc', resPriorityGetDoc.value);
@@ -617,7 +642,7 @@ export class GetOrderInfoService {
         order,
         docData,
         //'shipRushRes.ShipResponse.ShipTransaction.Shipment.ShipmentNumber',
-        '',
+        "",
         companyId
       );
       //console.log('resPriorityUpdateDoc', resPriorityUpdateDoc);
@@ -637,7 +662,8 @@ export class GetOrderInfoService {
       return userResult;
     } catch (error) {
       //console.log(error);
-      throw error;
+   
+       throw error;
     }
     //ShipmentNumber
     //
@@ -648,51 +674,53 @@ export class GetOrderInfoService {
   async createPrioritySh(Id: string, companyId: string) {
     try {
       let userResult: ShipmentClientRes = {
-        isSuccess: 'new',
-        ShipmentNumber: '',
-        ShipmentId: '',
+        isSuccess: "new",
+        ShipmentNumber: "",
+        ShipmentId: "",
         messages: [],
         printLables: [],
       };
       //console.log('createPrioritySh');
       await this._DbLogService.create({
-        subject: 'priority sh Create ',
-        message: 'orderId ' + Id,
-        level: '',
-        context: '',
-        metadata: '',
-        companyId: '',
+        subject: "priority sh Create ",
+        message: "orderId " + Id,
+        level: "",
+        context: "",
+        metadata: "",
+        companyId: "",
       });
       const order = await this._orderService.findOneGetOrder(Id);
       if (!order) {
-        throw new BadRequestException('order Not Found ', {
+        throw new BadRequestException("order Not Found ", {
           cause: new Error(),
-          description: 'order Not Found',
+          description: "order Not Found",
         });
       }
 
-      if (order.shipRushStatus !== 'new') {
-        throw new BadRequestException('order already in progress ', {
+      if (order.shipRushStatus !== "new") {
+        throw new BadRequestException("order already in progress ", {
           cause: new Error(),
-          description: 'order ' + order.ORDNAME + ' - ' + order.shipRushStatus,
+          description: "order " + order.ORDNAME + " - " + order.shipRushStatus,
         });
       }
 
       if (order.orderBoxes.length === 0) {
-        throw new BadRequestException('order as no Boxes ', {
+        throw new BadRequestException("order as no Boxes ", {
           cause: new Error(),
-          description: 'order ' + order.ORDNAME + ' - as no Boxes',
+          description: "order " + order.ORDNAME + " - as no Boxes",
         });
       }
-      const shp = await this._ShipmentPriorityService.findOneByStCode(order.STCODE);
+      const shp = await this._ShipmentPriorityService.findOneByStCode(
+        order.STCODE
+      );
       if (shp === null || shp.shipRushCode === null) {
-        throw new BadRequestException('order ship Rush Code not found', {
+        throw new BadRequestException("order ship Rush Code not found", {
           cause: new Error(),
-          description: 'order ' + order.ORDNAME + ' - ' + order.STCODE,
+          description: "order " + order.ORDNAME + " - " + order.STCODE,
         });
       }
       const updrunning = {
-        shipRushStatus: 'Running',
+        shipRushStatus: "Running",
       };
       await this._orderService.updateData(Id, updrunning);
 
@@ -700,25 +728,25 @@ export class GetOrderInfoService {
         order.ORDNAME,
         companyId
       );
-      console.log('resPriorityCreateDoc', resPriorityCreateDoc);
+      console.log("resPriorityCreateDoc", resPriorityCreateDoc);
       const updDOC = {
-        shipRushStatus: 'Pending',
-        DOCUMENT_DOC: resPriorityCreateDoc['DOC'].toString(),
-        DOCUMENT_DOCNO: resPriorityCreateDoc['DOCNO'].toString(),
-        ShData: resPriorityCreateDoc['DOCNO'].toString(),
+        shipRushStatus: "Pending",
+        DOCUMENT_DOC: resPriorityCreateDoc["DOC"].toString(),
+        DOCUMENT_DOCNO: resPriorityCreateDoc["DOCNO"].toString(),
+        ShData: resPriorityCreateDoc["DOCNO"].toString(),
       };
       console.log(updDOC);
       await this._orderService.updateData(Id, updDOC);
       //return updDOC;
       const updShipRushRes = {
-        shipRushStatus: 'Pending',
-        shipRushShipmentId: '0',
+        shipRushStatus: "Pending",
+        shipRushShipmentId: "0",
         //trackingNumber: shipRushRes.AddOrderResponse.OrderId,
       };
       await this._orderService.updateData(Id, updShipRushRes);
 
       const resPriorityGetDoc = await this.GetPriorityShippingDoc(
-        resPriorityCreateDoc['DOC'].toString(),
+        resPriorityCreateDoc["DOC"].toString(),
         companyId
       );
       //console.log('resPriorityGetDoc', resPriorityGetDoc.value);
@@ -731,20 +759,20 @@ export class GetOrderInfoService {
         order,
         docData,
         //'shipRushRes.ShipResponse.ShipTransaction.Shipment.ShipmentNumber',
-        '',
+        "",
         companyId
       );
       //console.log('resPriorityUpdateDoc', resPriorityUpdateDoc);
       userResult = {
-        isSuccess: 'true', //shipRushRes.ShipResponse.IsSuccess,
+        isSuccess: "true", //shipRushRes.ShipResponse.IsSuccess,
         ShipmentNumber: resPriorityUpdateDoc.DOCNO,
-        ShipmentId: '0',
+        ShipmentId: "0",
         messages: [
           {
-            Severity: 'Success',
+            Severity: "Success",
             textMessage:
-              'priority Sh order created' +
-              resPriorityCreateDoc['DOCNO'].toString(),
+              "priority Sh order created" +
+              resPriorityCreateDoc["DOCNO"].toString(),
           },
         ],
         printLables: [],
@@ -768,9 +796,7 @@ export class GetOrderInfoService {
     //   `/DOCUMENTS_D`;
     // const credentials = btoa(this.username + ':' + this.pwd);
 
-
-
-const resCompantSettings = await this._CompanyService.findOne(companyId)
+    const resCompantSettings = await this._CompanyService.findOne(companyId);
 
     const url =
       //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
@@ -778,11 +804,14 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
       resCompantSettings.companySetting.priorityApiCompany +
       `/DOCUMENTS_D`;
     //url = `https://win01.maclocks.com/odata/Priority/tabula.ini/clpln18/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,STCODE,STDES,ORDSTATUSDES&$top=200&$filter=ORDNAME eq 'SO24E04168'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
-   
-    const credentials = btoa(resCompantSettings.companySetting.priorityApiUser + ':' + resCompantSettings.companySetting.priorityApiPassword);
 
+    const credentials = btoa(
+      resCompantSettings.companySetting.priorityApiUser +
+        ":" +
+        resCompantSettings.companySetting.priorityApiPassword
+    );
 
-    const basicAuth = 'Basic ' + credentials;
+    const basicAuth = "Basic " + credentials;
     const dt = {
       ORDNAME: OrdName,
       //AIRWAYBILL: TrackingNumber,
@@ -797,17 +826,17 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
         .pipe(map((resp) => resp.data))
         .pipe(
           catchError((error) => {
-            console.log('Create Priority order error', error)
-            throw new BadRequestException('Create Priority order error', {
+            console.log("Create Priority order error", error);
+            throw new BadRequestException("Create Priority order error", {
               cause: new Error(),
               description:
-                'order ' +
+                "order " +
                 OrdName +
-                ' - ' +
+                " - " +
                 JSON.stringify(error.response.data),
             });
-          }),
-        ),
+          })
+        )
     );
     return data;
   }
@@ -822,20 +851,22 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
     // //console.log(url);
     // const credentials = btoa(this.username + ':' + this.pwd);
 
-
-    const resCompantSettings = await this._CompanyService.findOne(companyId)
-
+    const resCompantSettings = await this._CompanyService.findOne(companyId);
 
     const url =
       //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
-         `/DOCUMENTS_D?$filter=DOC eq ` +
+      `/DOCUMENTS_D?$filter=DOC eq ` +
       DOC +
-      `&$expand=TRANSORDER_D_SUBFORM`;    
-   
-    const credentials = btoa(resCompantSettings.companySetting.priorityApiUser + ':' + resCompantSettings.companySetting.priorityApiPassword);
-    const basicAuth = 'Basic ' + credentials;
+      `&$expand=TRANSORDER_D_SUBFORM`;
+
+    const credentials = btoa(
+      resCompantSettings.companySetting.priorityApiUser +
+        ":" +
+        resCompantSettings.companySetting.priorityApiPassword
+    );
+    const basicAuth = "Basic " + credentials;
     const data = await lastValueFrom(
       this.httpService
         .get(url, {
@@ -846,40 +877,42 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
         .pipe(map((resp) => resp.data))
         .pipe(
           catchError((error) => {
-            throw new BadRequestException('Update Priority SH', {
+            throw new BadRequestException("Update Priority SH", {
               cause: new Error(),
               description:
-                'Doc ' + DOC + ' - ' + JSON.stringify(error.response.data),
+                "Doc " + DOC + " - " + JSON.stringify(error.response.data),
             });
-          }),
-        ),
+          })
+        )
     );
     return data;
   }
   async UpdatePriorityShippingDoc(
-
     order: Order,
     ExisitingOrdName: any,
-    trackingNumber: any,  
-    companyId: string,
+    trackingNumber: any,
+    companyId: string
   ) {
-    const resCompantSettings = await this._CompanyService.findOne(companyId)
-    
+    const resCompantSettings = await this._CompanyService.findOne(companyId);
 
     // const url =
     //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
     //   this.comapny +
     //   `/DOCUMENTS_D`;
     // const credentials = btoa(this.username + ':' + this.pwd);
-     const url =
+    const url =
       //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
-         `/DOCUMENTS_D`;  
-   
-    const credentials = btoa(resCompantSettings.companySetting.priorityApiUser + ':' + resCompantSettings.companySetting.priorityApiPassword);
-    const basicAuth = 'Basic ' + credentials;
-    const CqauntData = await this._PartCqauntService.findAll('1');
+      `/DOCUMENTS_D`;
+
+    const credentials = btoa(
+      resCompantSettings.companySetting.priorityApiUser +
+        ":" +
+        resCompantSettings.companySetting.priorityApiPassword
+    );
+    const basicAuth = "Basic " + credentials;
+    const CqauntData = await this._PartCqauntService.findAll("1");
     const dt = {
       DOCNO: ExisitingOrdName.DOCNO, // order.ORDNAME,
       DOC: ExisitingOrdName.DOC, //order.DOCUMENT_DOCNO,
@@ -893,7 +926,7 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
             ol.PARTNAME,
             ol.CQUANT,
             ol.MIKU_ORDI,
-            CqauntData,
+            CqauntData
           ),
         };
       }),
@@ -921,16 +954,16 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
         .pipe(map((resp) => resp.data))
         .pipe(
           catchError((errorPriorityUpdate) => {
-            throw new BadRequestException('Update Priority SH', {
+            throw new BadRequestException("Update Priority SH", {
               cause: new Error(),
               description:
-                'order ' +
+                "order " +
                 order +
-                ' - ' +
+                " - " +
                 JSON.stringify(errorPriorityUpdate.response.data),
             });
-          }),
-        ),
+          })
+        )
     );
     return data;
   }
@@ -941,7 +974,7 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
     partName: string,
     cqount: number,
     MIKU_ORDI: number,
-    partCqaunt: PartCqaunt[],
+    partCqaunt: PartCqaunt[]
   ): number {
     // if (partName.startsWith('Ship')) return 1;
     // if (partName.startsWith('Rounding Adj')) {
@@ -969,30 +1002,37 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
     return result;
   }
 
-  async sendToShipRush(xml: string, ORDNAME: string): Promise<any> {
-    const shipRushUrl = this.configService.get<string>('SHIPRUSH_URL_WEBSITE');
+  async sendToShipRush(
+    xml: string,
+    ORDNAME: string,
+    companyId: string
+  ): Promise<any> {
+    const resCompantSettings = await this._CompanyService.findOne(companyId);
+    const shipRushUrl = resCompantSettings.companySetting.shipmentUrl;
+    const shipRushToken = resCompantSettings.companySetting.shipmentPassword;
+    //this.configService.get<string>('SHIPRUSH_URL_WEBSITE');
     //const shipRushToken = this.configService.get<string>(
     //  'X-SHIPRUSH-SHIPPING-TOKEN',
     //);
     const url = shipRushUrl; //`https://sandbox.api.my.shiprush.com/shipmentservice.svc/shipment/ship`;
-
+    console.log("Sending to ShipRush", url, xml);
     const data = await lastValueFrom(
       this.httpService
         .post(url, xml, {
-          // headers: {
-          //   'X-SHIPRUSH-SHIPPING-TOKEN': shipRushToken, //'0436c904-615c-4bb3-b41e-fcf7cd6282b8',
-          //   //configService.get<string>('X-SHIPRUSH-SHIPPING-TOKEN')
-          // },
+          headers: {
+            "X-SHIPRUSH-SHIPPING-TOKEN": shipRushToken, //'0436c904-615c-4bb3-b41e-fcf7cd6282b8',
+            //configService.get<string>('X-SHIPRUSH-SHIPPING-TOKEN')
+          },
         })
         .pipe(
           map((resp) => {
-            //console.log(resp.data);
+            console.log('shiprush res',resp.data);
             return resp.data;
-          }),
+          })
         )
         .pipe(
           catchError((error) => {
-            let errorMsg = 'Unknown error';
+            let errorMsg = "Unknown error";
             try {
               const xmlParser = new XMLParser();
               const parsed = xmlParser.parse(error.response.data);
@@ -1000,17 +1040,17 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
               const msg = parsed?.Error?.Message;
               const details = parsed?.Error?.Details;
 
-              errorMsg = details + ' - ' + msg;
+              errorMsg = details + " - " + msg;
             } catch (parseErr) {
               // fallback if parsing fails
               errorMsg = error?.message || errorMsg;
             }
-            throw new BadRequestException('Create ship Rush delivery', {
+            throw new BadRequestException("Create ship Rush delivery", {
               cause: new Error(),
-              description: 'order ' + ORDNAME + ' - ' + errorMsg,
+              description: "order " + ORDNAME + " - " + errorMsg,
             });
-          }),
-        ),
+          })
+        )
     );
     //const t = data as unknown as RootShipResponse;
     // if (t.ShipResponse.IsSuccess === 'true') {
@@ -1036,15 +1076,19 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
     shipmentPriority: ShipmentPriority,
     companyId: string
   ): Promise<string> {
-    const resCompantSettings = await this._CompanyService.findOne(companyId)
-    const shipRushConfigs = await this._deliverySettingService.findOneBySite(this.comapny);
-    let shipRushConfig = null;
-    if (shipRushConfigs) {
-      shipRushConfig = shipRushConfigs[0];
+    const resCompantSettings = await this._CompanyService.findOne(companyId);
+    const shipRushConfig = await this._deliverySettingService.findOneBySite(
+      this.comapny
+    );
+    if (!shipRushConfig) {
+      throw new BadRequestException("ShipRush configuration not found", {
+        cause: new Error(),
+        description: "ShipRush configuration not found for company " + this.comapny,
+      });
     }
     let tmpAddress = order.ADDRESS2;
-    if (order.ADDRESS3) tmpAddress = tmpAddress + ' ' + order.ADDRESS3;
-    let upsAcountNumbertrd = '';
+    if (order.ADDRESS3) tmpAddress = tmpAddress + " " + order.ADDRESS3;
+    let upsAcountNumbertrd = "";
     if (order.accountId) upsAcountNumbertrd = order.accountId;
     const todayDate = new Date().toISOString().slice(0, 10);
     const dt: RootShipRequest = {
@@ -1070,15 +1114,15 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
             HasShipNotification: 1,
             //PostbackUrl: this.priorityShipRushUrl, //'https://compl.com',
             PostbackUrl: resCompantSettings.companySetting.shipmentCallBack,
-            PostbackContentType: 'Unknown',
+            PostbackContentType: "Unknown",
             UnitsOfMeasureLinear: shipRushConfig.uomLength, //IN
             CustomerReference: order.ORDNAME,
             UOMWeight: shipRushConfig.uomweight,
-            IsTest: '0',
-            Carrier: '1',
+            IsTest: "0",
+            Carrier: "1",
             PickupReadyTime: todayDate + shipRushConfig.PickupReadyTime, // 'T15:00:00.000Z',
             LatestPickupTime: todayDate + shipRushConfig.LatestPickupTime, //'T17:00:00.000Z',
-            ChargeType: order.accountId ? 'TPB' : 'PRE',
+            ChargeType: order.accountId ? "TPB" : "PRE",
 
             // ShippingAccount: {
             //   ShippingAccountId: '00000000-0000-0000-0000-000000000000',
@@ -1087,10 +1131,10 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
               UPSAccountNumber: upsAcountNumbertrd,
               Address: {
                 PostalCode: order.accountZip,
-                StateOrEmpty: '',
-                Country: '',
-                StateAsString: '',
-                CountryAsString: '',
+                StateOrEmpty: "",
+                Country: "",
+                StateAsString: "",
+                CountryAsString: "",
               },
             },
             UPSServiceType: shipmentPriority.shipRushCode,
@@ -1098,8 +1142,8 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
             DeliveryAddress: {
               Address: {
                 Country:
-                  order.COUNTRYNAME === 'United States'
-                    ? 'U.S.A.'
+                  order.COUNTRYNAME === "United States"
+                    ? "U.S.A."
                     : order.COUNTRYNAME,
                 State: order.STATECODE,
                 City: order.STATE,
@@ -1135,30 +1179,35 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
     };
 
     order.orderBoxes.map((ob) => {
-      let size = ['0', '0', '0'];
+      let size = ["0", "0", "0"];
       if (
-        !(ob.boxSize.sizeDesc === 'Custom' || ob.boxSize.sizeDesc === 'Envlope')
+        !(ob.boxSize.sizeDesc === "Custom" || ob.boxSize.sizeDesc === "Envlope")
       ) {
-        size = ob.boxSize.sizeDesc.split('x');
+        size = ob.boxSize.sizeDesc.split("*");
       }
       dt.Request.ShipTransaction.Shipment.Package.push({
         PackageActualWeight: ob.boxweight.toString(),
-        PackagingType: '02',
-        PkgLength: size[0].toString().trim(),
-        PkgWidth: size[1].toString().trim(),
-        PkgHeight: size[2].toString().trim(),
+        PackagingType: "02",
+        PkgLength: size[0]?.toString().trim() || "0",
+        PkgWidth: size[1]?.toString().trim() || "0",
+        PkgHeight: size[2]?.toString().trim() || "0",
         PackageReference1: order.ORDNAME,
         PackageReference2: order.DETAILS,
-        InsuranceAmount: '0',
+        InsuranceAmount: "0",
       });
     });
 
     const builder = new Builder({ headless: true });
     const ret = builder.buildObject(dt.Request);
     let FinalXml = `${Headertmp}${ret}</Request>`;
-    FinalXml = FinalXml.replace('<root>', '');
-    FinalXml = FinalXml.replace('</root>', '');
-    console.log(      '******shipRush Xml***********',      '*********************',      FinalXml,      '*****************',    );
+    FinalXml = FinalXml.replace("<root>", "");
+    FinalXml = FinalXml.replace("</root>", "");
+    console.log(
+      "******shipRush Xml***********",
+      "*********************",
+      FinalXml,
+      "*****************"
+    );
     return FinalXml;
   }
 
@@ -1167,13 +1216,13 @@ const resCompantSettings = await this._CompanyService.findOne(companyId)
     if (Array.isArray(dt))
       return dt.map((g) => {
         return {
-          dataLabel: 'data:image/png;base64,' + g.ContentMimeEncoded,
+          dataLabel: "data:image/png;base64," + g.ContentMimeEncoded,
         } as ShipmentClientprintlablesRes;
       });
     else {
       return [
         {
-          dataLabel: 'data:image/png;base64,' + dt.ContentMimeEncoded,
+          dataLabel: "data:image/png;base64," + dt.ContentMimeEncoded,
         },
       ];
     }

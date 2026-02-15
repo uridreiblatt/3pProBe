@@ -35,10 +35,10 @@ export class DeliverySettingService {
     this.pwd = this.configService.get<string>('PRIORITY_PWD');
   }
 
-  async findOneBySite(siteName: string) {
-    return await this.ShipRushRepository.find({
+  async findOneBySite(companyId: string) {
+    return await this.ShipRushRepository.findOne({
       where: {
-        siteName: siteName,
+        company: { id: companyId },
       },
     });
   }

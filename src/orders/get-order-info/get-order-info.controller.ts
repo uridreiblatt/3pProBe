@@ -1,6 +1,7 @@
-import { Controller, Get, Param, Patch,Request } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch,Request } from '@nestjs/common';
 import { GetOrderInfoService } from './get-order-info.service';
 import { ApiTags } from '@nestjs/swagger';
+import { UpdateOrderBasketDto } from '../order-basket/dto/update-order-basket.dto';
 @ApiTags('get-order-info')
 @Controller('get-order-info')
 export class GetOrderInfoController {
@@ -15,6 +16,7 @@ export class GetOrderInfoController {
   @Patch('createShipRushDelivery/:orderId')
   async createShipRushDelivery(@Request() req,
     @Param('orderId') orderId: string,
+    @Body() createShipRushDelivery: UpdateOrderBasketDto,
   ): Promise<any> {
     
     const res = await this.getOrderInfoService.createShipRushDelivery(orderId, req.user.selectCompany);
