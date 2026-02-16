@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PriorityProducts } from "./entities/priorityProducts.entity";
-import { Repository } from "typeorm";
+import { Not, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ConfigService } from "@nestjs/config";
 import { catchError, lastValueFrom, map } from "rxjs";
@@ -90,10 +90,12 @@ export class priorityProductsService {
       createPartDto.PARTNAME = element.PARTNAME;
       createPartDto.BARCODE = element.BARCODE || "";
       createPartDto.PARTDES = element.PARTDES;
+      createPartDto.STATDES = element.STATDES;
+
       createPartDto.PART = element.PART;
       createPartDto.TYPE = element.TYPE;
       createPartDto.company = new Company();
-      createPartDto.company.id = "aaa-aaa-aaa";
+      createPartDto.company.id = companyId;
       try {
         await this.PartRepository.save(createPartDto);
         element.PARTARC_SUBFORM.map(async (son) => {
@@ -131,7 +133,7 @@ export class priorityProductsService {
     // const res = await this.PartRepository.query(sqlQuery);
     const res = await this.PartRepository.find({
       where: {
-        TYPE: "R",
+        STATDES :  Not("Not in Use"),
         company: { id: companyId },
       },
       //take:20,

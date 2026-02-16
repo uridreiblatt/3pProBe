@@ -131,28 +131,41 @@ export class OrderService {
         user: true,
         role: true,
       },
-      order: { priorityOrder: "ASC" },
+      order: { priorityOrder: "ASC", CURDATE: "ASC" },
     });
-    const resAll = res.map((ord) => {
-      return {
-        id: ord.id,
-        ORDNAME: ord.ORDNAME,
-        CUSTDES: ord.CUSTDES,
-        CUSTNAME: ord.CUSTNAME,
+    const resAll = await Promise.all(
+      res.map(async (ord) => {
+        const result = await this.orderRepository.query(
+          `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
+       FROM p3pro.order_boxes_items obi
+       WHERE obi.orderId = ? `,
+          [ord.id]
+        );
+        const collected = result[0]?.total ?? 0;
 
-        createdAt: ord.createdAt,
-        user: ord.user.userName,
-        COUNTRYNAME: ord.COUNTRYNAME,
-        STDES: ord.STDES,
-        status: ord.taskStatus.status,
-        orderLines: ord.orderLines,
-        role: ord.role.roleDisplayName,
-        roleId: ord.role.id,
-        taskStatus: {
+        return {
+          id: ord.id,
+          collected: collected,
+          priorityOrder: ord.priorityOrder,
+          ORDNAME: ord.ORDNAME,
+          CUSTDES: ord.CUSTDES,
+          CUSTNAME: ord.CUSTNAME,
+          CURDATE:  ord.CURDATE,
+
+          createdAt: ord.createdAt,
+          user: ord.user.userName,
+          COUNTRYNAME: ord.COUNTRYNAME,
+          STDES: ord.STDES,
           status: ord.taskStatus.status,
-        },
-      };
-    });
+          orderLines: ord.orderLines,
+          role: ord.role.roleDisplayName,
+          roleId: ord.role.id,
+          taskStatus: {
+            status: ord.taskStatus.status,
+          },
+        };
+      })
+    );
     return resAll;
     //
   }

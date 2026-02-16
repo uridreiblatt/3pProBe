@@ -1,17 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PartsHierarchyController } from './priority-products-hierarchy.controller';
-import { PartsHierarchyService } from './priority-products-hierarchy.service';
+import { PriorityProductsHierarchyController } from './priority-products-hierarchy.controller';
+import {  PriorityProductsHierarchyService } from './priority-products-hierarchy.service';
 
-describe('PartsHierarchyController', () => {
-  let controller: PartsHierarchyController;
+describe('PriorityProductsHierarchyController', () => {
+  let controller: PriorityProductsHierarchyController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [PartsHierarchyController],
-      providers: [PartsHierarchyService],
+      controllers: [PriorityProductsHierarchyController],
+      providers: [PriorityProductsHierarchyService],
     }).compile();
 
-    controller = module.get<PartsHierarchyController>(PartsHierarchyController);
+    controller = module.get<PriorityProductsHierarchyController>(PriorityProductsHierarchyController);
   });
 
   it('should be defined', () => {

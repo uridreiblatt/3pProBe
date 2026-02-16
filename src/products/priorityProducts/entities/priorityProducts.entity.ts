@@ -24,6 +24,9 @@ export class PriorityProducts {
   PART: number;
   @Column()
   PARTDES: string;
+ @Column()
+  STATDES: string;
+  
  
   @ManyToOne(() => Company, (company) => company.priorityProducts, {
     nullable: false,

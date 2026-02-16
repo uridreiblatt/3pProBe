@@ -14,67 +14,68 @@ import { UsersRoles } from "../user-role/entities/user-role.entity";
 @Dependencies(getRepositoryToken(User))
 export class UsersService {
   constructor(
-    @InjectRepository(User) 
+    @InjectRepository(User)
     private userRepository: Repository<User>,
-    @InjectRepository(UserCompany) 
-    private userCompanyRepository: Repository<UserCompany>, 
-    // @InjectRepository(UsersRoles) 
-    // private userRolesRepository: Repository<UsersRoles>,   
-  ) {}
-  async create(createUserDto: CreateUserDto) {    
+    @InjectRepository(UserCompany)
+    private userCompanyRepository: Repository<UserCompany>
+  ) // @InjectRepository(UsersRoles)
+  // private userRolesRepository: Repository<UsersRoles>,
+  {}
+  async create(createUserDto: CreateUserDto) {
     const ins = new User();
     ins.userName = createUserDto.userName;
     ins.userUuid = randomUUID();
     ins.userMail = createUserDto.usermail;
-    ins.userMobile = createUserDto.userMobile;    
-    ins.userPasswordEnc = createUserDto.userPasswordEnc;  
-    ins.isActive = createUserDto.isActive;  
-    ins.userSurname = createUserDto.userSurname || 'not required';
+    ins.userMobile = createUserDto.userMobile;
+    ins.userPasswordEnc = createUserDto.userPasswordEnc;
+    ins.isActive = createUserDto.isActive;
+    ins.userSurname = createUserDto.userSurname || "not required";
     ins.selectedCompany = createUserDto.companyId;
-    const res  =  await this.userRepository.save(ins);
+    const res = await this.userRepository.save(ins);
 
     const insUserCompant = new UserCompany();
-    insUserCompant.company =  new Company();
+    insUserCompant.company = new Company();
     insUserCompant.company.id = createUserDto.companyId;
     insUserCompant.users = new User();
     insUserCompant.users.id = res.id;
-  
-    const resUserCompany  =  await this.userCompanyRepository.save(insUserCompant);
-    
+
+    const resUserCompany = await this.userCompanyRepository.save(
+      insUserCompant
+    );
+
     return res;
   }
 
-  async findAll(companyId: string): Promise<any> {      
-    const resUser  =  await this.userRepository.find({
+  async findAll(companyId: string): Promise<any> {
+    const resUser = await this.userRepository.find({
       where: {
-        userCompany: {company: {id: companyId}},        
+        userCompany: { company: { id: companyId } },
       },
       relations: {
-        usersRoles: {role: true},
-        userCompany: {company: true},
-
+        usersRoles: { role: true },
+        userCompany: { company: true },
       },
       //select: ["id", "userName", "userMail", "usersRoles",  "userMobile", "isActive"],
     });
-    const res  =  resUser.map((user) => {
-    
-
-    return {
-      id: user.id,
-      userName: user.userName,
-      userMail: user.userMail,
-      userMobile: user.userMobile,            
-      roles: user.usersRoles.sort((a, b) => b.role.id - a.role.id).map((role)=>{
-        return        role.role.role}),
-        companies: user.userCompany.map((comapny)=>{
-        return comapny.company.name}),
-      isActive: user.isActive ? 'Active': 'InActive',
-    };
-  });
-  return res;
-
+    const res = resUser.map((user) => {
+      return {
+        id: user.id,
+        userName: user.userName,
+        userMail: user.userMail,
+        userMobile: user.userMobile,
+        roles: user.usersRoles
+          .sort((a, b) => b.role.id - a.role.id)
+          .map((role) => {
+            return role.role.role;
+          }),
+        companies: user.userCompany.map((comapny) => {
+          return comapny.company.name;
+        }),
+        isActive: user.isActive,
+      };
+    });
+    return res;
   }
-  
 
   findAllWithDbProc() {
     return this.userRepository.query("ggg @param1=1 ");
@@ -89,30 +90,30 @@ export class UsersService {
         usersRoles: {
           role: true,
         },
-        userCompany: {company: true},
+        userCompany: { company: true },
       },
     });
   }
   async switchCompany(userUuid: string): Promise<User> {
     return await this.userRepository.findOne({
       where: {
-        userUuid: userUuid,       
+        userUuid: userUuid,
       },
       relations: {
         usersRoles: {
           role: true,
         },
-        userCompany: {company: true},
+        userCompany: { company: true },
       },
     });
   }
 
   async findOne(id: string) {
-    const resUser =  await this.userRepository.findOne({
+    const resUser = await this.userRepository.findOne({
       where: { id: id },
-      relations:{
-        usersRoles: {role: true},
-        userCompany:{company: true},
+      relations: {
+        usersRoles: { role: true },
+        userCompany: { company: true },
       },
     });
     const resLogin = {
@@ -129,7 +130,7 @@ export class UsersService {
         return { id: o.company.id, companyName: o.company.name };
       }),
     };
-    return  resLogin;
+    return resLogin;
   }
   async update(id: string, updateUserDto: UpdateUserDto) {
     const ins = new User();

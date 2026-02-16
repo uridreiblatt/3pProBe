@@ -51,4 +51,12 @@ export class CreateCompanySettingDto {
   @ApiProperty()
   @IsBoolean()
   boxItemsCount: boolean;
+  @ApiProperty()
+  @IsBoolean()
+  isActive: boolean;
+ @ApiProperty()
+  @IsString()
+  priorityOrderLineStatus: string;
+
+  
 }

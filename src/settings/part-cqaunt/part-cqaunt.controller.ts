@@ -34,13 +34,13 @@ export class PartCqauntController {
       @Param("id") id: string,
       @Body() updatePartCqauntDto: UpdatePartCqauntDto
     ) {   
-      return this.partCqauntService.update(+id, updatePartCqauntDto);
+      return this.partCqauntService.update(id, updatePartCqauntDto);
     }
   
     @Delete(":id")
     async remove(@Request() req, @Param("id") id: string) {
       const res = await this.partCqauntService.findOne(id);
       validateCompany (req.user.selectCompany , res.company.id);
-      return this.partCqauntService.remove(+id);
+      return this.partCqauntService.remove(id);
     }
 }

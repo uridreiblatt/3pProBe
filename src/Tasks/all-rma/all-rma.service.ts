@@ -35,9 +35,14 @@ export class AllRmaService {
   async handleCron() {
     this.logger.log("crone Called getAllNewRmaFromPriority EVERY_10_MINUTES");
     const allCompanies = await this._CompanyService.findAll();
-    allCompanies.forEach(async (company) => {
+    try {
+      allCompanies.forEach(async (company) => {
       if (company.companySetting) await this.syncAllNewRmaFromPriority(company);
     });
+    } catch (error) {
+      this.logger.error("Error in handleCron rma", error);
+    }
+    
   }
 
   async getAllNewRmaFromPriority(companyId:string): Promise<any>{

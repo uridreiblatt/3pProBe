@@ -24,7 +24,7 @@ export class PriorityProductsLocationsService {
      const ins =  new PriorityProductsLocation();
     ins.location = createPriorityProductsLocationDto.location;
     ins.quantity = createPriorityProductsLocationDto.quantity;
-    ins.stockDate = null;
+    ins.stockDate = new Date(createPriorityProductsLocationDto.stockDate);
     ins.priorityProducts = new PriorityProducts();
     ins.priorityProducts.id = createPriorityProductsLocationDto.productId;
     ins.zone =  new Zone();
@@ -106,9 +106,13 @@ export class PriorityProductsLocationsService {
       location: res.location,
       product: res.priorityProducts.PARTNAME,
       productId: res.priorityProducts.id,
+      quantity: res.quantity,
+      stockDate: res.stockDate,
     };
     return resAll;
   }
+
+  
 
   async update(
     id: string,
@@ -121,7 +125,7 @@ export class PriorityProductsLocationsService {
     const upt =  new PriorityProductsLocation();
     upt.location = updatePriorityProductsLocationDto.location;
     upt.quantity = updatePriorityProductsLocationDto.quantity;
-    upt.stockDate = null;
+    upt.stockDate = upt.stockDate = new Date(updatePriorityProductsLocationDto.stockDate);
     upt.priorityProducts = new PriorityProducts();
     upt.priorityProducts.id = updatePriorityProductsLocationDto.productId;
     upt.zone =  new Zone();

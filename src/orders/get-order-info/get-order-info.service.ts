@@ -78,13 +78,25 @@ export class GetOrderInfoService {
     this._CompanyService = CompanyService;
   }
   @Cron(CronExpression.EVERY_10_MINUTES)
-  async handleCron() {
-    this.logger.log("crone get all orders Called EVERY_DAY_AT_10AM");
-    const allCompanies = await this._CompanyService.findAll();
-    allCompanies.forEach(async (company) => {
-      if (company.companySetting) await this.GetAllOrder(company.id);
-    });
+async handleCron() {
+  this.logger.log("cron get all orders Called EVERY_10_MINUTES");
+
+  const allCompanies = await this._CompanyService.findAll();
+
+  for (const company of allCompanies) {
+    if (!company.companySetting) continue;
+
+    try {
+      await this.GetAllOrder(company.id);
+    } catch (error) {
+      this.logger.error(
+        `cron error GetAllOrder for company ${company.id}`,
+        error?.message || error
+      );
+    }
   }
+}
+
 
   async GetAll(companyId: string): Promise<any> {
     return await this.GetAllOrder(companyId);
@@ -123,7 +135,7 @@ export class GetOrderInfoService {
         .pipe(
           catchError((error) => {
             this.isLocked = false;
-            throw `An error happened. Msg: ${JSON.stringify(error.request)}`;
+            throw `An error happened. Msg: ${JSON.stringify(error)}`;
           })
         )
     );
@@ -198,11 +210,12 @@ export class GetOrderInfoService {
         createOrderDto.userId = EOrderUser.unAssigned;
         createOrderDto.taskStatusId = OrderStatusEnum.New; //EOrderUser.unAssigned;
         let checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {
+          console.log(ln.TBALANCE, createOrderDto.ORDNAME)
           if (ln.TBALANCE > 0) return true;
           return false;
         });
         if (
-          resCompantSettings.companySetting.priorityOrderLineStatus === null
+          resCompantSettings.companySetting.priorityOrderLineStatus !== null
         ) {
           checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {
             if (
@@ -343,7 +356,8 @@ export class GetOrderInfoService {
                 (resCompantSettings.companySetting.priorityOrderLineStatus ===
                   null &&
                   subForm.TBALANCE > 0) ||
-                subForm.ORDISTATUSDES ===
+                  subForm.TBALANCE > 0 && 
+                  subForm.ORDISTATUSDES ===
                   resCompantSettings.companySetting.priorityOrderLineStatus
               ) {
                 CheckOrderLineStatus = true;
@@ -500,13 +514,14 @@ export class GetOrderInfoService {
       await this._orderService.updateData(Id, updDOC);
       //return updDOC;
       const ShipRushXml = await this.BuilddataToShipRush(order, shp, companyId);
-      console.log('ShipRushXml', ShipRushXml);
+      //console.log('ShipRushXml', ShipRushXml);
       const shipRushResXml = await this.sendToShipRush(
         ShipRushXml,
         order.ORDNAME,
         companyId
       );
 
+      console.log('shipRushResXml', shipRushResXml);
       //       <?xml version="1.0" encoding="utf-8"?>
       // <AddOrderResponse xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       //     <OrderId>fa9eff8a-0b7e-45c9-a20d-b2e000c78f17</OrderId>
@@ -1015,7 +1030,7 @@ export class GetOrderInfoService {
     //  'X-SHIPRUSH-SHIPPING-TOKEN',
     //);
     const url = shipRushUrl; //`https://sandbox.api.my.shiprush.com/shipmentservice.svc/shipment/ship`;
-    console.log("Sending to ShipRush", url, xml);
+    //console.log("Sending to ShipRush", url, xml);
     const data = await lastValueFrom(
       this.httpService
         .post(url, xml, {
@@ -1025,13 +1040,13 @@ export class GetOrderInfoService {
           },
         })
         .pipe(
-          map((resp) => {
-            console.log('shiprush res',resp.data);
+          map((resp) => {            
             return resp.data;
           })
         )
         .pipe(
           catchError((error) => {
+             console.log('shiprush res Error',error.response.data , error.message);
             let errorMsg = "Unknown error";
             try {
               const xmlParser = new XMLParser();
@@ -1202,12 +1217,11 @@ export class GetOrderInfoService {
     let FinalXml = `${Headertmp}${ret}</Request>`;
     FinalXml = FinalXml.replace("<root>", "");
     FinalXml = FinalXml.replace("</root>", "");
-    console.log(
-      "******shipRush Xml***********",
-      "*********************",
-      FinalXml,
-      "*****************"
-    );
+    // console.log(
+    //   "******shipRush Xml***********",
+    //   FinalXml,
+    //   "*****************"
+    // );
     return FinalXml;
   }
 

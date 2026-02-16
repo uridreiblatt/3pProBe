@@ -23,7 +23,7 @@ export class CompanyService {
   }
 
   async findOne(id: string) {
-    return this.companyRepository.findOne({
+    const res =  await this.companyRepository.findOne({
       where: {
         id: id,
       },
@@ -31,6 +31,10 @@ export class CompanyService {
         companySetting: true,
       },
     });
+    
+    res.companySetting.priorityApiPassword = '********';
+    
+    return res;
   }
 
   update(id: number, updateCompanyDto: UpdateCompanyDto) {

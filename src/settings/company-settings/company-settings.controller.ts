@@ -24,7 +24,7 @@ export class CompanySettingsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCompanySettingDto: UpdateCompanySettingDto) {
-    return this.companySettingsService.update(+id, updateCompanySettingDto);
+    return this.companySettingsService.update(id, updateCompanySettingDto);
   }
 
   @Delete(':id')

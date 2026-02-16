@@ -11,11 +11,11 @@ import {
 export abstract  class Tablestamp {
   @Column({default: 0, nullable: false,select: false})
   updatedBy: string;
-  @CreateDateColumn({ name: 'created_at',select: false })
+  @CreateDateColumn({ name: 'created_at',select: true })
   createdAt: Date;
   @UpdateDateColumn({ name: 'updated_at',select: false })
   updatedAt: Date;
-  @Column({ name: 'is_active' , default: true, nullable: false, select: false})
+  @Column({ name: 'is_active' , default: true, nullable: false, select: true})
   @IsBoolean()
   isActive: boolean;
 }

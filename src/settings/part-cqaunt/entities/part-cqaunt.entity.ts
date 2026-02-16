@@ -5,7 +5,6 @@ import { PrimaryGeneratedColumn, Column, Entity, ManyToOne, JoinColumn } from 't
 export class PartCqaunt extends Tablestamp{
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
   @Column()
   partName: string;
   @ManyToOne(() => Company, (company) => company.partCqaunt)

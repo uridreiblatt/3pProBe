@@ -37,9 +37,27 @@ export class CompanySettingsService {
   });
 }
 
-  update(id: number, updateCompanySettingDto: UpdateCompanySettingDto) {
-    return `This action updates a #${id} companySetting`;
-  }
+  async update(id: string, updateCompanySettingDto: UpdateCompanySettingDto) {  
+        const upd = new CompanySetting();
+        upd.priorityApiUrl = updateCompanySettingDto.priorityApiUrl;
+        upd.priorityApiCompany = updateCompanySettingDto.priorityApiCompany;
+        upd.priorityApiUser = updateCompanySettingDto.priorityApiUser;
+        upd.priorityApiPassword = updateCompanySettingDto.priorityApiPassword;
+        upd.priorityOrderStatus = updateCompanySettingDto.priorityOrderStatus;
+        upd.priorityPoStatus = updateCompanySettingDto.priorityPoStatus;
+        upd.priorityRmaStatus = updateCompanySettingDto.priorityRmaStatus;        
+        upd.priorityProductStatus = updateCompanySettingDto.priorityProductStatus;
+        upd.addtionalPickingInfo = updateCompanySettingDto.addtionalPickingInfo;
+        upd.qcRequired = updateCompanySettingDto.qcRequired;
+        upd.shipmentUrl = updateCompanySettingDto.shipmentUrl;
+        upd.shipmentUser = updateCompanySettingDto.shipmentUser;
+        upd.shipmentPassword = updateCompanySettingDto.shipmentPassword;
+        upd.shipmentCallBack = updateCompanySettingDto.shipmentCallBack;
+        upd.boxItemsCount = updateCompanySettingDto.boxItemsCount;
+        upd.isActive = updateCompanySettingDto.isActive;        
+        return await this.CompanySettingRepository.update(id, upd);
+      }
+
 
   remove(id: number) {
     return `This action removes a #${id} companySetting`;
