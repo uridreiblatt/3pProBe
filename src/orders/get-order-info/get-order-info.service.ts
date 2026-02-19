@@ -154,7 +154,8 @@ async handleCron() {
       if (
         element.ORDERITEMS_SUBFORM !== null &&
         element.ORDERITEMS_SUBFORM.length > 0 &&
-        element.SHIPTO2_SUBFORM !== null
+        element.SHIPTO2_SUBFORM !== null &&
+        element.STCODE !== null
       ) {
         const createOrderDto: CreateOrderDto = new CreateOrderDto();
         createOrderDto.CUSTNO = element.CUSTNAME;

@@ -131,7 +131,7 @@ export class OrderService {
         user: true,
         role: true,
       },
-      order: { priorityOrder: "ASC", CURDATE: "ASC" },
+      order: { priorityOrder: "ASC", shipmentOrder: "ASC", CURDATE: "DESC" },
     });
     const resAll = await Promise.all(
       res.map(async (ord) => {

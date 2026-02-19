@@ -32,7 +32,7 @@ export class CompanyService {
       },
     });
     
-    res.companySetting.priorityApiPassword = '********';
+    //res.companySetting.priorityApiPassword = '********';
     
     return res;
   }
