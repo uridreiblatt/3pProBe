@@ -421,7 +421,7 @@ export class OrderService {
       orderRemarks: updateOrderDto.orderRemarks,
       ShData: updateOrderDto.ShData,
       Pallet: updateOrderDto.Pallet,
-      orderNote: updateOrderDto.orderNote,
+      //orderNote: updateOrderDto.orderNote,
 
       taskStatus: {
         id: orderStatus,
