@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PriorityProducts } from "./entities/priorityProducts.entity";
-import { Not, Repository } from "typeorm";
+import { In, Not, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ConfigService } from "@nestjs/config";
 import { catchError, lastValueFrom, map } from "rxjs";
@@ -150,18 +150,16 @@ export class priorityProductsService {
   }
 
   async findAll(companyId: string) {
-    // return await this.PartRepository.find({
-    //   // take: 100,
-    // });
-    // const sqlQuery =
-    //   'SELECT  pp.[id] ,pp.[PARTNAME]  ,pp.[PART] ,pp.[PARTDES] ,pp.[BARCODE],pp.[TYPE] ,pl.[location] , z.[zoneName],  cast(pl.[stockDate]as nvarchar) as stockDate,pl.[quantity]   ' +
-    //   ' FROM [dbo].[priorityProducts] pp  ' +
-    //   ' left JOIN  [dbo].[priorityProductsLocation] pl ON pp.[id]= pl.[priorityProductsId] ' +
-    //   ' left JOIN [dbo].[zone] z ON pl.[zoneId] = z.id order by isnull(z.priority,100) ';
-    // const res = await this.PartRepository.query(sqlQuery);
+    const sql = `SELECT productstatus FROM p3pro.product_status where companyId ='${companyId}' and is_active = 0`;
+    console.log(sql);
+    const newProductStatus = await this.PartRepository.query(sql);
+    const newProductStatusArray: string[] = newProductStatus.map(
+  (row: any) => row.productstatus
+);
+console.log(newProductStatusArray);
     const res = await this.PartRepository.find({
       where: {
-        STATDES: Not("Not in Use"),
+        STATDES: Not ( In(newProductStatusArray)),
         company: { id: companyId },
       },
       //take:20,

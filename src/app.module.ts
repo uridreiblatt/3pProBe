@@ -46,6 +46,7 @@ import { AllRmaModule } from "./Tasks/all-rma/all-rma.module";
 import { CompanySettingsModule } from "./settings/company-settings/company-settings.module";
 import { OrderBoxItemsModule } from "./orders/order-box-items/order-box-items.module";
 import { ShipRushModule } from "./shipments/ship-rush/ship-rush.module";
+import { ProductStatusModule } from './products/product-status/product-status.module';
 
 const cookieMatchOpts: CookieMatchOptions = {
   cookieName: "companyId",
@@ -127,6 +128,8 @@ const cookieMatchOpts: CookieMatchOptions = {
     ShipRushModule,
 
     DbLogModule,
+
+    ProductStatusModule,
   ],
   controllers: [],
   providers: [

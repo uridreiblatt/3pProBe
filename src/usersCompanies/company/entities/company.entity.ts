@@ -19,6 +19,7 @@ import { AllRma } from "src/Tasks/all-rma/entities/all-rma.entity";
 import { CompanySetting } from "src/settings/company-settings/entities/company-setting.entity";
 import { PriorityProducts } from "src/products/priorityProducts/entities/priorityProducts.entity";
 import { Order } from "src/orders/order/entities/order.entity";
+import { ProductStatus } from "src/products/product-status/entities/product-status.entity";
 
 @Entity()
 export class Company extends Tablestamp {
@@ -66,4 +67,9 @@ export class Company extends Tablestamp {
   priorityProducts: PriorityProducts[];
    @OneToMany(() => Order, (Order) => Order)
   orders: Order[];
+
+
+
+@OneToMany(() => ProductStatus, (productStatus) => productStatus.company)
+  productStatuses: ProductStatus[];
 }
