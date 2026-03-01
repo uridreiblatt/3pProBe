@@ -47,6 +47,12 @@ export class CreateAllRmaDto {
           @ApiProperty() 
           @IsString()
           companyId: string;
+          @ApiProperty() 
+          @IsString()
+          remarks: string;
+
+
+          
 }
 
 

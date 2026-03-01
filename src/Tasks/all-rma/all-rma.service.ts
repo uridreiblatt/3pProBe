@@ -46,7 +46,9 @@ export class AllRmaService {
   }
 
   async getAllNewRmaFromPriority(companyId:string): Promise<any>{
-    return await this._CompanyService.findOne(companyId);
+    const company = await this._CompanyService.findOne(companyId);
+    if (company.companySetting) await this.syncAllNewRmaFromPriority(company);
+
 
   }
   async syncAllNewRmaFromPriority(resCompantSettings: Company): Promise<any> {
@@ -59,13 +61,13 @@ export class AllRmaService {
     this.isLocked = true;
     //const resCompantSettings = await this._CompanyService.findOne(companyId);
     //const urlEndPoint = `/DOCUMENTS_m?$filter=STATDES eq 'Open' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
-    const urlEndPoint = `/DOCUMENTS_m?$filter=STATDES eq '${resCompantSettings.companySetting.priorityRmaStatus}' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
+    const urlEndPointPriority = `/DOCUMENTS_m?$filter=STATDES eq '${resCompantSettings.companySetting.priorityRmaStatus}' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
 
     const url =
       //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
-      urlEndPoint;
+      urlEndPointPriority;
 
     const credentials = btoa(
       resCompantSettings.companySetting.priorityApiUser +

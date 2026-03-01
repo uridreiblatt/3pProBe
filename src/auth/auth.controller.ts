@@ -44,8 +44,8 @@ export class AuthController {
       ...resUser.usersRoles.map((o) => o.role["id"]),
       0
     );
-    
-    //const user = 
+
+    //const user =
     jwtDetails.userEmail = resUser.userMail;
     jwtDetails.userRole = maxValueOfY.toString();
     jwtDetails.uuid = resUser.id;
@@ -54,20 +54,31 @@ export class AuthController {
         ? resUser.userCompany[0].company.id
         : resUser.selectedCompany;
 
-    jwtDetails.roles = resUser.usersRoles.map((o) => {
-      return { id: o.role.id, name: o.role.role } as role;
-    });
+    // jwtDetails.roles = resUser.usersRoles.map((o) => {
+    //   return { id: o.role.id, name: o.role.role } as role;
+    // });
     jwtDetails.companies = resUser.userCompany.map((o) => {
       return { id: o.company.id, name: o.company.name };
     });
-    jwtDetails.addtionalPickingInfo = resUser.userCompany[0].company.companySetting.addtionalPickingInfo;
-    jwtDetails.boxItemsCount = resUser.userCompany[0].company.companySetting.boxItemsCount;
+    jwtDetails.addtionalPickingInfo =
+      resUser.userCompany[0].company.companySetting.addtionalPickingInfo;
+    jwtDetails.qcRequired =
+      resUser.userCompany[0].company.companySetting.qcRequired;
+    jwtDetails.boxItemsCount =
+      resUser.userCompany[0].company.companySetting.boxItemsCount;
     jwtDetails.users = [];
-    if( maxValueOfY > 5 ) 
-      jwtDetails.users = resUserAll.users.map((u)=>{
-        return {id:u.id, userName: u.userName}
+    if (maxValueOfY > 5)
+      jwtDetails.users = resUserAll.users.map((u) => {
+        return { id: u.id, userName: u.userName };
       });
-    
+      jwtDetails.roles = resUser.usersRoles
+        .filter((o) => jwtDetails.qcRequired || o.role.role !== "QC")
+        .sort((a, b) => a.role.id - b.role.id)
+        .map((o) => ({
+          id: o.role.id,
+          name: o.role.role,
+        }));
+
     const jwtToken = await this.authService.signAsyncCookie(jwtDetails);
     response.cookie("access_token", jwtToken.access_token, {
       httpOnly: true,
@@ -82,14 +93,20 @@ export class AuthController {
       userName: resUser.userName,
       userLastName: resUser.userSurname,
       usermail: resUser.userMail,
-      userRoles: resUser.usersRoles
-      .sort((a, b) => a.role.id - b.role.id)
-      .map((o) => {
-        return { id: o.role.id, role: o.role.role };
-      }),
+
       userSelectedCompany: resUser.userCompany[0]?.company.id || 0,
-      addtionalPickingInfo: resUser.userCompany[0]?.company.companySetting.addtionalPickingInfo,
-      boxItemsCount:resUser.userCompany[0]?.company.companySetting.boxItemsCount,
+      addtionalPickingInfo:
+        resUser.userCompany[0]?.company.companySetting.addtionalPickingInfo,
+      qcRequired: resUser.userCompany[0]?.company.companySetting.qcRequired,
+      boxItemsCount:
+        resUser.userCompany[0]?.company.companySetting.boxItemsCount,
+      userRoles: resUser.usersRoles
+        .filter((o) => resUser.userCompany[0]?.company.companySetting.qcRequired || o.role.role !== "QC")
+        .sort((a, b) => a.role.id - b.role.id)
+        .map((o) => ({
+          id: o.role.id,
+          role: o.role.role,
+        })),
       userRoleName: resUser.usersRoles.find((ur) => {
         if (ur.role.id === maxValueOfY) return true;
       }).role.role,
@@ -98,9 +115,12 @@ export class AuthController {
       }),
       color: resUser.color,
       userRoleId: maxValueOfY,
-      users: maxValueOfY > 5 ? resUserAll.users.map((u)=>{
-        return {id:u.id, userName: u.userName}
-      }) : []
+      users:
+        maxValueOfY > 5
+          ? resUserAll.users.map((u) => {
+              return { id: u.id, userName: u.userName };
+            })
+          : [],
     };
     return resLogin;
   }
@@ -166,8 +186,10 @@ export class AuthController {
           };
         }),
       userSelectedCompany: switchCompanyDto.companyId,
-      addtionalPickingInfo: resUser.userCompany[0]?.company.companySetting.addtionalPickingInfo,
-      boxItemsCount: resUser.userCompany[0]?.company.companySetting.boxItemsCount,
+      addtionalPickingInfo:
+        resUser.userCompany[0]?.company.companySetting.addtionalPickingInfo,
+      boxItemsCount:
+        resUser.userCompany[0]?.company.companySetting.boxItemsCount,
       userRoleName: resUser.usersRoles.find((ur) => {
         if (ur.role.id === maxValueOfY) return true;
       }).role.role,

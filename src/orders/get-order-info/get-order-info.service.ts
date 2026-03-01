@@ -110,14 +110,11 @@ async handleCron() {
     const resCompantSettings = await this._CompanyService.findOne(companyId);
 
     this.isLocked = true;
-    const url =
-      //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+    const urlEndPointPriority =   
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
       `/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq '${resCompantSettings.companySetting.priorityOrderStatus}'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
-    //`/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq 'In Progress'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
-    //url = `https://win01.maclocks.com/odata/Priority/tabula.ini/clpln18/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,STCODE,STDES,ORDSTATUSDES&$top=200&$filter=ORDNAME eq 'SO24E04168'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
-
+    
     const credentials = btoa(
       resCompantSettings.companySetting.priorityApiUser +
         ":" +
@@ -126,7 +123,7 @@ async handleCron() {
     const basicAuth = "Basic " + credentials;
     const data = await lastValueFrom(
       this.httpService
-        .get(url, {
+        .get(urlEndPointPriority, {
           headers: {
             Authorization: basicAuth,
           },
@@ -210,8 +207,7 @@ async handleCron() {
         createOrderDto.CURDATE = element.CURDATE;
         createOrderDto.userId = EOrderUser.unAssigned;
         createOrderDto.taskStatusId = OrderStatusEnum.New; //EOrderUser.unAssigned;
-        let checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {
-          console.log(ln.TBALANCE, createOrderDto.ORDNAME)
+        let checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {       
           if (ln.TBALANCE > 0) return true;
           return false;
         });
@@ -578,70 +574,7 @@ async handleCron() {
           printLables: [],
         };
       }
-      // if (shipRushRes.ShipResponse.IsSuccess === 'false') {
-      //   const upd = {
-      //     shipRushStatus: 'error',
-      //   };
-      //   await this._orderService.updateData(Id, upd);
-      //   if (Array.isArray(shipRushRes.ShipResponse.Messages.ShippingMessage)) {
-      //     shipRushRes.ShipResponse.Messages.ShippingMessage.forEach(
-      //       async (c) => {
-      //         const errLog = {
-      //           subject: 'shipRush Create Error - ' + order.ORDNAME,
-      //           message: c.Severity + '--' + c.Text,
-      //         };
-      //         await this._DbLogService.create(errLog);
-      //       },
-      //     );
-      //   } else {
-      //     const errLog = {
-      //       subject: 'shipRush Create Error - ' + order.ORDNAME,
-      //       message: JSON.stringify(
-      //         shipRushRes.ShipResponse.Messages?.ShippingMessage,
-      //       ),
-      //     };
-      //     await this._DbLogService.create(errLog);
-      //   }
-
-      //   userResult = {
-      //     isSuccess: shipRushRes.ShipResponse.IsSuccess,
-      //     ShipmentNumber:
-      //       shipRushRes.ShipResponse.ShipTransaction.Shipment.ShipmentNumber,
-      //     ShipmentId:
-      //       shipRushRes.ShipResponse.ShipTransaction.Shipment.ShipmentId,
-      //     messages: this.printMessageHelper(
-      //       shipRushRes.ShipResponse.Messages.ShippingMessage,
-      //     ),
-      //     printLables: [],
-      //   };
-      // } else {
-      //   userResult = {
-      //     isSuccess: shipRushRes.ShipResponse.IsSuccess,
-      //     ShipmentNumber:
-      //       shipRushRes.ShipResponse.ShipTransaction.Shipment.ShipmentNumber,
-      //     ShipmentId:
-      //       shipRushRes.ShipResponse.ShipTransaction.Shipment.ShipmentId,
-      //     messages: this.printMessageHelper(
-      //       shipRushRes.ShipResponse.Messages.ShippingMessage,
-      //     ),
-      //     printLables: this.printLabelHelper(
-      //       shipRushRes.ShipResponse.ShipTransaction.Shipment.Documents
-      //         .PaperDocument,
-      //     ),
-      //   };
-
-      //   const updShipRushRes = {
-      //     shipRushStatus: 'Pending',
-      //     shipRushShipmentId:
-      //       shipRushRes.ShipResponse.ShipTransaction.Shipment.ShipmentId,
-      //     trackingNumber:
-      //       shipRushRes.ShipResponse.ShipTransaction.Shipment.ShipmentNumber,
-      //   };
-
-      //   console.log(updShipRushRes);
-      //   await this._orderService.updateData(Id, updShipRushRes);
-      //   // await this.sleep(1000).then(async () => {});
-      // }
+   
       const resPriorityGetDoc = await this.GetPriorityShippingDoc(
         //order.ORDNAME,
         //resPriorityCreateDoc['DOC'].toString()
@@ -805,22 +738,14 @@ async handleCron() {
     //return shipRushRes;
   }
   async createPriorityShippingDoc(OrdName: string, companyId: string) {
-    //https://win01.maclocks.com/odata/Priority/tabula.ini/cb3007/DOCUMENTS_D
-    // const url =
-    //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-    //   this.comapny +
-    //   `/DOCUMENTS_D`;
-    // const credentials = btoa(this.username + ':' + this.pwd);
-
-    const resCompantSettings = await this._CompanyService.findOne(companyId);
+       const resCompantSettings = await this._CompanyService.findOne(companyId);
 
     const url =
-      //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
       `/DOCUMENTS_D`;
-    //url = `https://win01.maclocks.com/odata/Priority/tabula.ini/clpln18/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,STCODE,STDES,ORDSTATUSDES&$top=200&$filter=ORDNAME eq 'SO24E04168'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
-
+    
     const credentials = btoa(
       resCompantSettings.companySetting.priorityApiUser +
         ":" +
@@ -858,19 +783,11 @@ async handleCron() {
   }
 
   async GetPriorityShippingDoc(DOC: string, companyId: string): Promise<any> {
-    // const url =
-    //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-    //   this.comapny +
-    //   `/DOCUMENTS_D?$filter=DOC eq ` +
-    //   DOC +
-    //   `&$expand=TRANSORDER_D_SUBFORM`;
-    // //console.log(url);
-    // const credentials = btoa(this.username + ':' + this.pwd);
+    
 
     const resCompantSettings = await this._CompanyService.findOne(companyId);
 
-    const url =
-      //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+    const urlEndPointPriority =    
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
       `/DOCUMENTS_D?$filter=DOC eq ` +
@@ -885,7 +802,7 @@ async handleCron() {
     const basicAuth = "Basic " + credentials;
     const data = await lastValueFrom(
       this.httpService
-        .get(url, {
+        .get(urlEndPointPriority, {
           headers: {
             Authorization: basicAuth,
           },
@@ -911,13 +828,8 @@ async handleCron() {
   ) {
     const resCompantSettings = await this._CompanyService.findOne(companyId);
 
-    // const url =
-    //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-    //   this.comapny +
-    //   `/DOCUMENTS_D`;
-    // const credentials = btoa(this.username + ':' + this.pwd);
-    const url =
-      //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+   
+    const urlEndPointPriority =    
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
       `/DOCUMENTS_D`;
@@ -946,23 +858,12 @@ async handleCron() {
           ),
         };
       }),
-
-      // order.orderLines.find((olP) => {
-      //   if (olP.PARTNAME === ol.PARTNAME) return true;
-      //   return false;
-      // }).TBALANCE,
-      //STATDES: 'Final',
-      // {
-      //   KLINE: 2,
-      //   TRANS: 429098,
-      //   TYPE: 'D',
-      //   TQUANT: 2,
-      // },
+   
     };
     //console.log(url, dt);
     const data = await lastValueFrom(
       this.httpService
-        .patch(url, dt, {
+        .patch(urlEndPointPriority, dt, {
           headers: {
             Authorization: basicAuth,
           },

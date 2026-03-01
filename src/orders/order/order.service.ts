@@ -327,7 +327,7 @@ export class OrderService {
             });
 
             return {
-              itm: ol.BARCODE,
+              itm: ol.PARTNAME,
               cnt: ol.TBALANCE,
               boxitems: itm.reduce((sum, item) => sum + item.itemsCount, 0),
             };
@@ -343,7 +343,7 @@ export class OrderService {
               "Incorrect qty in boxes:" +
               itemQtyCheck
                 .map(
-                  (x) => `${x.itm}: expected=${x.boxitems}, inBoxes=${x.cnt}`
+                  (x) => `${x.itm}:  expected=${x.cnt}, inBoxes=${x.boxitems} </br>`
                 )
                 .join(" , "),
           });

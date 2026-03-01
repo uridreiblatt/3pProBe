@@ -45,6 +45,7 @@ import { TaskGrvModule } from "./Tasks/task-grv/task-grv.module";
 import { AllRmaModule } from "./Tasks/all-rma/all-rma.module";
 import { CompanySettingsModule } from "./settings/company-settings/company-settings.module";
 import { OrderBoxItemsModule } from "./orders/order-box-items/order-box-items.module";
+import { ShipRushModule } from "./shipments/ship-rush/ship-rush.module";
 
 const cookieMatchOpts: CookieMatchOptions = {
   cookieName: "companyId",
@@ -123,6 +124,7 @@ const cookieMatchOpts: CookieMatchOptions = {
     PriorityProductsHierarchyModule,
     PriorityProductsLocationsModule,
     PartCqauntModule,
+    ShipRushModule,
 
     DbLogModule,
   ],

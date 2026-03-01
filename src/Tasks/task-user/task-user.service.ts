@@ -89,12 +89,12 @@ export class TaskUserService {
       const resCompantSettings = await this._CompanyService.findOne(companyId);
 
       //const urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`;
-      const urlEndPoint = `/PORDERS?$filter=STATDES eq  '${resCompantSettings.companySetting.priorityPoStatus}' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT,BARCODE)`;
+      const urlEndPointPriority = `/PORDERS?$filter=STATDES eq  '${resCompantSettings.companySetting.priorityPoStatus}' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT,BARCODE)`;
       const url =
         //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
         resCompantSettings.companySetting.priorityApiUrl +
         resCompantSettings.companySetting.priorityApiCompany +
-        urlEndPoint;
+        urlEndPointPriority;
       // const url =
       //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
       //   this.comapny +

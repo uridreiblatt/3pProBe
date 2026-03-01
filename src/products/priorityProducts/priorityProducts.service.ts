@@ -34,40 +34,65 @@ export class priorityProductsService {
     this._CompanyService = CompanyService;
   }
 
-    @Cron(CronExpression.EVERY_DAY_AT_10AM)
-      async handleCron() {
-        this.logger.log('crone Called EVERY_DAY_AT_10AM getAllNewPoFromPriority');
-        return;
-        const companies = await this._CompanyService.findAll();
-        companies.map(async (e)=>{
-           await this.SyncPriorityParts(e.id);
-  
-        })
-      }
-
-
-  async getPriorityParts(companyId: string){
-    return await this.SyncPriorityParts(companyId);
+  @Cron(CronExpression.EVERY_DAY_AT_10AM)
+  async handleCron() {
+    this.logger.log("crone Called EVERY_DAY_AT_10AM getAllNewPoFromPriority");
+    const companies = await this._CompanyService.findAll();
+    companies.map(async (e) => {
+      await this.SyncPriorityParts(e.id, false);
+    });
   }
-  async SyncPriorityParts(companyId: string) {
+  @Cron(CronExpression.EVERY_WEEKEND)
+  async handleCronWeekly() {
+    this.logger.log("crone Called EVERY_WEEKEND getAllNewPoFromPriority");
+    const companies = await this._CompanyService.findAll();
+    companies.map(async (e) => {
+      await this.SyncPriorityParts(e.id, true);
+    });
+  }
+
+  async getPriorityParts(companyId: string) {
+    return await this.SyncPriorityParts(companyId, false);
+  }
+  async SyncPriorityParts(companyId: string, fullSync: boolean): Promise<any> {
     //https://win01.maclocks.com/odata/Priority/tabula.ini/cb3007/LOGPART?$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES
     if (this.isLocked) {
       return "is locked";
     }
 
     this.isLocked = true;
-    const resCompantSettings = await this._CompanyService.findOne(companyId)
-    const url =
-      //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-      //   this.comapny +
+    const resCompantSettings = await this._CompanyService.findOne(companyId);
+    const base =
       resCompantSettings.companySetting.priorityApiUrl +
-      resCompantSettings.companySetting.priorityApiCompany +
-      `/LOGPART?$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES,PART&$expand=PARTARC_SUBFORM($select=SONNAME,TYPE,SON)`;
+      resCompantSettings.companySetting.priorityApiCompany;
+
+    const select =
+      "$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES,PART";
+    const expand = "$expand=PARTARC_SUBFORM($select=SONNAME,TYPE,SON)";
+    const now = new Date();
+    const startOfDayUTC = new Date(
+      Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth() -1, //last month
+        now.getUTCDate(),
+        0,
+        0,
+        0
+      )
+    );
+    const isoDate = startOfDayUTC.toISOString().split(".")[0] + "Z";
+    const filter = `CREATEDDATE  gt ${isoDate}`;
+    const path = fullSync
+      ? `/LOGPART?${select}&${expand}`
+      : `/LOGPART?$filter=${encodeURIComponent(filter)}&${select}&${expand}`;
+
+    const urlEndPointPriority = base + path;
+
     const credentials = btoa(this.username + ":" + this.pwd);
     const basicAuth = "Basic " + credentials;
     const data = await lastValueFrom(
       this.httpService
-        .get(url, {
+        .get(urlEndPointPriority, {
           headers: {
             Authorization: basicAuth,
           },
@@ -82,7 +107,10 @@ export class priorityProductsService {
     );
     const orderInfo: any = data;
     //this._DbLogService.create({
-    console.log(      "priority parts ",      "start import parts " + orderInfo.value.length.toString()    );
+    console.log(
+      "priority parts ",
+      "start import parts " + orderInfo.value.length.toString()
+    );
     let LinesInserted = 0;
 
     orderInfo.value.forEach(async (element) => {
@@ -133,7 +161,7 @@ export class priorityProductsService {
     // const res = await this.PartRepository.query(sqlQuery);
     const res = await this.PartRepository.find({
       where: {
-        STATDES :  Not("Not in Use"),
+        STATDES: Not("Not in Use"),
         company: { id: companyId },
       },
       //take:20,
@@ -149,7 +177,6 @@ export class priorityProductsService {
   }
 
   async findOne(id: string) {
-    
     return await this.PartRepository.findOne({
       where: {
         id: id,
@@ -178,21 +205,22 @@ export class priorityProductsService {
 
   async findChildByParentPart(id: string) {
     const sqlQuery =
-
       `SELECT     PP.PARTNAME, PP.BARCODE,   PL.location,    PL.stockDate,    PL.quantity,    Z.zoneName ` +
-` FROM priorityProducts AS P LEFT JOIN priorityProductsHierarchy AS C    ON P.PART = C.PART LEFT JOIN priorityProducts AS PP    ON PP.PART = C.SON LEFT JOIN priorityProductsLocation AS PL     ON PL.priorityProductsId = PP.id LEFT JOIN zone AS Z    ON Z.id = PL.zoneId `+
-` WHERE P.PARTNAME = '`+id+ `'`  +
-` ORDER BY PP.PARTNAME, Z.priority`;
-//console.log(sqlQuery);
+      ` FROM priorityProducts AS P LEFT JOIN priorityProductsHierarchy AS C    ON P.PART = C.PART LEFT JOIN priorityProducts AS PP    ON PP.PART = C.SON LEFT JOIN priorityProductsLocation AS PL     ON PL.priorityProductsId = PP.id LEFT JOIN zone AS Z    ON Z.id = PL.zoneId ` +
+      ` WHERE P.PARTNAME = '` +
+      id +
+      `'` +
+      ` ORDER BY PP.PARTNAME, Z.priority`;
+    //console.log(sqlQuery);
     const res = await this.PartRepository.query(sqlQuery);
     return res;
   }
 
   // async findChildByParent(id: string) {
-//   //   let sqlQuery =
-//   SELECT    P.PART,    C.SON,    DT.PARTNAME,    DT.PARTDES,    DT.BARCODE FROM priorityProducts P
-// LEFT JOIN priorityProductsHierarchy C   ON P.PART = C.PART LEFT JOIN priorityProducts DT    ON DT.PART = C.SON
-// WHERE P.PARTNAME = 'TCDP04W1910GASW';
+  //   //   let sqlQuery =
+  //   SELECT    P.PART,    C.SON,    DT.PARTNAME,    DT.PARTDES,    DT.BARCODE FROM priorityProducts P
+  // LEFT JOIN priorityProductsHierarchy C   ON P.PART = C.PART LEFT JOIN priorityProducts DT    ON DT.PART = C.SON
+  // WHERE P.PARTNAME = 'TCDP04W1910GASW';
   //   sqlQuery += " where   P.[id] = '" + id + "'";
   //   //} else {
   //   //  sqlQuery += " AND  P.[PARTNAME] = '" + id + "'";

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsInt, IsString } from "class-validator";
+import { IsInt, IsOptional, IsString } from "class-validator";
 
 export class CreateTaskGrvDto {
   @ApiProperty()
@@ -67,6 +67,7 @@ export class CreateTaskGrvDto {
   Total: number;
   @ApiProperty()
   @IsInt()
+  @IsOptional()
   quantityRequired: number;
   @ApiProperty()
   @IsString()

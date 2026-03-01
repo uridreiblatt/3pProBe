@@ -60,6 +60,8 @@ export class JwtDetails {
   @ApiProperty()
   addtionalPickingInfo: boolean;
   @ApiProperty()
+  qcRequired: boolean;
+  @ApiProperty()
   boxItemsCount:boolean;
   @ApiProperty()
   users: user[];
