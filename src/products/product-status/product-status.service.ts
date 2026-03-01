@@ -28,7 +28,7 @@ export class ProductStatusService {
   }
 
   findAll(selectCompany: string) {
-    return this.productStatusRepository.find({where: {company: {id: selectCompany}, isActive: true}} );
+    return this.productStatusRepository.find({where: {company: {id: selectCompany}}} );
   }
 
   async findOne(id: string) {
