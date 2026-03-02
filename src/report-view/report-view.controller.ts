@@ -15,6 +15,16 @@ export class ReportViewController {
     //console.log(req.user)
     return await this.reportViewService.DashBoard(req.user.selectCompany, req.user.role, req.user.userUuid);
   }
+
+  @Get('Notification')
+  async Notification(@Request() req) {
+    //console.log(req.user)
+    return await this.reportViewService.Notification(req.user.selectCompany, req.user.role, req.user.userUuid);
+  }
+
+
+
+  
   @Get()
   async findAll() {
     return await this.reportViewService.findAll();

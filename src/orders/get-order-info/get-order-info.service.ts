@@ -74,7 +74,6 @@ export class GetOrderInfoService {
     this._DbLogService = DbLogService;
     this._deliverySettingService = DeliverySettingService;
     this._PartCqauntService = PartCqauntService;
-    this._PartCqauntService = PartCqauntService;
     this._CompanyService = CompanyService;
   }
   @Cron(CronExpression.EVERY_10_MINUTES)
@@ -840,7 +839,7 @@ async handleCron() {
         resCompantSettings.companySetting.priorityApiPassword
     );
     const basicAuth = "Basic " + credentials;
-    const CqauntData = await this._PartCqauntService.findAll("1");
+    const CqauntData = await this._PartCqauntService.findAll(companyId);
     const dt = {
       DOCNO: ExisitingOrdName.DOCNO, // order.ORDNAME,
       DOC: ExisitingOrdName.DOC, //order.DOCUMENT_DOCNO,

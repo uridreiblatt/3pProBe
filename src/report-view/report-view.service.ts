@@ -80,6 +80,45 @@ export class ReportViewService {
     
   }
 
+  async Notification(companyId: string, roleId: number, userId: string) {
+    
+    
+    const queryOrderalert = "SELECT * FROM p3pro.order p WHERE  taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )";
+    const orderalert = await this.reportViewRepository.query(queryOrderalert);
+    const queryRmaalert = "SELECT * FROM p3pro.all_rma p WHERE  taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )";
+    const rmaAlert = await this.reportViewRepository.query(queryRmaalert);
+    const queryTaskalert = "SELECT * FROM p3pro.task_user p WHERE  taskStatusId = 4   OR (    created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )";
+    const taskAlert = await this.reportViewRepository.query(queryTaskalert);
+    const allData = {
+      
+      orderalert: orderalert.map((o) => ({
+        type:'order',
+        id: o.id,
+        name: o.ORDNAME,
+        curDate:o.CURDATE,
+        taskStatus: this.getTaskStatusName(o.taskStatusId ),    
+        note:o.orderNote,
+    })),
+     rmaAlert:rmaAlert.map((o) => ({
+      type:'rma',
+      id: o.id,
+      name: o.DOCNO,
+      curDate:o.created_at,
+      taskStatus: this.getTaskStatusName(o.taskStatusId),    
+      note:o.remarks,
+  })),
+      taskAlert:taskAlert.map((o) => ({
+      type:'tasks',
+      id: o.id,
+      name: o.DataInfo || '',
+      curDate:o.created_at,
+      taskStatus: this.getTaskStatusName(o.taskStatusId),    
+      note:o.taskInfo || '',
+  })),}
+    return [...allData.orderalert,...allData.rmaAlert,...allData.taskAlert];
+    
+  }
+
   async findOne(id: number) {
     const rpt = await this.reportViewRepository.findOne({
       where: { id: id },
@@ -110,5 +149,24 @@ ORDER BY ORDINAL_POSITION;`;
       data: data,
     };
     return allData;
+  }
+
+
+  getTaskStatusName(id: number){
+      switch (id) {
+        case 3:
+            return 'complete';
+        case 2:
+          return 'in progress';
+        case 4:          
+            return 'pending';
+        case 1:
+            return 'new';
+        case 7:
+            return 'review';
+
+        default:
+            return 'general';
+    }
   }
 }
