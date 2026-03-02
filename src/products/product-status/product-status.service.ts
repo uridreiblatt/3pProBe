@@ -12,13 +12,13 @@ export class ProductStatusService {
         private productStatusRepository: Repository<ProductStatus>,
       ) {}
 
-  async create(createProductStatusDto: CreateProductStatusDto) {
-    const sql = `SELECT distinct STATDES  FROM p3pro.priorityproducts where companyId  ='${createProductStatusDto.companyId}'`;
+  async create(companyId: string) {
+    const sql = `SELECT distinct STATDES  FROM p3pro.priorityproducts where companyId  ='${companyId}'`;
     console.log(sql);
     const newProductStatus = await this.productStatusRepository.query(sql);
     newProductStatus.forEach((element) => {      const productStatus = new ProductStatus();
       productStatus.productStatus = element.STATDES;
-      productStatus.company = {id: createProductStatusDto.companyId} as any;
+      productStatus.company = {id: companyId} as any;
 
       this.productStatusRepository.save(productStatus).catch((err) => {
         //Duplicate entry 'WSL-aaa-aaa-aaa' for key 'product-status.productStatus_UNIQUE'",

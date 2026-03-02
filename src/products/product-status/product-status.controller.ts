@@ -9,7 +9,7 @@ export class ProductStatusController {
 
   @Post()
   create(@Body() createProductStatusDto: CreateProductStatusDto) {
-    return this.productStatusService.create(createProductStatusDto);
+    return this.productStatusService.create(createProductStatusDto.companyId);
   }
 
   @Get()

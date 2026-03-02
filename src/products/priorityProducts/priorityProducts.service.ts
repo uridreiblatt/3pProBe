@@ -9,6 +9,7 @@ import { Company } from "src/usersCompanies/company/entities/company.entity";
 import { PriorityProductsHierarchy } from "../priorityProductsHierarchy/entities/priority-products-hierarchy.entity";
 import { CompanyService } from "src/usersCompanies/company/company.service";
 import { Cron, CronExpression } from "@nestjs/schedule";
+import { ProductStatusService } from "../product-status/product-status.service";
 
 @Injectable()
 export class priorityProductsService {
@@ -18,6 +19,7 @@ export class priorityProductsService {
   private readonly pwd: string;
   private readonly comapny: string;
   private readonly _CompanyService: CompanyService;
+  private readonly _ProductStatusService: ProductStatusService;
 
   constructor(
     @InjectRepository(PriorityProducts)
@@ -26,12 +28,14 @@ export class priorityProductsService {
     private PartHierarchyRepository: Repository<PriorityProductsHierarchy>,
     private CompanyService: CompanyService,
     private configService: ConfigService,
-    private httpService: HttpService
+    private httpService: HttpService,
+    private productStatusService: ProductStatusService,
   ) {
     this.username = this.configService.get<string>("PRIORITY_USER");
     this.pwd = this.configService.get<string>("PRIORITY_PWD");
     this.comapny = this.configService.get<string>("COMPANY") || "";
     this._CompanyService = CompanyService;
+    this._ProductStatusService=productStatusService;
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_10AM)
@@ -40,6 +44,7 @@ export class priorityProductsService {
     const companies = await this._CompanyService.findAll();
     companies.map(async (e) => {
       await this.SyncPriorityParts(e.id, false);
+      await this._ProductStatusService.create(e.id)
     });
   }
   @Cron(CronExpression.EVERY_WEEKEND)

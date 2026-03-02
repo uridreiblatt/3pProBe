@@ -63,7 +63,7 @@ export class TaskUser extends Tablestamp {
   @Column({ nullable: true })
   orderName: string;
   @Column({ nullable: true })
-  Color: string;
+  remarks: string;
   @Column({ default: 0 })
   bulkQauntity: number;
   @ManyToOne(() => User, (user) => user.id)

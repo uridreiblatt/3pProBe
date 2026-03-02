@@ -72,9 +72,9 @@ export class CreateTaskUserDto {
   // @ApiProperty({ default: 0 })
   // @IsInt()
   // bulkQauntity: number;
-  // @ApiProperty()
-  // @IsString()
-  // Color: string;
+  @ApiProperty()
+  @IsString()
+  remarks: string;
   // @ApiProperty()
   // @IsString()
   // orderName: string;
