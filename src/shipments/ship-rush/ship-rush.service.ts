@@ -48,22 +48,29 @@ export class ShipRushService {
   // }
 
   async create(createShipRushDto: CreateShipRushDto) {
-    console.log('createShipRushDto', createShipRushDto);
+    
     const order = await this._orderService.getOrderByShipmentIdFromShipRush(
       createShipRushDto.shipmentId,
     );
 
-
+console.log('getOrderByShipmentIdFromShipRush', order);
 
 
     const resCompantSettings = await this._CompanyService.findOne(order.comapny.id)
 
-    const resPriorityUpdateDoc = await this.UpdatePriorityShippingDoc(
+    try {
+      const resPriorityUpdateDoc = await this.UpdatePriorityShippingDoc(
       order,
       createShipRushDto,
       resCompantSettings,
+      
     );
     console.log('resPriorityUpdateDoc', resPriorityUpdateDoc);
+    } catch (error) {
+      console.log('resPriorityUpdateDoc', error);
+    }
+    
+    
     const updOrderPriority = {
       trackingNumber: createShipRushDto.trackingNumber.toString(),
       shipRushStatus: 'Final',
@@ -90,6 +97,7 @@ export class ShipRushService {
       const credentials = btoa(resCompantSettings.companySetting.priorityApiUser + ':' + resCompantSettings.companySetting.priorityApiPassword);
     
     const basicAuth = 'Basic ' + credentials;
+     console.log('UpdatePriorityShippingDoc', url);
     const dt = {
       DOCNO: order.DOCUMENT_DOCNO, // order.ORDNAME,
       DOC: Number(order.DOCUMENT_DOC), //order.DOCUMENT_DOCNO,
@@ -107,8 +115,8 @@ export class ShipRushService {
         .pipe(map((resp) => resp.data))
         .pipe(
           catchError((error) => {
-            //console.log('priorityt close sh error', error);
-            throw `An error happened. Msg: ${JSON.stringify(error)}`;
+            console.error(`An error happened(priorityt close sh error). Msg: ${JSON.stringify(error)}`);            
+            throw error;
           }),
         ),
     );

@@ -18,8 +18,8 @@ export class ShipRushController {
     const xml = await this.getRawBody(req); // read stream
 
     const parsed = await this.parser.parse(xml);
-    console.log("handleXml-Shipment", parsed.Request.ShipTransaction.Shipment);
-    console.log("handleXml-Order", parsed.Request.ShipTransaction.Order);
+    //console.log("handleXml-Shipment", parsed.Request.ShipTransaction.Shipment);
+    //console.log("handleXml-Order", parsed.Request.ShipTransaction.Order);
     const createShipRushDto: CreateShipRushDto = {
       shipmentId: parsed.Request.ShipTransaction.Order.OrderId,
       trackingNumber: parsed.Request.ShipTransaction.Shipment.ShipmentNumber,

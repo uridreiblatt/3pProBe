@@ -131,7 +131,7 @@ export class OrderService {
         user: true,
         role: true,
       },
-      order: { priorityOrder: "ASC", shipmentOrder: "ASC", CURDATE: "DESC" },
+      order: { priorityOrder: "ASC", shipmentOrder: "DESC", CURDATE: "ASC" },
     });
     const resAll = await Promise.all(
       res.map(async (ord) => {
@@ -338,15 +338,15 @@ export class OrderService {
         );
 
         if (itemQtyCheck.length > 0) {
-          throw new BadRequestException({
-            message:
-              "Incorrect qty in boxes:" +
-              itemQtyCheck
-                .map(
-                  (x) => `${x.itm}:  expected=${x.cnt}, inBoxes=${x.boxitems} </br>`
-                )
-                .join(" , "),
-          });
+            throw new BadRequestException({
+              message:
+                "Incorrect qty in boxes:" +
+                itemQtyCheck
+                  .map(
+                    (x) => `${x.itm}:  expected=${x.cnt}, inBoxes=${x.boxitems}`
+                  )
+                  .join("\n"),
+            });
         }
       }
     }

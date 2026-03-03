@@ -213,7 +213,7 @@ console.log(newProductStatusArray);
       ` WHERE P.PARTNAME = '` +
       id +
       `'` +
-      ` ORDER BY PP.PARTNAME, Z.priority`;
+      ` ORDER BY Z.priority desc , stockDate`;
     //console.log(sqlQuery);
     const res = await this.PartRepository.query(sqlQuery);
     return res;
