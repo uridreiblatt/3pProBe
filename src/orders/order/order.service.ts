@@ -300,6 +300,9 @@ export class OrderService {
       where: {
         shipRushShipmentId: shipmentId,
       },
+      relations:{
+        comapny: true,
+      }
     });
   }
 
@@ -340,12 +343,11 @@ export class OrderService {
         if (itemQtyCheck.length > 0) {
             throw new BadRequestException({
               message:
-                "Incorrect qty in boxes:" +
+                "Incorrect quantity in boxes Table:" +
                 itemQtyCheck
                   .map(
-                    (x) => `${x.itm}:  expected=${x.cnt}, inBoxes=${x.boxitems}`
-                  )
-                  .join("\n"),
+                    (x) => `${x.itm}  expected=${x.cnt}, inBoxes=${x.boxitems} ##`
+                  ) ,
             });
         }
       }

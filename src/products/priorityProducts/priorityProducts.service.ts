@@ -43,8 +43,13 @@ export class priorityProductsService {
     this.logger.log("crone Called EVERY_DAY_AT_10AM getAllNewPoFromPriority");
     const companies = await this._CompanyService.findAll();
     companies.map(async (e) => {
-      await this.SyncPriorityParts(e.id, false);
+      try {
+        await this.SyncPriorityParts(e.id, false);
       await this._ProductStatusService.create(e.id)
+      } catch (error) {
+        console.log('SyncPriorityParts', error)
+      }
+      
     });
   }
   @Cron(CronExpression.EVERY_WEEKEND)

@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsInt, IsString } from "class-validator";
+import { IsInt, IsOptional, IsString } from "class-validator";
 
 export class CreateTaskUserDto {
   @ApiProperty({ default: 1 })
@@ -91,6 +91,7 @@ export class CreateTaskUserDto {
   // @IsString()
   // orderlineId: string;
   @ApiProperty({ default: 0 })
+  @IsOptional()
   @IsInt()
   taskPriority: number;
   // @ApiProperty()
