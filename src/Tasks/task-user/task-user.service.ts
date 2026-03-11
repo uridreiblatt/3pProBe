@@ -140,7 +140,7 @@ export class TaskUserService {
         if (element !== null) {
           let taskUser = new TaskUser();
           taskUser.orderName = element.ORDNAME;
-          taskUser.DataInfo = element.CDES;
+          taskUser.DataInfo = element.ORDNAME;
           taskUser.Supplier = element.SUPNAME;
           taskUser.taskInfo = element.DETAILS;
           taskUser.PartNumber = "";
@@ -335,6 +335,10 @@ export class TaskUserService {
 
   async remove(id: string) {
     await this.updateorderStatus(id);
+    await this.taskGrvRepository.delete({
+      taskUser:{id : id} 
+    }      
+    );
     return await this.taskUsersRepository.delete(id);
   }
 }

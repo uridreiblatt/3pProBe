@@ -12,6 +12,7 @@ import { DbLogService } from "src/db-log/db-log.service";
 import { CompanyService } from "src/usersCompanies/company/company.service";
 import { RootRmaPriority } from "./dto/create-all-rma.dto";
 import { Cron, CronExpression } from "@nestjs/schedule";
+import { TaskRma } from "../task-rma/entities/task-rma.entity";
 
 @Injectable()
 export class AllRmaService {
@@ -22,6 +23,8 @@ export class AllRmaService {
   constructor(
     @InjectRepository(AllRma)
     private allRmaRepository: Repository<AllRma>,
+    @InjectRepository(TaskRma)
+    private TaskRmaRepository: Repository<TaskRma>,
     private httpService: HttpService,
     private configService: ConfigService,
     private DbLogService: DbLogService,
@@ -217,7 +220,7 @@ export class AllRmaService {
       DETAILS: res.DETAILS,
       FBCM_RETREASONCODE: res.FBCM_RETREASONCODE,
       FBCM_RETREASONDES: res.FBCM_RETREASONDES,
-
+      remarks: res.remarks,
       status: res.taskStatus.status,
       userName: res.user.userName,
       taskRma: res.taskRma.map((rma) => {
@@ -256,6 +259,9 @@ export class AllRmaService {
   }
 
   async remove(id: string) {
+    await this.TaskRmaRepository.delete({
+      allRma:{id:id}
+    });
     return await this.allRmaRepository.delete(id);
   }
 }

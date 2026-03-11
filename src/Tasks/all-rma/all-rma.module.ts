@@ -6,10 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DbLogModule } from 'src/db-log/db-log.module';
 import { HttpModule } from '@nestjs/axios';
 import { CompanyModule } from 'src/usersCompanies/company/company.module';
+import { TaskRma } from '../task-rma/entities/task-rma.entity';
 
 @Module({
   imports: [
-      TypeOrmModule.forFeature([AllRma]),
+      TypeOrmModule.forFeature([AllRma, TaskRma]),
       DbLogModule,
       CompanyModule,
       HttpModule,

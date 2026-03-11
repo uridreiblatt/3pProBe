@@ -130,6 +130,7 @@ export class OrderService {
         orderLines: true,
         user: true,
         role: true,
+        orderBasket:true,
       },
       order: { priorityOrder: "ASC", shipmentOrder: "DESC", CURDATE: "ASC" },
     });
@@ -157,12 +158,19 @@ export class OrderService {
           COUNTRYNAME: ord.COUNTRYNAME,
           STDES: ord.STDES,
           status: ord.taskStatus.status,
-          orderLines: ord.orderLines,
+          //orderLines: ord.orderLines,
+          orderLines: ord.orderLines.map((b)=>
+            ({ TBALANCE: b.TBALANCE, })
+          ),
+
           role: ord.role.roleDisplayName,
           roleId: ord.role.id,
           taskStatus: {
             status: ord.taskStatus.status,
           },
+          orderBasket: ord.orderBasket.map((b)=>
+            ({ basketId: b.basketId, })
+          ),
         };
       })
     );
@@ -201,7 +209,7 @@ export class OrderService {
         orderLines: true,
         orderBoxes: {
           boxSize: true,
-        },
+        },       
         //orderBasket: true,
         role: true,
       },
