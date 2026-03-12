@@ -130,7 +130,7 @@ export class OrderService {
         orderLines: true,
         user: true,
         role: true,
-        orderBasket:true,
+        orderBasket: true,
       },
       order: { priorityOrder: "ASC", shipmentOrder: "DESC", CURDATE: "ASC" },
     });
@@ -151,7 +151,7 @@ export class OrderService {
           ORDNAME: ord.ORDNAME,
           CUSTDES: ord.CUSTDES,
           CUSTNAME: ord.CUSTNAME,
-          CURDATE:  ord.CURDATE,
+          CURDATE: ord.CURDATE,
 
           createdAt: ord.createdAt,
           user: ord.user.userName,
@@ -159,18 +159,14 @@ export class OrderService {
           STDES: ord.STDES,
           status: ord.taskStatus.status,
           //orderLines: ord.orderLines,
-          orderLines: ord.orderLines.map((b)=>
-            ({ TBALANCE: b.TBALANCE, })
-          ),
+          orderLines: ord.orderLines.map((b) => ({ TBALANCE: b.TBALANCE })),
 
           role: ord.role.roleDisplayName,
           roleId: ord.role.id,
           taskStatus: {
             status: ord.taskStatus.status,
           },
-          orderBasket: ord.orderBasket.map((b)=>
-            ({ basketId: b.basketId, })
-          ),
+          orderBasket: ord.orderBasket.map((b) => ({ basketId: b.basketId })),
         };
       })
     );
@@ -209,7 +205,7 @@ export class OrderService {
         orderLines: true,
         orderBoxes: {
           boxSize: true,
-        },       
+        },
         //orderBasket: true,
         role: true,
       },
@@ -308,9 +304,9 @@ export class OrderService {
       where: {
         shipRushShipmentId: shipmentId,
       },
-      relations:{
+      relations: {
         comapny: true,
-      }
+      },
     });
   }
 
@@ -331,15 +327,30 @@ export class OrderService {
         orderStatus === OrderStatusEnum.Complete &&
         newRole === rolesEnum.Packer
       ) {
+        const barcodeTotals = updateOrderDto.orderLines.reduce((acc, ol) => {
+          const barcode = ol.BARCODE;
+
+          if (!acc[barcode]) {
+            acc[barcode] = {
+              PARTNAME: ol.PARTNAME,
+              TBALANCE: 0,
+            };
+          }
+
+          acc[barcode].TBALANCE += Number(ol.TBALANCE || 0);
+
+          return acc;
+        }, {} as Record<string, { PARTNAME: string; TBALANCE: number }>);
+
         const itmQtyData = await Promise.all(
-          updateOrderDto.orderLines.map(async (ol) => {
+          Object.entries(barcodeTotals).map(async ([barcode, data]) => {
             const itm = await this.orderBoxesItemsRepository.find({
-              where: { orderId: orderId, partNumber: ol.BARCODE },
+              where: { orderId: orderId, partNumber: barcode },
             });
 
             return {
-              itm: ol.PARTNAME,
-              cnt: ol.TBALANCE,
+              itm: data.PARTNAME,
+              cnt: data.TBALANCE, // summed TBALANCE
               boxitems: itm.reduce((sum, item) => sum + item.itemsCount, 0),
             };
           })
@@ -349,14 +360,13 @@ export class OrderService {
         );
 
         if (itemQtyCheck.length > 0) {
-            throw new BadRequestException({
-              message:
-                "Incorrect quantity in boxes Table:" +
-                itemQtyCheck
-                  .map(
-                    (x) => `${x.itm}  expected=${x.cnt}, inBoxes=${x.boxitems} ##`
-                  ) ,
-            });
+          throw new BadRequestException({
+            message:
+              "Incorrect quantity in boxes Table:" +
+              itemQtyCheck.map(
+                (x) => `${x.itm}  expected=${x.cnt}, inBoxes=${x.boxitems} ##`
+              ),
+          });
         }
       }
     }

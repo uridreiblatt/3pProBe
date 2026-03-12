@@ -29,13 +29,13 @@ export class priorityProductsService {
     private CompanyService: CompanyService,
     private configService: ConfigService,
     private httpService: HttpService,
-    private productStatusService: ProductStatusService,
+    private productStatusService: ProductStatusService
   ) {
     this.username = this.configService.get<string>("PRIORITY_USER");
     this.pwd = this.configService.get<string>("PRIORITY_PWD");
     this.comapny = this.configService.get<string>("COMPANY") || "";
     this._CompanyService = CompanyService;
-    this._ProductStatusService=productStatusService;
+    this._ProductStatusService = productStatusService;
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_10AM)
@@ -45,11 +45,10 @@ export class priorityProductsService {
     companies.map(async (e) => {
       try {
         await this.SyncPriorityParts(e.id, false);
-      await this._ProductStatusService.create(e.id)
+        await this._ProductStatusService.create(e.id);
       } catch (error) {
-        console.log('SyncPriorityParts', error)
+        console.log("SyncPriorityParts", error);
       }
-      
     });
   }
   @Cron(CronExpression.EVERY_WEEKEND)
@@ -83,20 +82,21 @@ export class priorityProductsService {
     const startOfDayUTC = new Date(
       Date.UTC(
         now.getUTCFullYear(),
-        now.getUTCMonth() -1, //last month
-        now.getUTCDate(),
+        now.getUTCMonth(), // -1, //last month
+        now.getUTCDate() - 7, // last week
         0,
         0,
         0
       )
     );
     const isoDate = startOfDayUTC.toISOString().split(".")[0] + "Z";
-    const filter = `CREATEDDATE  gt ${isoDate}`;
+    const filter = `UDATE  gt ${isoDate}`;
     const path = fullSync
       ? `/LOGPART?${select}&${expand}`
       : `/LOGPART?$filter=${encodeURIComponent(filter)}&${select}&${expand}`;
 
     const urlEndPointPriority = base + path;
+    console.log("part url", urlEndPointPriority);
 
     const credentials = btoa(this.username + ":" + this.pwd);
     const basicAuth = "Basic " + credentials;
@@ -135,7 +135,23 @@ export class priorityProductsService {
       createPartDto.company = new Company();
       createPartDto.company.id = companyId;
       try {
-        await this.PartRepository.save(createPartDto);
+        //await this.PartRepository.save(createPartDto);
+
+        await this.PartRepository.upsert(
+          {
+            PARTNAME: element.PARTNAME,
+            BARCODE: element.BARCODE || "",
+            PARTDES: element.PARTDES,
+            STATDES: element.STATDES,
+            PART: element.PART,
+            TYPE: element.TYPE,
+            company: { id: companyId },
+          },
+          {
+            conflictPaths: ["PART"], // unique field
+            skipUpdateIfNoValuesChanged: true,
+          }
+        );
         element.PARTARC_SUBFORM.map(async (son) => {
           const prod = new PriorityProductsHierarchy();
           (prod.PART = element.PART),
@@ -164,12 +180,12 @@ export class priorityProductsService {
     console.log(sql);
     const newProductStatus = await this.PartRepository.query(sql);
     const newProductStatusArray: string[] = newProductStatus.map(
-  (row: any) => row.productstatus
-);
-console.log(newProductStatusArray);
+      (row: any) => row.productstatus
+    );
+    console.log(newProductStatusArray);
     const res = await this.PartRepository.find({
       where: {
-        STATDES: Not ( In(newProductStatusArray)),
+        STATDES: Not(In(newProductStatusArray)),
         company: { id: companyId },
       },
       //take:20,
