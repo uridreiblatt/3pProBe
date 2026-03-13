@@ -47,6 +47,7 @@ import { CompanySettingsModule } from "./settings/company-settings/company-setti
 import { OrderBoxItemsModule } from "./orders/order-box-items/order-box-items.module";
 import { ShipRushModule } from "./shipments/ship-rush/ship-rush.module";
 import { ProductStatusModule } from './products/product-status/product-status.module';
+import { NewCompanyModule } from './new-company/new-company.module';
 
 const cookieMatchOpts: CookieMatchOptions = {
   cookieName: "companyId",
@@ -130,6 +131,8 @@ const cookieMatchOpts: CookieMatchOptions = {
     DbLogModule,
 
     ProductStatusModule,
+
+    NewCompanyModule,
   ],
   controllers: [],
   providers: [
