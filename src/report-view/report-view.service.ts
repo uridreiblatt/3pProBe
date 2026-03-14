@@ -83,12 +83,12 @@ export class ReportViewService {
   async Notification(companyId: string, roleId: number, userId: string) {
     
     
-    const queryOrderalert = "SELECT * FROM p3pro.order p WHERE  taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )";
-    const orderalert = await this.reportViewRepository.query(queryOrderalert);
-    const queryRmaalert = "SELECT * FROM p3pro.all_rma p WHERE  taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )";
-    const rmaAlert = await this.reportViewRepository.query(queryRmaalert);
-    const queryTaskalert = "SELECT * FROM p3pro.task_user p WHERE  taskStatusId = 4   OR (    created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )";
-    const taskAlert = await this.reportViewRepository.query(queryTaskalert);
+    const queryOrderalert = "SELECT * FROM p3pro.order p WHERE  comapnyId = ? and (taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  ))";
+    const orderalert = await this.reportViewRepository.query(queryOrderalert,[companyId]);
+    const queryRmaalert = "SELECT * FROM p3pro.all_rma p WHERE  comapnyId = ? and (taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  ))";
+    const rmaAlert = await this.reportViewRepository.query(queryRmaalert,[companyId]);
+    const queryTaskalert = "SELECT * FROM p3pro.task_user p WHERE  comapnyId = ? and ( taskStatusId = 4   OR (  created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3 ))";
+    const taskAlert = await this.reportViewRepository.query(queryTaskalert,[companyId]);
     const allData = {
       
       orderalert: orderalert.map((o) => ({
