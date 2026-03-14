@@ -12,15 +12,15 @@ import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
 export class User extends Tablestamp{
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  @Column({default: ''})
+  @Column({unique: true , default: ''})
   userName: string;
   @Column({default: ''})
   userSurname: string;
   @Column()
   userUuid: string;
-  @Column()
+  @Column({default: ''})
   userMail: string;
-  @Column()
+  @Column({default: ''})
   userMobile: string;
   @Column({default: 'grey'})
   color: string;

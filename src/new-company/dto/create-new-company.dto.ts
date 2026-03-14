@@ -2,6 +2,9 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateNewCompanyDto {
+  @ApiProperty({ default: "aaa-aaa-aaa" })
+  @IsString()
+  companyId: string; // required if you expect it in the body
   @ApiProperty({})
   @IsString()
   @IsNotEmpty()
@@ -23,19 +26,19 @@ export class CreateNewCompanyDto {
   @IsString()
   @IsNotEmpty()
   priorityApiPassword: string;
-  @ApiProperty({ default: "Open" })
+  @ApiProperty({ default: "In progress" })
   @IsString()
   priorityOrderStatus: string;
-  @ApiProperty({ default: "Open" })
+  @ApiProperty({ default: "Sent" })
   @IsString()
   priorityPoStatus: string;
-  @ApiProperty({ default: "Open" })
+  @ApiProperty({ default: "Wait Return" })
   @IsString()
   priorityRmaStatus: string;
-  @ApiProperty({ default: "Open" })
+  @ApiProperty({ default: "New" })
   @IsString()
   priorityProductStatus: string;
-  @ApiProperty({ default: "Open" })
+  @ApiProperty({ default: "In progress" })
   @IsString()
   priorityOrderLineStatus: string;
   /// shipment
@@ -52,13 +55,13 @@ export class CreateNewCompanyDto {
   @IsString()
   shipmentCallBack: string;
   ///Config
-  @ApiProperty({default: false})
+  @ApiProperty({ default: false })
   @IsBoolean()
   addtionalPickingInfo: boolean;
-  @ApiProperty({default: false})
+  @ApiProperty({ default: false })
   @IsBoolean()
   qcRequired: boolean;
-  @ApiProperty({default: false})
+  @ApiProperty({ default: false })
   @IsBoolean()
-  boxItemsCount: boolean;  
+  boxItemsCount: boolean;
 }

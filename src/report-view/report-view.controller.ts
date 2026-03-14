@@ -31,7 +31,7 @@ export class ReportViewController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
-    return await this.reportViewService.findOne(id);
+  async findOne(@Request() req,@Param('id') id: number) {
+    return await this.reportViewService.findOne(req.user.selectCompany, id);
   }
 }

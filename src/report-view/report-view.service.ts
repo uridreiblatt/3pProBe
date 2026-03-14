@@ -40,7 +40,7 @@ export class ReportViewService {
       " , count(*)  as count " +
       " ,userId " +
       " FROM p3pro.order o " +
-      " where o.comapnyId = 'aaa-aaa-aaa' " +
+      " where o.comapnyId = '"+companyId+"' " +
       //" and roleId = 1 " +
       //and userId in ('aaa-bbb-ccc','94cb0799-a7d0-4c84-9ab9-ca36ed161d32')
       " group by taskStatusId, roleId, userId; ";
@@ -119,7 +119,7 @@ export class ReportViewService {
     
   }
 
-  async findOne(id: number) {
+  async findOne(companyId: string,id: number) {
     const rpt = await this.reportViewRepository.findOne({
       where: { id: id },
     });
@@ -141,7 +141,7 @@ ORDER BY ORDINAL_POSITION;`;
   FROM ${rpt.reportTitleName}
   WHERE companyId = ?`;
 
-    const data = await this.reportViewRepository.query(sql, ["aaa-aaa-aaa"]);
+    const data = await this.reportViewRepository.query(sql, [companyId]);
 
     const allData = {
       currentReport: rpt,

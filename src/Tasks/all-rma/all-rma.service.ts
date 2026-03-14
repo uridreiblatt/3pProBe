@@ -175,6 +175,7 @@ export class AllRmaService {
   }
 
   async findAll(companyId: string) {
+    console.log('findAll Rma',companyId)
     const res = await this.allRmaRepository.find({
       where: { company: { id: companyId } },
       relations: {

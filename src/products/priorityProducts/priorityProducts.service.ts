@@ -61,7 +61,7 @@ export class priorityProductsService {
   }
 
   async getPriorityParts(companyId: string) {
-    return await this.SyncPriorityParts(companyId, false);
+    return await this.SyncPriorityParts(companyId, true);
   }
   async SyncPriorityParts(companyId: string, fullSync: boolean): Promise<any> {
     //https://win01.maclocks.com/odata/Priority/tabula.ini/cb3007/LOGPART?$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES

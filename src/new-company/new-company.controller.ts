@@ -28,8 +28,8 @@ export class NewCompanyController {
   //   return this.newCompanyService.update(+id, updateNewCompanyDto);
   // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.newCompanyService.remove(id);
+  @Delete(':id/:AdminPassword')
+  remove(@Param('id') id: string, @Param('AdminPassword') AdminPassword: string) {
+    return this.newCompanyService.remove(id, AdminPassword);
   }
 }
