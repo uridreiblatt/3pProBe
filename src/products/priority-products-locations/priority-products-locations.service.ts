@@ -82,7 +82,7 @@ export class PriorityProductsLocationsService {
         zone: true,
       },
       order: {
-        zone: { priority: 'ASC' },
+        zone: { priority: 'DESC' },
         stockDate: 'ASC',
       },
     });

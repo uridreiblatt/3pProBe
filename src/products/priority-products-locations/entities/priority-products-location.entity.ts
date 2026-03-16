@@ -4,6 +4,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Zone } from '../../../maintenence/zone/entities/zone.entity';
@@ -28,4 +29,12 @@ export class PriorityProductsLocation {
   priorityProducts: PriorityProducts;
   @ManyToOne(() => Zone, (zone) => zone.PriorityProductsLocation)  
   zone: Zone;
+
+
+  @OneToMany(
+  () => PriorityProductsLocation,
+  (location) => location.priorityProducts,
+)
+PriorityProductsLocation: PriorityProductsLocation[];
+  
 }
