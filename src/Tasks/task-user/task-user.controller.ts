@@ -25,10 +25,7 @@ export class TaskUserController {
   constructor(private readonly taskUserService: TaskUserService) {}
 
 
-  @Get('getAllNewPoFromPriority')
-  async getAllNewPoFromPriority(@Request() req) {
-    return await this.taskUserService.getAllNewPoFromPriority(req.user.selectCompany );
-  }
+  
 
   @Post()
   async create(@Body() createTaskUserDto: CreateTaskUserDto) {

@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 import { Tablestamp } from "src/maintenence/boxes/entities/tablestamp.embed";
 import { TaskUser } from "src/Tasks/task-user/entities/task-user.entity";
+import { AllGrv } from "src/Tasks/all-grv/entities/all-grv.entity";
 
 @Entity()
 export class TaskGrv extends Tablestamp {
@@ -51,6 +52,6 @@ export class TaskGrv extends Tablestamp {
   Total: number;
   @Column({ default: 0 })
   quantityRequired: number;
-  @ManyToOne(() => TaskUser, (taskUser) => taskUser.id)
-  taskUser: TaskUser;
+  @ManyToOne(() => AllGrv, (allGrv) => allGrv.id)
+  allGrv: AllGrv;
 }

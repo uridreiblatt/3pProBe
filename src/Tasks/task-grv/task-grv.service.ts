@@ -5,6 +5,7 @@ import { TaskGrv } from './entities/task-grv.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TaskUser } from '../task-user/entities/task-user.entity';
+import { AllGrv } from '../all-grv/entities/all-grv.entity';
 
 @Injectable()
 export class TaskGrvService {
@@ -36,8 +37,8 @@ export class TaskGrvService {
     ins.bulkQauntity= createTaskGrvDto.bulkQauntity;
     ins.quantityRequired =  createTaskGrvDto.quantityRequired;
     ins.Total= createTaskGrvDto.Total;    
-    ins.taskUser= new TaskUser();
-    ins.taskUser.id = createTaskGrvDto.taskUserId;
+    ins.allGrv= new AllGrv();
+    ins.allGrv.id = createTaskGrvDto.taskUserId;
     return await this.taskGrvRepository.save(ins);
     
   }
@@ -45,22 +46,22 @@ export class TaskGrvService {
   async findAll(taskTypeId: string) {
     return await this.taskGrvRepository.find({
       where:{
-        taskUser: {id: taskTypeId}
-      }
+        allGrv: {id: taskTypeId}
+      },      
     })
   }
 
   async findOne(id: string) {
     const res = await this.taskGrvRepository.findOne({
       where:{id: id}, 
-      relations :{taskUser: true},
+      relations :{allGrv: true},
 
     })
-    const { taskUser, ...rest } = res;
+    const { allGrv, ...rest } = res;
 
     return {
       ...rest,
-      taskUserId: taskUser.id,
+      taskUserId: allGrv.id,
     };
   }
 
@@ -86,8 +87,8 @@ export class TaskGrvService {
     ins.bulkQauntity= updateTaskGrvDto.bulkQauntity;
     ins.quantityRequired =  updateTaskGrvDto.quantityRequired;
     ins.Total= updateTaskGrvDto.Total;    
-    ins.taskUser= new TaskUser();
-    ins.taskUser.id = updateTaskGrvDto.taskUserId;
+    ins.allGrv= new AllGrv();
+    ins.allGrv.id = updateTaskGrvDto.taskUserId;
     return await this.taskGrvRepository.update(id, ins);
   }
 

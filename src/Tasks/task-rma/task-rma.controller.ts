@@ -5,7 +5,7 @@ import { UpdateTaskRmaDto } from './dto/update-task-rma.dto';
 
 @Controller('task-rma')
 export class TaskRmaController {
-  constructor(private readonly taskRmaService: TaskRmaService) {}
+  constructor(private readonly taskRmaService: TaskRmaService) { }
 
   @Post()
   create(@Body() createTaskRmaDto: CreateTaskRmaDto) {
@@ -19,10 +19,11 @@ export class TaskRmaController {
 
   @Get('findAllByRma/:rmaId')
   findAllByRma(@Param('rmaId') rmaId: string) {
-    return this.taskRmaService.findAll(rmaId);
+
+    return this.taskRmaService.findAllByRma(rmaId);
   }
 
-  
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {

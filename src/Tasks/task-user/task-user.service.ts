@@ -64,143 +64,10 @@ export class TaskUserService {
   }
 
 
-    @Cron(CronExpression.EVERY_10_MINUTES)
-    async handleCron() {
-      this.logger.log('crone Called EVERY_10_MINUTES getAllNewPoFromPriority');
-      const companies = await this._CompanyService.findAll();
-      companies.map(async (e)=>{
-         await this.SyncAllNewPoFromPriority(e.id);
 
-      })
-    }
-
-  async getAllNewPoFromPriority(companyId: string): Promise<any> {
-    
-    return await this.SyncAllNewPoFromPriority(companyId);
-  }
-
-  async SyncAllNewPoFromPriority(companyId: string): Promise<any> {
-    if (this.isLocked) {
-      return "is locked";
-    }
-
-    try {
-      this.isLocked = true;
-      const resCompantSettings = await this._CompanyService.findOne(companyId);
-
-      //const urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT)`;
-      const urlEndPointPriority = `/PORDERS?$filter=STATDES eq  '${resCompantSettings.companySetting.priorityPoStatus}' &$select=SUPNAME,CDES,ORDNAME,DETAILS&$expand=PORDERITEMS_SUBFORM($select=PARTNAME,PDES,TQUANT,BARCODE)`;
-      const url =
-        //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-        resCompantSettings.companySetting.priorityApiUrl +
-        resCompantSettings.companySetting.priorityApiCompany +
-        urlEndPointPriority;
-      // const url =
-      //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-      //   this.comapny +
-      //   this.urlEndPoint;
-      //const credentials = btoa(this.username + ":" + this.pwd);
-      const credentials = btoa(
-        resCompantSettings.companySetting.priorityApiUser +
-          ":" +
-          resCompantSettings.companySetting.priorityApiPassword
-      );
-      const basicAuth = "Basic " + credentials;
-
-      const data = await lastValueFrom(
-        this.httpService
-          .get(url, {
-            headers: {
-              Authorization: basicAuth,
-            },
-          })
-          .pipe(map((resp) => resp.data))
-          .pipe(
-            catchError((error) => {
-              this.isLocked = false;
-              console.log(
-                `An error happened. Msg: ${JSON.stringify(error.request)}`
-              );
-              throw `An error happened. Msg: ${JSON.stringify(error.request)}`;
-            })
-          )
-      );
-      const GrvInfo: RootPoPriority = data;
-      this._DbLogService.create({
-        subject: "priority Po",
-        message: "start import Po: " + GrvInfo.value.length.toString(),
-        level: "",
-        context: "",
-        metadata: "",
-        companyId: companyId,
-      });
-      let LinesInserted = 0;
-
-      GrvInfo.value.forEach(async (element) => {
-        if (element !== null) {
-          let taskUser = new TaskUser();
-          taskUser.orderName = element.ORDNAME;
-          taskUser.DataInfo = element.ORDNAME;
-          taskUser.Supplier = element.SUPNAME;
-          taskUser.taskInfo = element.DETAILS;
-          taskUser.PartNumber = "";
-          taskUser.user = new User();
-          taskUser.user.id = EOrderUser.unAssigned;
-          taskUser.taskType = new TaskType();
-          taskUser.taskType.id = TaskTypesEnum.Good_received;
-          taskUser.taskStatus = new TaskStatus();
-          taskUser.taskStatus.id = TaskStatusEnum.New;
-          taskUser.company = new Company();
-          taskUser.company.id = companyId;
-
-          const foundOne = await this.taskUsersRepository.findOne({
-            where: { orderName: taskUser.orderName },
-          });
-
-          if (foundOne === null) {
-            LinesInserted += 1;
-
-            const newPo = await this.taskUsersRepository.save(taskUser);
-            element.PORDERITEMS_SUBFORM.forEach(async (subForm) => {
-              const ins = new TaskGrv();
-              ins.taskUser = new TaskUser();
-              ins.taskUser.id = EOrderUser.unAssigned;
-              ins.PartNumber = subForm.BARCODE;
-              ins.DataInfo = '';
-              ins.productName = subForm.PARTNAME;
-              ins.productDescription = subForm.PDES;
-              ins.quantityRequired = Number(subForm.TQUANT);
-              ins.taskUser = new TaskUser();
-              ins.taskUser.id = newPo.id;
-              await this.taskGrvRepository.save(ins);
-            });
-          }
-        }
-      });
-      this._DbLogService.create({
-        subject: "priority Po",
-        message: "end import Po inserted lines: " + LinesInserted.toString(),
-        level: "Info",
-        context: "",
-        metadata: "",
-        companyId: companyId,
-      });
-      this.isLocked = false;
-    } catch (error) {
-      this.isLocked = false;
-      this._DbLogService.create({
-        subject: "priority Po",
-        message: error.message,
-        level: "error",
-        context: "getAllNewPoFromPriority",
-        metadata: "",
-        companyId: companyId,
-      });
-    }
-  }
 
   async findAll(companyId: string) {
-     console.log('findAll task User',companyId)
+    console.log('findAll task User', companyId)
     const res = await this.taskUsersRepository.find({
       where: {
         company: { id: companyId },
@@ -336,10 +203,7 @@ export class TaskUserService {
 
   async remove(id: string) {
     await this.updateorderStatus(id);
-    await this.taskGrvRepository.delete({
-      taskUser:{id : id} 
-    }      
-    );
+
     return await this.taskUsersRepository.delete(id);
   }
 }

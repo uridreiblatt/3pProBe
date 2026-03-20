@@ -13,7 +13,7 @@ export class TaskRmaService {
   constructor(
     @InjectRepository(TaskRma)
     private taskRmaRepository: Repository<TaskRma>
-  ) {}
+  ) { }
 
   async create(createTaskRmaDto: CreateTaskRmaDto) {
     const ins = new TaskRma();
@@ -39,7 +39,7 @@ export class TaskRmaService {
     });
   }
   async findAllByRma(id: string) {
-    return await this.taskRmaRepository.findOne({
+    return await this.taskRmaRepository.find({
       where: { allRma: { id: id } },
       relations: {
         allRma: true,
@@ -53,9 +53,9 @@ export class TaskRmaService {
       relations: {
         allRma: true,
       },
-    });    
-    
-    
+    });
+
+
     return {
       ...res,
       rmaId: res.allRma.id,
