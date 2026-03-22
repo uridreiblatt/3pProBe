@@ -9,7 +9,7 @@ export class ReportViewService {
   constructor(
     @InjectRepository(ReportView)
     private reportViewRepository: Repository<ReportView>
-  ) {}
+  ) { }
 
   async findAll() {
     return await this.reportViewRepository.find();
@@ -40,7 +40,7 @@ export class ReportViewService {
       " , count(*)  as count " +
       " ,userId " +
       " FROM p3pro.order o " +
-      " where o.comapnyId = '"+companyId+"' " +
+      " where o.comapnyId = '" + companyId + "' " +
       //" and roleId = 1 " +
       //and userId in ('aaa-bbb-ccc','94cb0799-a7d0-4c84-9ab9-ca36ed161d32')
       " group by taskStatusId, roleId, userId; ";
@@ -72,53 +72,54 @@ export class ReportViewService {
       orders: dataOrders,
       rma: dataRma,
       orderalert: orderalert?.[0].count || 0,
-      rmaAlert:rmaAlert?.[0].count || 0,
-      taskAlert:taskAlert?.[0].count || 0,
+      rmaAlert: rmaAlert?.[0].count || 0,
+      taskAlert: taskAlert?.[0].count || 0,
 
     };
     return allData;
-    
+
   }
 
   async Notification(companyId: string, roleId: number, userId: string) {
 
     const queryOrderalert = "SELECT * FROM p3pro.order p WHERE  comapnyId = ? and (taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  ))";
-    const orderalert = await this.reportViewRepository.query(queryOrderalert,[companyId]);
+    const orderalert = await this.reportViewRepository.query(queryOrderalert, [companyId]);
     const queryRmaalert = "SELECT * FROM p3pro.all_rma p WHERE  companyId = ? and (taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  ))";
-    const rmaAlert = await this.reportViewRepository.query(queryRmaalert,[companyId]);
+    const rmaAlert = await this.reportViewRepository.query(queryRmaalert, [companyId]);
     const queryTaskalert = "SELECT * FROM p3pro.task_user p WHERE  companyId = ? and ( taskStatusId = 4   OR (  created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3 ))";
-    const taskAlert = await this.reportViewRepository.query(queryTaskalert,[companyId]);
+    const taskAlert = await this.reportViewRepository.query(queryTaskalert, [companyId]);
     const allData = {
-      
+
       orderalert: orderalert.map((o) => ({
-        type:'order',
+        type: 'order',
         id: o.id,
         name: o.ORDNAME,
-        curDate:o.CURDATE,
-        taskStatus: this.getTaskStatusName(o.taskStatusId ),    
-        note:o.orderNote,
-    })),
-     rmaAlert:rmaAlert.map((o) => ({
-      type:'rma',
-      id: o.id,
-      name: o.DOCNO,
-      curDate:o.created_at,
-      taskStatus: this.getTaskStatusName(o.taskStatusId),    
-      note:o.remarks,
-  })),
-      taskAlert:taskAlert.map((o) => ({
-      type:'tasks',
-      id: o.id,
-      name: o.DataInfo || '',
-      curDate:o.created_at,
-      taskStatus: this.getTaskStatusName(o.taskStatusId),    
-      note:o.taskInfo || '',
-  })),}
-    return [...allData.orderalert,...allData.rmaAlert,...allData.taskAlert];
-    
+        curDate: o.CURDATE,
+        taskStatus: this.getTaskStatusName(o.taskStatusId),
+        note: o.orderNote,
+      })),
+      rmaAlert: rmaAlert.map((o) => ({
+        type: 'rma',
+        id: o.id,
+        name: o.DOCNO,
+        curDate: o.created_at,
+        taskStatus: this.getTaskStatusName(o.taskStatusId),
+        note: o.remarks,
+      })),
+      taskAlert: taskAlert.map((o) => ({
+        type: 'tasks',
+        id: o.id,
+        name: o.DataInfo || '',
+        curDate: o.created_at,
+        taskStatus: this.getTaskStatusName(o.taskStatusId),
+        note: o.taskInfo || '',
+      })),
+    }
+    return [...allData.orderalert, ...allData.rmaAlert, ...allData.taskAlert];
+
   }
 
-  async findOne(companyId: string,id: number) {
+  async findOne(companyId: string, id: number) {
     const rpt = await this.reportViewRepository.findOne({
       where: { id: id },
     });
@@ -132,12 +133,12 @@ WHERE TABLE_SCHEMA = DATABASE()
 ORDER BY ORDINAL_POSITION;`;
 
     const dtFields = await this.reportViewRepository.query(queryViewFields, [
-      rpt.reportTitleName,
+      rpt.reportName,
     ]);
 
     const sql = `
   SELECT *
-  FROM ${rpt.reportTitleName}
+  FROM ${rpt.reportName}
   WHERE companyId = ?`;
 
     const data = await this.reportViewRepository.query(sql, [companyId]);
@@ -151,21 +152,21 @@ ORDER BY ORDINAL_POSITION;`;
   }
 
 
-  getTaskStatusName(id: number){
-      switch (id) {
-        case 3:
-            return 'complete';
-        case 2:
-          return 'in progress';
-        case 4:          
-            return 'pending';
-        case 1:
-            return 'new';
-        case 7:
-            return 'review';
+  getTaskStatusName(id: number) {
+    switch (id) {
+      case 3:
+        return 'complete';
+      case 2:
+        return 'in progress';
+      case 4:
+        return 'pending';
+      case 1:
+        return 'new';
+      case 7:
+        return 'review';
 
-        default:
-            return 'general';
+      default:
+        return 'general';
     }
   }
 }

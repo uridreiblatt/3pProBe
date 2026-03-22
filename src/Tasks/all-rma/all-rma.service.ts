@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { AllRma } from "./entities/all-rma.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Not, Repository } from "typeorm";
 import { TaskStatus } from "src/settings/task-status/entities/task-status.entity";
 import { Company } from "src/usersCompanies/company/entities/company.entity";
 import { User } from "src/usersCompanies/users/entities/user.entity";
@@ -40,15 +40,15 @@ export class AllRmaService {
     const allCompanies = await this._CompanyService.findAll();
     try {
       allCompanies.forEach(async (company) => {
-      if (company.companySetting) await this.syncAllNewRmaFromPriority(company);
-    });
+        if (company.companySetting) await this.syncAllNewRmaFromPriority(company);
+      });
     } catch (error) {
       this.logger.error("Error in handleCron rma", error);
     }
-    
+
   }
 
-  async getAllNewRmaFromPriority(companyId:string): Promise<any>{
+  async getAllNewRmaFromPriority(companyId: string): Promise<any> {
     const company = await this._CompanyService.findOne(companyId);
     if (company.companySetting) await this.syncAllNewRmaFromPriority(company);
 
@@ -59,106 +59,106 @@ export class AllRmaService {
       return "is locked";
     }
     try {
-      
-    
-    this.isLocked = true;
-    //const resCompantSettings = await this._CompanyService.findOne(companyId);
-    //const urlEndPoint = `/DOCUMENTS_m?$filter=STATDES eq 'Open' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
-    const urlEndPointPriority = `/DOCUMENTS_m?$filter=STATDES eq '${resCompantSettings.companySetting.priorityRmaStatus}' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
 
-    const url =
-      //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-      resCompantSettings.companySetting.priorityApiUrl +
-      resCompantSettings.companySetting.priorityApiCompany +
-      urlEndPointPriority;
 
-    const credentials = btoa(
-      resCompantSettings.companySetting.priorityApiUser +
+      this.isLocked = true;
+      //const resCompantSettings = await this._CompanyService.findOne(companyId);
+      //const urlEndPoint = `/DOCUMENTS_m?$filter=STATDES eq 'Open' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
+      const urlEndPointPriority = `/DOCUMENTS_m?$filter=STATDES eq '${resCompantSettings.companySetting.priorityRmaStatus}' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
+
+      const url =
+        //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
+        resCompantSettings.companySetting.priorityApiUrl +
+        resCompantSettings.companySetting.priorityApiCompany +
+        urlEndPointPriority;
+
+      const credentials = btoa(
+        resCompantSettings.companySetting.priorityApiUser +
         ":" +
         resCompantSettings.companySetting.priorityApiPassword
-    );
-    const basicAuth = "Basic " + credentials;
-    const data = await lastValueFrom(
-      this.httpService
-        .get(url, {
-          headers: {
-            Authorization: basicAuth,
-          },
-        })
-        .pipe(map((resp) => resp.data))
-        .pipe(
-          catchError((error) => {
-            this.isLocked = false;
-            console.log(
-              `An error happened. Msg: ${JSON.stringify(error.request)}`
-            );
-            throw `An error happened. Msg: ${JSON.stringify(error.request)}`;
+      );
+      const basicAuth = "Basic " + credentials;
+      const data = await lastValueFrom(
+        this.httpService
+          .get(url, {
+            headers: {
+              Authorization: basicAuth,
+            },
           })
-        )
-    );
-    const RmaInfo: RootRmaPriority = data;
+          .pipe(map((resp) => resp.data))
+          .pipe(
+            catchError((error) => {
+              this.isLocked = false;
+              console.log(
+                `An error happened. Msg: ${JSON.stringify(error.request)}`
+              );
+              throw `An error happened. Msg: ${JSON.stringify(error.request)}`;
+            })
+          )
+      );
+      const RmaInfo: RootRmaPriority = data;
 
-    this._DbLogService.create({
-      subject: "priority rmas",
-      message: "start import rmas " + RmaInfo.value.length.toString(),
-      level: "",
-      context: "",
-      metadata: "",
-      companyId: resCompantSettings.id,
-    });
-    let LinesInserted = 0;
+      this._DbLogService.create({
+        subject: "priority rmas",
+        message: "start import rmas " + RmaInfo.value.length.toString(),
+        level: "",
+        context: "",
+        metadata: "",
+        companyId: resCompantSettings.id,
+      });
+      let LinesInserted = 0;
 
-    RmaInfo.value.forEach(async (element) => {
-      if (element !== null) {
-        const rma: AllRma = new AllRma();
-        rma.CUSTNAME = element.CUSTNAME || "";
-        rma.CUSTDES = element.CUSTDES;
-        rma.CURDATE = element.CURDATE;
-        rma.DOCNO = element.DOCNO;
-        rma.STATDES = element.STATDES;
-        rma.DETAILS = element.DETAILS || "";
-        rma.FBCM_RETREASONCODE = element.FBCM_RETREASONCODE || "";
-        rma.FBCM_RETREASONDES = element.FBCM_RETREASONDES || "";
-        rma.taskPriority = 10;
-        rma.user = new User();
-        rma.user.id = "aaa-bbb-ccc"; // unAssigned
-        rma.taskStatus = new TaskStatus();
-        rma.Title = "";
-        rma.trackingNumber = "";
-        rma.remarks = "";
-        rma.taskStatus.id = 1;
-        rma.company = new Company();
-        rma.company.id = resCompantSettings.id;
-        const foundOne = await this.allRmaRepository.findOne({
-          where: { DOCNO: rma.DOCNO },
-        });
+      RmaInfo.value.forEach(async (element) => {
+        if (element !== null) {
+          const rma: AllRma = new AllRma();
+          rma.CUSTNAME = element.CUSTNAME || "";
+          rma.CUSTDES = element.CUSTDES;
+          rma.CURDATE = element.CURDATE;
+          rma.DOCNO = element.DOCNO;
+          rma.STATDES = element.STATDES;
+          rma.DETAILS = element.DETAILS || "";
+          rma.FBCM_RETREASONCODE = element.FBCM_RETREASONCODE || "";
+          rma.FBCM_RETREASONDES = element.FBCM_RETREASONDES || "";
+          rma.taskPriority = 10;
+          rma.user = new User();
+          rma.user.id = "aaa-bbb-ccc"; // unAssigned
+          rma.taskStatus = new TaskStatus();
+          rma.Title = "";
+          rma.trackingNumber = "";
+          rma.remarks = "";
+          rma.taskStatus.id = 1;
+          rma.company = new Company();
+          rma.company.id = resCompantSettings.id;
+          const foundOne = await this.allRmaRepository.findOne({
+            where: { DOCNO: rma.DOCNO },
+          });
 
-        if (foundOne === null) {
-          LinesInserted += 1;
-          await this.allRmaRepository.save(rma);
+          if (foundOne === null) {
+            LinesInserted += 1;
+            await this.allRmaRepository.save(rma);
+          }
         }
-      }
-    });
-    this._DbLogService.create({
-      subject: "priority rmas",
-      message: "end import rma inserted lines: " + LinesInserted.toString(),
-      level: "",
-      context: "",
-      metadata: "",
-      companyId: resCompantSettings.id,
-    });
-    this.isLocked = false;
+      });
+      this._DbLogService.create({
+        subject: "priority rmas",
+        message: "end import rma inserted lines: " + LinesInserted.toString(),
+        level: "",
+        context: "",
+        metadata: "",
+        companyId: resCompantSettings.id,
+      });
+      this.isLocked = false;
     } catch (error) {
       this.isLocked = false;
-      console.log(error.message)     
+      console.log(error.message)
       this._DbLogService.create({
-      subject: "priority rmas error",
-      message:  error.message,
-      level: "",
-      context: "",
-      metadata: "",
-      companyId: resCompantSettings.id,
-    });
+        subject: "priority rmas error",
+        message: error.message,
+        level: "",
+        context: "",
+        metadata: "",
+        companyId: resCompantSettings.id,
+      });
     }
   }
 
@@ -175,9 +175,12 @@ export class AllRmaService {
   }
 
   async findAll(companyId: string) {
-    console.log('findAll Rma',companyId)
+    console.log('findAll Rma', companyId)
     const res = await this.allRmaRepository.find({
-      where: { company: { id: companyId } },
+      where: {
+        company: { id: companyId },
+        taskStatus: { id: Not(3) },
+      },
       relations: {
         user: true,
         taskStatus: true,
@@ -211,7 +214,7 @@ export class AllRmaService {
         taskRma: true,
       },
     });
-    
+
     const resAll = {
       id: res.id,
       CURDATE: res.CURDATE,
@@ -261,7 +264,7 @@ export class AllRmaService {
 
   async remove(id: string) {
     await this.TaskRmaRepository.delete({
-      allRma:{id:id}
+      allRma: { id: id }
     });
     return await this.allRmaRepository.delete(id);
   }

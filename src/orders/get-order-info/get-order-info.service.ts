@@ -77,24 +77,24 @@ export class GetOrderInfoService {
     this._CompanyService = CompanyService;
   }
   @Cron(CronExpression.EVERY_10_MINUTES)
-async handleCron() { 
-  this.logger.log("cron get all orders Called EVERY_10_MINUTES");
+  async handleCron() {
+    this.logger.log("cron get all orders Called EVERY_10_MINUTES");
 
-  const allCompanies = await this._CompanyService.findAll();
+    const allCompanies = await this._CompanyService.findAll();
 
-  for (const company of allCompanies) {
-    if (!company.companySetting) continue;
+    for (const company of allCompanies) {
+      if (!company.companySetting) continue;
 
-    try {
-      await this.GetAllOrder(company.id);
-    } catch (error) {
-      this.logger.error(
-        `cron error GetAllOrder for company ${company.id}`,
-        error?.message || error
-      );
+      try {
+        await this.GetAllOrder(company.id);
+      } catch (error) {
+        this.logger.error(
+          `cron error GetAllOrder for company ${company.id}`,
+          error?.message || error
+        );
+      }
     }
   }
-}
 
 
   async GetAll(companyId: string): Promise<any> {
@@ -109,15 +109,15 @@ async handleCron() {
     const resCompantSettings = await this._CompanyService.findOne(companyId);
 
     this.isLocked = true;
-    const urlEndPointPriority =   
+    const urlEndPointPriority =
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
       `/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq '${resCompantSettings.companySetting.priorityOrderStatus}'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
-    
+
     const credentials = btoa(
       resCompantSettings.companySetting.priorityApiUser +
-        ":" +
-        resCompantSettings.companySetting.priorityApiPassword
+      ":" +
+      resCompantSettings.companySetting.priorityApiPassword
     );
     const basicAuth = "Basic " + credentials;
     const data = await lastValueFrom(
@@ -172,6 +172,7 @@ async handleCron() {
         createOrderDto.NAME = element.SHIPTO2_SUBFORM?.NAME || "";
         createOrderDto.CUSTDES = element.SHIPTO2_SUBFORM?.CUSTDES || "";
         createOrderDto.PHONENUM = element.SHIPTO2_SUBFORM?.PHONENUM;
+        //createOrderDto. = element.SHIPTO2_SUBFORM?.EMAIL;
         createOrderDto.ADDRESS = element.SHIPTO2_SUBFORM?.ADDRESS;
         createOrderDto.ADDRESS2 = element.SHIPTO2_SUBFORM?.ADDRESS2;
         createOrderDto.ADDRESS3 = element.SHIPTO2_SUBFORM?.ADDRESS3 || "";
@@ -183,12 +184,11 @@ async handleCron() {
         createOrderDto.ShData = "";
         createOrderDto.trackingNumber = "";
         createOrderDto.shipRushDeliveryId = "";
-        createOrderDto.FAX = "";
         createOrderDto.shipRushShipmentId = "";
         createOrderDto.accountId = "";
         createOrderDto.accountZip = "";
         createOrderDto.DETAILS = "";
-        createOrderDto.PHONENUM = "";
+
 
         let tmpText = "";
         try {
@@ -206,7 +206,7 @@ async handleCron() {
         createOrderDto.CURDATE = element.CURDATE;
         createOrderDto.userId = EOrderUser.unAssigned;
         createOrderDto.taskStatusId = OrderStatusEnum.New; //EOrderUser.unAssigned;
-        let checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {       
+        let checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {
           if (ln.TBALANCE > 0) return true;
           return false;
         });
@@ -217,7 +217,7 @@ async handleCron() {
             if (
               ln.TBALANCE > 0 &&
               ln.ORDISTATUSDES ===
-                resCompantSettings.companySetting.priorityOrderLineStatus
+              resCompantSettings.companySetting.priorityOrderLineStatus
             )
               return true;
             return false;
@@ -352,9 +352,9 @@ async handleCron() {
                 (resCompantSettings.companySetting.priorityOrderLineStatus ===
                   null &&
                   subForm.TBALANCE > 0) ||
-                  subForm.TBALANCE > 0 && 
-                  subForm.ORDISTATUSDES ===
-                  resCompantSettings.companySetting.priorityOrderLineStatus
+                subForm.TBALANCE > 0 &&
+                subForm.ORDISTATUSDES ===
+                resCompantSettings.companySetting.priorityOrderLineStatus
               ) {
                 CheckOrderLineStatus = true;
               }
@@ -478,16 +478,16 @@ async handleCron() {
       }
 
       if (order.orderBoxes.length === 0) {
-         throw new BadRequestException({
-          message: "order as no Boxes [" + "order " + order.ORDNAME + "]",         
-        });        
+        throw new BadRequestException({
+          message: "order as no Boxes [" + "order " + order.ORDNAME + "]",
+        });
       }
       const shp = await this._ShipmentPriorityService.findOneByStCode(
         order.STCODE
       );
       if (shp === null || shp.shipRushCode === null) {
-        throw new BadRequestException( {
-         message: "order ship Rush Code not found [" + "order " + order.ORDNAME + " - " + order.STCODE + "]",
+        throw new BadRequestException({
+          message: "order ship Rush Code not found [" + "order " + order.ORDNAME + " - " + order.STCODE + "]",
         });
       }
       const updrunning = {
@@ -573,7 +573,7 @@ async handleCron() {
           printLables: [],
         };
       }
-   
+
       const resPriorityGetDoc = await this.GetPriorityShippingDoc(
         //order.ORDNAME,
         //resPriorityCreateDoc['DOC'].toString()
@@ -610,8 +610,8 @@ async handleCron() {
       return userResult;
     } catch (error) {
       //console.log(error);
-   
-       throw error;
+
+      throw error;
     }
     //ShipmentNumber
     //
@@ -737,18 +737,18 @@ async handleCron() {
     //return shipRushRes;
   }
   async createPriorityShippingDoc(OrdName: string, companyId: string) {
-       const resCompantSettings = await this._CompanyService.findOne(companyId);
+    const resCompantSettings = await this._CompanyService.findOne(companyId);
 
     const url =
 
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
       `/DOCUMENTS_D`;
-    
+
     const credentials = btoa(
       resCompantSettings.companySetting.priorityApiUser +
-        ":" +
-        resCompantSettings.companySetting.priorityApiPassword
+      ":" +
+      resCompantSettings.companySetting.priorityApiPassword
     );
 
     const basicAuth = "Basic " + credentials;
@@ -782,11 +782,11 @@ async handleCron() {
   }
 
   async GetPriorityShippingDoc(DOC: string, companyId: string): Promise<any> {
-    
+
 
     const resCompantSettings = await this._CompanyService.findOne(companyId);
 
-    const urlEndPointPriority =    
+    const urlEndPointPriority =
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
       `/DOCUMENTS_D?$filter=DOC eq ` +
@@ -795,8 +795,8 @@ async handleCron() {
 
     const credentials = btoa(
       resCompantSettings.companySetting.priorityApiUser +
-        ":" +
-        resCompantSettings.companySetting.priorityApiPassword
+      ":" +
+      resCompantSettings.companySetting.priorityApiPassword
     );
     const basicAuth = "Basic " + credentials;
     const data = await lastValueFrom(
@@ -827,16 +827,16 @@ async handleCron() {
   ) {
     const resCompantSettings = await this._CompanyService.findOne(companyId);
 
-   
-    const urlEndPointPriority =    
+
+    const urlEndPointPriority =
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
       `/DOCUMENTS_D`;
 
     const credentials = btoa(
       resCompantSettings.companySetting.priorityApiUser +
-        ":" +
-        resCompantSettings.companySetting.priorityApiPassword
+      ":" +
+      resCompantSettings.companySetting.priorityApiPassword
     );
     const basicAuth = "Basic " + credentials;
     const CqauntData = await this._PartCqauntService.findAll(companyId);
@@ -857,7 +857,7 @@ async handleCron() {
           ),
         };
       }),
-   
+
     };
     //console.log(url, dt);
     const data = await lastValueFrom(
@@ -941,13 +941,13 @@ async handleCron() {
           },
         })
         .pipe(
-          map((resp) => {            
+          map((resp) => {
             return resp.data;
           })
         )
         .pipe(
           catchError((error) => {
-             console.log('shiprush res Error',error.response.data , error.message);
+            console.log('shiprush res Error', error.response.data, error.message);
             let errorMsg = "Unknown error";
             try {
               const xmlParser = new XMLParser();
