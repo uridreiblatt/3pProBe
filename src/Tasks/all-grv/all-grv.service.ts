@@ -42,15 +42,15 @@ export class AllGrvService {
   }
 
 
-  // @Cron(CronExpression.EVERY_10_MINUTES)
-  //     async handleCron() {
-  //       this.logger.log('crone Called EVERY_10_MINUTES getAllNewPoFromPriority');
-  //       const companies = await this._CompanyService.findAll();
-  //       companies.map(async (e)=>{
-  //          await this.SyncAllNewPoFromPriority(e.id);
+  @Cron(CronExpression.EVERY_10_MINUTES)
+  async handleCron() {
+    this.logger.log('crone Called EVERY_10_MINUTES getAllNewPoFromPriority');
+    const companies = await this._CompanyService.findAll();
+    companies.map(async (e) => {
+      await this.SyncAllNewPoFromPriority(e.id);
 
-  //       })
-  //     }
+    })
+  }
 
   async getAllNewPoFromPriority(companyId: string): Promise<any> {
 
