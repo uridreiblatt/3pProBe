@@ -1,6 +1,7 @@
 import { float } from '@elastic/elasticsearch/lib/api/types';
 import { Boxsize } from 'src/maintenence/boxes/entities/box.entity';
 import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
+import { OrderBoxesItems } from 'src/orders/order-box-items/entities/order-box-item.entity';
 import { Order } from 'src/orders/order/entities/order.entity';
 import {
   Entity,
@@ -8,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
   //OneToMany,
   //JoinColumn,
 } from 'typeorm';
@@ -17,11 +19,11 @@ export class OrderBoxes extends Tablestamp {
   id: string;
   @Column({ nullable: true })
   lineRemarks: string;
-  @Column('float', { precision: 8, scale: 2 , default: 0})
+  @Column('float', { precision: 8, scale: 2, default: 0 })
   boxweight: float;
   @Column({ nullable: true })
   boxNo: number;
-  @Column({ nullable: true, default :  0})
+  @Column({ nullable: true, default: 0 })
   itemsCount: number;
   @ManyToOne(() => Boxsize, (boxSize) => boxSize.id)
   @JoinColumn({ name: 'boxSizeId' })
@@ -31,8 +33,8 @@ export class OrderBoxes extends Tablestamp {
   @JoinColumn({ name: 'orderId' })
   order: Order;
 
-  // @OneToMany(() => OrderLine, (orderLine) => orderLine.order)
-  // orderLines: OrderLine[];
-  // @JoinColumn()
-  // orderId: number;
+  @OneToMany(() => OrderBoxesItems, (orderBoxesItems) => orderBoxesItems.orderBoxes)
+  orderBoxesItems: OrderBoxesItems[];
+  @JoinColumn()
+  orderBoxesItemsId: string;
 }

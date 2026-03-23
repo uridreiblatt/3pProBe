@@ -22,10 +22,10 @@ import { AuthGuard } from 'src/auth/auth.guard';
 @UseGuards(AuthGuard)
 export class OrderController {
   private readonly logger = new Logger(OrderController.name);
-  constructor(private readonly orderService: OrderService) {}
+  constructor(private readonly orderService: OrderService) { }
 
   @Post()
-  async create(@Request() req ,@Body() createOrderDto: CreateOrderDto) {
+  async create(@Request() req, @Body() createOrderDto: CreateOrderDto) {
     return await this.orderService.create(createOrderDto, req.user.selectCompany);
   }
 
@@ -51,6 +51,15 @@ export class OrderController {
   ) {
     return await this.orderService.getOrderByBasket(basket, roleId);
   }
+
+  @Get('/getOrderBoxItems/:orderId')
+  async getOrderBoxItems(
+    @Param('orderId') orderId: string,
+  ) {
+    return await this.orderService.getOrderBoxItems(orderId);
+  }
+
+
 
   @Patch('/updateData/:id')
   async updateData(

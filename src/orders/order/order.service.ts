@@ -283,6 +283,21 @@ export class OrderService {
     });
   }
 
+  async getOrderBoxItems(orderId: string) {
+    return await this.orderRepository.findOne({
+      where: {
+        id: orderId,
+      },
+      relations: {
+        orderBoxes: { orderBoxesItems: true, },
+        orderLines: true,
+      }
+    });
+  }
+
+
+
+
   async updateTrackingNumberFromShipRush(
     createDeliverySettingDto: CreateDeliverySettingDto
   ): Promise<any> {
