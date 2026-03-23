@@ -211,13 +211,14 @@ export class priorityProductsService {
     });
   }
 
-  async findBarcode(barcode: string) {
+  async findBarcode(barcode: string, companyId: string) {
     return await this.PartRepository.findOne({
       // select: {
       //   PARTNAME: true,
       // },
       where: {
         BARCODE: barcode,
+        company: { id: companyId },
       },
       relations: {
         PriorityProductsHierarchy: true,
@@ -226,16 +227,22 @@ export class priorityProductsService {
     });
   }
 
-  async findChildByParentPart(id: string) {
-    const sqlQuery =
-      `SELECT     PP.PARTNAME, PP.BARCODE,   PL.location,    PL.stockDate,    PL.quantity,    Z.zoneName ` +
-      ` FROM priorityProducts AS P LEFT JOIN priorityProductsHierarchy AS C    ON P.PART = C.PART LEFT JOIN priorityProducts AS PP    ON PP.PART = C.SON LEFT JOIN priorityProductsLocation AS PL     ON PL.priorityProductsId = PP.id LEFT JOIN zone AS Z    ON Z.id = PL.zoneId ` +
-      ` WHERE P.PARTNAME = '` +
-      id +
-      `'` +
-      ` ORDER BY Z.priority desc , stockDate`;
-    //console.log(sqlQuery);
-    const res = await this.PartRepository.query(sqlQuery);
+  async findChildByParentPart(id: string, companyId: string) {
+    const sqlQuery = `
+  SELECT PP.PARTNAME, PP.BARCODE, PL.location, PL.stockDate, PL.quantity, Z.zoneName
+  FROM priorityProducts AS P
+  LEFT JOIN priorityProductsHierarchy AS C ON P.PART = C.PART
+  LEFT JOIN priorityProducts AS PP ON PP.PART = C.SON
+  LEFT JOIN priorityProductsLocation AS PL ON PL.priorityProductsId = PP.id
+  LEFT JOIN zone AS Z ON Z.id = PL.zoneId
+  WHERE P.PARTNAME = ? AND p.companyId = ?
+  ORDER BY Z.priority DESC, stockDate
+`;
+
+    const res = await this.PartRepository.query(sqlQuery, [id, companyId]);
+    if (res.length === 0) {
+      return []
+    }
     return res;
   }
 

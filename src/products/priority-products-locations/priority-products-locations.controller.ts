@@ -20,7 +20,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class PriorityProductsLocationsController {
   constructor(
     private readonly priorityProductsLocationsService: PriorityProductsLocationsService,
-  ) {}
+  ) { }
 
   @Post()
   create(
@@ -47,12 +47,12 @@ export class PriorityProductsLocationsController {
   }
 
   @Get('findAllByProduct/:id')
-  findAllByProduct(@Param('id') id: string) {
-    return this.priorityProductsLocationsService.findAllByProduct(id);
+  findAllByProduct(@Request() req, @Param('id') id: string) {
+    return this.priorityProductsLocationsService.findAllByProduct(id, req.user.selectCompany);
   }
   @Get('findAllByProductName/:partName')
-  findAllByProductName(@Param('partName') partName: string) {
-    return this.priorityProductsLocationsService.findAllByProductName(partName);
+  findAllByProductName(@Request() req, @Param('partName') partName: string) {
+    return this.priorityProductsLocationsService.findAllByProductName(partName, req.user.selectCompany);
   }
 
   @Patch(':id')

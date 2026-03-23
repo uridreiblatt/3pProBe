@@ -6,19 +6,19 @@ import { AuthGuard } from 'src/auth/auth.guard';
 @Controller('priorityProducts')
 @UseGuards(AuthGuard)
 export class PriorityProductsController {
-  constructor(private readonly partsService: priorityProductsService) {}
+  constructor(private readonly partsService: priorityProductsService) { }
 
   // @Post()
   // create(@Body() createPartDto: CreatePartDto) {
   //   return this.partsService.create(createPartDto);
   // }
   @Get('getPriorityParts')
-  async getPriorityParts(@Request() req ) {
+  async getPriorityParts(@Request() req) {
     await this.partsService.getPriorityParts(req.user.selectCompany);
   }
 
   @Get()
-  async findAll(@Request() req) {    
+  async findAll(@Request() req) {
     return await this.partsService.findAll(req.user.selectCompany);
   }
 
@@ -28,16 +28,16 @@ export class PriorityProductsController {
   }
 
   @Get('findChildByParentPart/:id')
-  async findChildByParentPart(@Param('id') id: string) {
-    return await this.partsService.findChildByParentPart(id);
+  async findChildByParentPart(@Request() req, @Param('id') id: string) {
+    return await this.partsService.findChildByParentPart(id, req.user.selectCompany);
   }
   // @Get('findChildByParent/:id')
   // async findChildByParent(@Param('id') id: string) {
   //   return await this.partsService.findChildByParent(id);
   // }
   @Get('findBarcode/:barcode')
-  async findBarcode(@Param('barcode') id: string) {
-    const res = await this.partsService.findBarcode(id);
+  async findBarcode(@Request() req, @Param('barcode') id: string) {
+    const res = await this.partsService.findBarcode(id, req.user.selectCompany);
     return res;
   }
 

@@ -16,18 +16,19 @@ export class PriorityProductsLocationsService {
     private priorityProductsLocationsRepo: Repository<PriorityProductsLocation>,
     @InjectRepository(Zone)
     private priorityZoneRepo: Repository<Zone>,
-  ) {}
+  ) { }
   async create(
     createPriorityProductsLocationDto: CreatePriorityProductsLocationDto,
   ) {
-    
-     const ins =  new PriorityProductsLocation();
+
+    const ins = new PriorityProductsLocation();
     ins.location = createPriorityProductsLocationDto.location;
     ins.quantity = createPriorityProductsLocationDto.quantity;
+    ins.remarks = createPriorityProductsLocationDto.remarks;
     ins.stockDate = new Date(createPriorityProductsLocationDto.stockDate);
     ins.priorityProducts = new PriorityProducts();
     ins.priorityProducts.id = createPriorityProductsLocationDto.productId;
-    ins.zone =  new Zone();
+    ins.zone = new Zone();
     ins.zone.id = createPriorityProductsLocationDto.zoneId;
     return await this.priorityProductsLocationsRepo.save(
       ins,
@@ -39,27 +40,27 @@ export class PriorityProductsLocationsService {
   }
 
   async findAll(companyId: string) {
-    const res =  await this.priorityProductsLocationsRepo.find({
-       where: {
-              priorityProducts: { company: {id: companyId}}
-      
-            },
-            relations: {priorityProducts: true, zone: true,},
-            }
+    const res = await this.priorityProductsLocationsRepo.find({
+      where: {
+        priorityProducts: { company: { id: companyId } }
+
+      },
+      relations: { priorityProducts: true, zone: true, },
+    }
     );
-    const resAll = res.map((loc)=>{
+    const resAll = res.map((loc) => {
       return {
-      id: loc.id,
-      location:  loc.location,
-      zone: loc.zone.zoneName,
-      product: loc.priorityProducts.PARTNAME,
+        id: loc.id,
+        location: loc.location,
+        zone: loc.zone.zoneName,
+        product: loc.priorityProducts.PARTNAME,
       }
     });
     return resAll;
 
   }
 
-  async findAllByProduct(id: string) {
+  async findAllByProduct(id: string, companyId: string) {
     return await this.priorityProductsLocationsRepo.find({
       where: {
         priorityProducts: { id: id },
@@ -73,10 +74,11 @@ export class PriorityProductsLocationsService {
       },
     });
   }
-  async findAllByProductName(partName: string) {    
+  async findAllByProductName(partName: string, companyId: string) {
     return await this.priorityProductsLocationsRepo.find({
       where: {
-        priorityProducts: { PARTNAME: partName },
+        priorityProducts: { PARTNAME: partName, company: { id: companyId } },
+
       },
       relations: {
         zone: true,
@@ -99,8 +101,8 @@ export class PriorityProductsLocationsService {
       },
     });
 
-    const resAll  =  {
-      id: res.id,             
+    const resAll = {
+      id: res.id,
       zone: res.zone.zoneName,
       zoneId: res.zone.id,
       location: res.location,
@@ -108,11 +110,12 @@ export class PriorityProductsLocationsService {
       productId: res.priorityProducts.id,
       quantity: res.quantity,
       stockDate: res.stockDate,
+      remarks: res.remarks,
     };
     return resAll;
   }
 
-  
+
 
   async update(
     id: string,
@@ -122,13 +125,14 @@ export class PriorityProductsLocationsService {
     //   updatePriorityProductsLocationDto.stockDate = null;
     // }
 
-    const upt =  new PriorityProductsLocation();
+    const upt = new PriorityProductsLocation();
     upt.location = updatePriorityProductsLocationDto.location;
     upt.quantity = updatePriorityProductsLocationDto.quantity;
+    upt.remarks = updatePriorityProductsLocationDto.remarks;
     upt.stockDate = upt.stockDate = new Date(updatePriorityProductsLocationDto.stockDate);
     upt.priorityProducts = new PriorityProducts();
     upt.priorityProducts.id = updatePriorityProductsLocationDto.productId;
-    upt.zone =  new Zone();
+    upt.zone = new Zone();
     upt.zone.id = updatePriorityProductsLocationDto.zoneId;
 
     return await this.priorityProductsLocationsRepo.update(

@@ -22,4 +22,7 @@ export class CreatePriorityProductsLocationDto {
   @ApiProperty()
   @IsString()
   companyId: string;
+  @ApiProperty()
+  @IsString()
+  remarks: string;
 }

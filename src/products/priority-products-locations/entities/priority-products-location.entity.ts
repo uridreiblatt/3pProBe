@@ -14,7 +14,7 @@ import { IsDate } from 'class-validator';
 export class PriorityProductsLocation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  @Column({default:'', nullable:true})
+  @Column({ default: '', nullable: true })
   location: string;
   @Column({ nullable: true, type: 'date' })
   @IsDate()
@@ -27,14 +27,16 @@ export class PriorityProductsLocation {
     { nullable: false },
   )
   priorityProducts: PriorityProducts;
-  @ManyToOne(() => Zone, (zone) => zone.PriorityProductsLocation)  
+  @ManyToOne(() => Zone, (zone) => zone.PriorityProductsLocation)
   zone: Zone;
 
 
   @OneToMany(
-  () => PriorityProductsLocation,
-  (location) => location.priorityProducts,
-)
-PriorityProductsLocation: PriorityProductsLocation[];
-  
+    () => PriorityProductsLocation,
+    (location) => location.priorityProducts,
+  )
+  PriorityProductsLocation: PriorityProductsLocation[];
+  @Column({ default: '', nullable: true })
+  remarks: string;
+
 }
