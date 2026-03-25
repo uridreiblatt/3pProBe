@@ -34,19 +34,47 @@ export class AllRmaService {
     this._CompanyService = CompanyService;
   }
 
+  private isRunning = false;
+
+
   @Cron(CronExpression.EVERY_10_MINUTES)
   async handleCron() {
-    this.logger.log("crone Called getAllNewRmaFromPriority EVERY_10_MINUTES");
-    const allCompanies = await this._CompanyService.findAll();
-    try {
-      allCompanies.forEach(async (company) => {
-        if (company.companySetting) await this.syncAllNewRmaFromPriority(company);
-      });
-    } catch (error) {
-      this.logger.error("Error in handleCron rma", error);
+    if (this.isRunning) {
+      this.logger.warn('Cron skipped - previous run still in progress');
+      return;
     }
 
+    this.isRunning = true;
+    this.logger.log("cron Called getAllNewRmaFromPriority EVERY_MINUTE");
+
+    try {
+      const allCompanies = await this._CompanyService.findAll();
+
+      for (const company of allCompanies) {
+        if (!company.companySetting) continue;
+
+        try {
+          this.logger.log(`Processing company ${company.name}`);
+
+          await this.syncAllNewRmaFromPriority(company); // ⬅️ waits before moving on
+
+          this.logger.log(`Finished company ${company.name}`);
+        } catch (err) {
+          this.logger.error(
+            `Error processing company ${company.name}`,
+            err
+          );
+          // continues to next company
+        }
+      }
+
+    } catch (error) {
+      this.logger.error("Error in handleCron rma", error);
+    } finally {
+      this.isRunning = false;
+    }
   }
+
 
   async getAllNewRmaFromPriority(companyId: string): Promise<any> {
     const company = await this._CompanyService.findOne(companyId);
@@ -66,6 +94,7 @@ export class AllRmaService {
       //const urlEndPoint = `/DOCUMENTS_m?$filter=STATDES eq 'Open' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
       const urlEndPointPriority = `/DOCUMENTS_m?$filter=STATDES eq '${resCompantSettings.companySetting.priorityRmaStatus}' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
 
+      console.log('syncAllNewRmaFromPriority', resCompantSettings.name)
       const url =
         //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
         resCompantSettings.companySetting.priorityApiUrl +

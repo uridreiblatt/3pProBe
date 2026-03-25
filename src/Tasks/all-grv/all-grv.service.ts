@@ -41,16 +41,54 @@ export class AllGrvService {
     this._CompanyService = CompanyService;
   }
 
+  private isRunning = false;
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
-    this.logger.log('crone Called EVERY_10_MINUTES getAllNewPoFromPriority');
-    const companies = await this._CompanyService.findAll();
-    companies.map(async (e) => {
-      await this.SyncAllNewPoFromPriority(e.id);
+    if (this.isRunning) {
+      this.logger.warn('Cron skipped - previous run still in progress');
+      return;
+    }
 
-    })
+    this.isRunning = true;
+    this.logger.log("cron Called SyncAllNewPoFromPriority EVERY_MINUTE");
+
+    try {
+      const allCompanies = await this._CompanyService.findAll();
+
+      for (const company of allCompanies) {
+        if (!company.companySetting) continue;
+
+        try {
+          this.logger.log(`Processing company ${company.name}`);
+
+          await this.SyncAllNewPoFromPriority(company.id);
+
+          this.logger.log(`Finished company ${company.name}`);
+        } catch (err) {
+          this.logger.error(
+            `Error processing company ${company.name}`,
+            err
+          );
+          // continues to next company
+        }
+      }
+
+    } catch (error) {
+      this.logger.error("Error in handleCron rma", error);
+    } finally {
+      this.isRunning = false;
+    }
   }
+
+
+
+
+
+
+
+
 
   async getAllNewPoFromPriority(companyId: string): Promise<any> {
 

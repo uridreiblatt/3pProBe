@@ -265,7 +265,6 @@ export class GetOrderInfoService {
               return false;
             });
             if (updateOrderAddress) {
-              console.log("update shipping address");
               const updAddress = {
                 ADDRESS: updateOrderAddress.ADDRESS,
                 ADDRESS2: updateOrderAddress.ADDRESS2,
@@ -472,7 +471,7 @@ export class GetOrderInfoService {
 
       if (order.shipRushStatus !== "new") {
         throw new BadRequestException({
-          message: "order already in progress [" + "order " + order.ORDNAME + " - " + order.shipRushStatus + "]",
+          message: "Duplicate action detected. This order is already sent to ShipRush.[ " + order.ORDNAME + "]",
           description: "order " + order.ORDNAME + " - " + order.shipRushStatus,
         });
       }

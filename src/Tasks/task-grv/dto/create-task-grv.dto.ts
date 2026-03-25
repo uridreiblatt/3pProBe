@@ -71,7 +71,7 @@ export class CreateTaskGrvDto {
   quantityRequired: number;
   @ApiProperty()
   @IsString()
-  taskUserId: string;
+  allGrvId: string;
   @ApiProperty()
   @IsString()
   companyId: string;
