@@ -136,17 +136,17 @@ export class OrderService {
     });
     const resAll = await Promise.all(
       res.map(async (ord) => {
-        const result = await this.orderRepository.query(
-          `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
-       FROM p3pro.order_boxes_items obi
-       WHERE obi.orderId = ? `,
-          [ord.id]
-        );
-        const collected = result[0]?.total ?? 0;
+        //   const result = await this.orderRepository.query(
+        //     `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
+        //  FROM p3pro.order_boxes_items obi
+        //  WHERE obi.orderId = ? `,
+        //     [ord.id]
+        //   );
+        //   const collected = result[0]?.total ?? 0;
 
         return {
           id: ord.id,
-          collected: collected,
+          collected: 0,
           priorityOrder: ord.priorityOrder,
           ORDNAME: ord.ORDNAME,
           CUSTDES: ord.CUSTDES,
@@ -210,23 +210,23 @@ export class OrderService {
         role: true,
       },
     });
-    const orderLines = await Promise.all(
-      res.orderLines.map(async (ol) => {
-        const result = await this.orderRepository.query(
-          `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
-       FROM p3pro.order_boxes_items obi
-       WHERE obi.orderId = ? AND obi.partNumber = ?`,
-          [res.id, ol.BARCODE]
-        );
+    // const orderLines = await Promise.all(
+    //   res.orderLines.map(async (ol) => {
+    //     const result = await this.orderRepository.query(
+    //       `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
+    //    FROM p3pro.order_boxes_items obi
+    //    WHERE obi.orderId = ? AND obi.partNumber = ?`,
+    //       [res.id, ol.BARCODE]
+    //     );
 
-        const collected = result[0]?.total ?? 0;
+    //     const collected = result[0]?.total ?? 0;
 
-        return {
-          ...ol,
-          collected,
-        };
-      })
-    );
+    //     return {
+    //       ...ol,
+    //       collected,
+    //     };
+    //   })
+    // );
 
     const resAll = {
       id: res.id,
@@ -245,7 +245,7 @@ export class OrderService {
       status: res.taskStatus.status,
       orderNote: res.orderNote,
       ordertext: res.ordertext,
-      orderLines, // ✅ real objects, not promises
+      orderLines: res.orderLines, // ✅ real objects, not promises
       role: res.role.roleDisplayName,
       taskStatus: { status: res.taskStatus.status },
     };
@@ -284,15 +284,43 @@ export class OrderService {
   }
 
   async getOrderBoxItems(orderId: string) {
-    return await this.orderRepository.findOne({
+    const res = await this.orderRepository.findOne({
       where: {
         id: orderId,
       },
       relations: {
-        orderBoxes: { orderBoxesItems: true, },
+        orderBoxes: { orderBoxesItems: true, boxSize: true },
         orderLines: true,
       }
     });
+    const orderLines = await Promise.all(
+      res.orderLines.map(async (ol) => {
+        const result = await this.orderRepository.query(
+          `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
+       FROM p3pro.order_boxes_items obi
+       WHERE obi.orderId = ? AND obi.partNumber = ?`,
+          [res.id, ol.BARCODE]
+        );
+
+        const collected = result[0]?.total ?? 0;
+
+        return {
+          ...ol,
+          collected,
+        };
+      })
+    );
+    const resAll = {
+      id: res.id,
+      orderLines,
+      //orderLines: res.orderLines,
+      orderBoxes: res.orderBoxes, // ✅ real objects, not promises
+
+    };
+
+    return resAll;
+
+
   }
 
 

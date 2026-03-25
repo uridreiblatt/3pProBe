@@ -171,7 +171,7 @@ export class GetOrderInfoService {
         createOrderDto.FAX = element.SHIPTO2_SUBFORM?.FAX;
         createOrderDto.NAME = element.SHIPTO2_SUBFORM?.NAME || "";
         createOrderDto.CUSTDES = element.SHIPTO2_SUBFORM?.CUSTDES || "";
-        createOrderDto.PHONENUM = element.SHIPTO2_SUBFORM?.PHONENUM;
+        createOrderDto.PHONENUM = element.SHIPTO2_SUBFORM?.PHONENUM || '';
         //createOrderDto. = element.SHIPTO2_SUBFORM?.EMAIL;
         createOrderDto.ADDRESS = element.SHIPTO2_SUBFORM?.ADDRESS;
         createOrderDto.ADDRESS2 = element.SHIPTO2_SUBFORM?.ADDRESS2;
