@@ -11,24 +11,24 @@ import { validateCompanies } from 'src/util/validateCompany.util';
 @UseGuards(AuthGuard)
 @Controller('user-role')
 export class UserRoleController {
-  constructor(private readonly userRoleService: UserRoleService) {}
+  constructor(private readonly userRoleService: UserRoleService) { }
 
-//
+  //
   @Post()
-  create( @Request() req, @Body() createUserRoleDto: CreateUserRoleDto) {
+  create(@Request() req, @Body() createUserRoleDto: CreateUserRoleDto) {
     return this.userRoleService.create(createUserRoleDto);
   }
 
   @Get()
   findAll(@Request() req,) {
-    return this.userRoleService.findAll(req.user.userID);
+    return this.userRoleService.findAll(req.user.selectCompany);
   }
 
   @Get(':id')
-  async findOne(@Request() req,@Param('id') id: string) {    
+  async findOne(@Request() req, @Param('id') id: string) {
     const res = await this.userRoleService.findOne(id, req.user.selectCompany);
-        //validateCompanies (req.user.selectCompany , res.users.userCompany); // add find in loop
-        return res;
+    //validateCompanies (req.user.selectCompany , res.users.userCompany); // add find in loop
+    return res;
   }
 
   @Patch(':id')
@@ -37,7 +37,7 @@ export class UserRoleController {
   }
 
   @Delete(':id')
-  async remove(@Request() req,@Param('id') id: string) {    
+  async remove(@Request() req, @Param('id') id: string) {
     const res = await this.userRoleService.findOne(id, req.user.selectCompany);
     //validateCompanies (req.user.selectCompany , res.users.userCompany);
     return this.userRoleService.remove(id);

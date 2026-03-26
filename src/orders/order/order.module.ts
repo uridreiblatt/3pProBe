@@ -10,10 +10,11 @@ import { TaskUserModule } from 'src/Tasks/task-user/task-user.module';
 import { CompanyModule } from 'src/usersCompanies/company/company.module';
 import { OrderBoxesItems } from '../order-box-items/entities/order-box-item.entity';
 import { OrderBoxItemsModule } from '../order-box-items/order-box-items.module';
+import { PartCqaunt } from 'src/settings/part-cqaunt/entities/part-cqaunt.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Order, OrderBoxesItems]),
+    TypeOrmModule.forFeature([Order, OrderBoxesItems, PartCqaunt]),
     forwardRef(() => OrderLinesModule),
     OrderBoxesModule,
     OrderBasketModule,
@@ -25,4 +26,4 @@ import { OrderBoxItemsModule } from '../order-box-items/order-box-items.module';
   providers: [OrderService],
   exports: [OrderService],
 })
-export class OrderModule {}
+export class OrderModule { }

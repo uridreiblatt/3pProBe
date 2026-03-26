@@ -20,21 +20,21 @@ export class PriorityProducts {
   TYPE: string;
   @Column()
   BARCODE: string;
-  @Column({ unique: true })
+  @Column()
   PART: number;
   @Column()
   PARTDES: string;
- @Column()
+  @Column()
   STATDES: string;
-  
- 
+
+
   @ManyToOne(() => Company, (company) => company.priorityProducts, {
     nullable: false,
-  })  
+  })
   company: Company;
 
 
-@OneToMany(
+  @OneToMany(
     () => PriorityProductsHierarchy,
     (hierarchy) => hierarchy.priorityProducts,
   )
@@ -45,6 +45,6 @@ export class PriorityProducts {
     (location) => location.priorityProducts,
   )
   PriorityProductsLocation: PriorityProductsLocation[];
-  
- 
+
+
 }

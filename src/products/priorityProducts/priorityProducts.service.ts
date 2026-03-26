@@ -38,141 +38,168 @@ export class priorityProductsService {
     this._ProductStatusService = productStatusService;
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_10AM)
+  private isRunning = false;
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async handleCron() {
-    this.logger.log("crone Called EVERY_DAY_AT_10AM getAllNewPoFromPriority");
-    const companies = await this._CompanyService.findAll();
-    companies.map(async (e) => {
-      try {
-        await this.SyncPriorityParts(e.id, false);
-        await this._ProductStatusService.create(e.id);
-      } catch (error) {
-        console.log("SyncPriorityParts", error);
+    if (this.isRunning) {
+      this.logger.warn('Cron skipped - previous run still in progress');
+      return;
+    }
+
+    this.isRunning = true;
+    this.logger.log("cron Called getAllNewRmaFromPriority EVERY_MINUTE");
+
+    try {
+      const allCompanies = await this._CompanyService.findAll();
+
+      for (const company of allCompanies) {
+        if (!company.companySetting) continue;
+
+        try {
+          this.logger.log(`Processing company ${company.name}`);
+
+          await this.SyncPriorityParts(company.id, false); // ⬅️ waits before moving on
+          await this._ProductStatusService.create(company.id);
+
+          this.logger.log(`Finished company ${company.name}`);
+        } catch (err) {
+          this.logger.error(
+            `Error processing company ${company.name}`,
+            err
+          );
+          // continues to next company
+        }
       }
-    });
+
+    } catch (error) {
+      this.logger.error("Error in handleCron rma", error);
+    } finally {
+      this.isRunning = false;
+    }
   }
-  @Cron(CronExpression.EVERY_WEEKEND)
-  async handleCronWeekly() {
-    this.logger.log("crone Called EVERY_WEEKEND getAllNewPoFromPriority");
-    const companies = await this._CompanyService.findAll();
-    companies.map(async (e) => {
-      await this.SyncPriorityParts(e.id, true);
-    });
-  }
+
+
+  // @Cron(CronExpression.EVERY_WEEKEND)
+  // async handleCronWeekly() {
+  //   this.logger.log("crone Called EVERY_WEEKEND getAllNewPoFromPriority");
+  //   const companies = await this._CompanyService.findAll();
+  //   companies.map(async (e) => {
+  //     await this.SyncPriorityParts(e.id, true);
+  //   });
+  // }
 
   async getPriorityParts(companyId: string) {
     return await this.SyncPriorityParts(companyId, true);
   }
   async SyncPriorityParts(companyId: string, fullSync: boolean): Promise<any> {
-    //https://win01.maclocks.com/odata/Priority/tabula.ini/cb3007/LOGPART?$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES
     if (this.isLocked) {
       return "is locked";
     }
 
     this.isLocked = true;
-    const resCompantSettings = await this._CompanyService.findOne(companyId);
-    const base =
-      resCompantSettings.companySetting.priorityApiUrl +
-      resCompantSettings.companySetting.priorityApiCompany;
 
-    const select =
-      "$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES,PART";
-    const expand = "$expand=PARTARC_SUBFORM($select=SONNAME,TYPE,SON)";
-    const now = new Date();
-    const startOfDayUTC = new Date(
-      Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(), // -1, //last month
-        now.getUTCDate() - 7, // last week
-        0,
-        0,
-        0
-      )
-    );
-    const isoDate = startOfDayUTC.toISOString().split(".")[0] + "Z";
-    const filter = `UDATE  gt ${isoDate}`;
-    const path = fullSync
-      ? `/LOGPART?${select}&${expand}`
-      : `/LOGPART?$filter=${encodeURIComponent(filter)}&${select}&${expand}`;
+    try {
+      const resCompantSettings = await this._CompanyService.findOne(companyId);
 
-    const urlEndPointPriority = base + path;
-    console.log("part url", urlEndPointPriority);
+      const base =
+        resCompantSettings.companySetting.priorityApiUrl +
+        resCompantSettings.companySetting.priorityApiCompany;
 
-    const credentials = btoa(this.username + ":" + this.pwd);
-    const basicAuth = "Basic " + credentials;
-    const data = await lastValueFrom(
-      this.httpService
-        .get(urlEndPointPriority, {
-          headers: {
-            Authorization: basicAuth,
-          },
-        })
-        .pipe(map((resp) => resp.data))
-        .pipe(
-          catchError((error) => {
-            this.isLocked = false;
-            throw `An error happened. Msg: ${JSON.stringify(error.request)}`;
-          })
+      const select =
+        "$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES,PART";
+      const expand = "$expand=PARTARC_SUBFORM($select=SONNAME,TYPE,SON)";
+
+      const now = new Date();
+      const startOfDayUTC = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate() - 7,
+          0,
+          0,
+          0
         )
-    );
-    const orderInfo: any = data;
-    //this._DbLogService.create({
-    console.log(
-      "priority parts ",
-      "start import parts " + orderInfo.value.length.toString()
-    );
-    let LinesInserted = 0;
+      );
 
-    orderInfo.value.forEach(async (element) => {
-      const createPartDto = new PriorityProducts();
-      createPartDto.PARTNAME = element.PARTNAME;
-      createPartDto.BARCODE = element.BARCODE || "";
-      createPartDto.PARTDES = element.PARTDES;
-      createPartDto.STATDES = element.STATDES;
+      const isoDate = startOfDayUTC.toISOString().split(".")[0] + "Z";
+      const filter = `UDATE gt ${isoDate}`;
 
-      createPartDto.PART = element.PART;
-      createPartDto.TYPE = element.TYPE;
-      createPartDto.company = new Company();
-      createPartDto.company.id = companyId;
-      try {
-        //await this.PartRepository.save(createPartDto);
+      const path = fullSync
+        ? `/LOGPART?${select}&${expand}`
+        : `/LOGPART?$filter=${encodeURIComponent(filter)}&${select}&${expand}`;
 
-        await this.PartRepository.upsert(
-          {
-            PARTNAME: element.PARTNAME,
-            BARCODE: element.BARCODE || "",
-            PARTDES: element.PARTDES,
-            STATDES: element.STATDES,
-            PART: element.PART,
-            TYPE: element.TYPE,
-            company: { id: companyId },
-          },
-          {
-            conflictPaths: ["PART"], // unique field
-            skipUpdateIfNoValuesChanged: true,
+      const urlEndPointPriority = base + path;
+      console.log("part url", urlEndPointPriority);
+
+      const credentials = btoa(this.username + ":" + this.pwd);
+      const basicAuth = "Basic " + credentials;
+
+      const data = await lastValueFrom(
+        this.httpService
+          .get(urlEndPointPriority, {
+            headers: {
+              Authorization: basicAuth,
+            },
+          })
+          .pipe(map((resp) => resp.data))
+          .pipe(
+            catchError((error) => {
+              throw new Error(
+                `An error happened. Msg: ${JSON.stringify(error.request)}`
+              );
+            })
+          )
+      );
+
+      const orderInfo: any = data;
+
+      console.log(
+        "priority parts ",
+        "start import parts " + orderInfo.value.length.toString()
+      );
+
+      for (const element of orderInfo.value) {
+        try {
+          await this.PartRepository.upsert(
+            {
+              PARTNAME: element.PARTNAME,
+              BARCODE: element.BARCODE || "",
+              PARTDES: element.PARTDES,
+              STATDES: element.STATDES,
+              PART: element.PART,
+              TYPE: element.TYPE,
+              company: { id: companyId },
+            },
+            {
+              conflictPaths: ["PART", "company"],
+              skipUpdateIfNoValuesChanged: true,
+            }
+          );
+
+          if (Array.isArray(element.PARTARC_SUBFORM)) {
+            for (const son of element.PARTARC_SUBFORM) {
+              await this.PartHierarchyRepository.upsert(
+                {
+                  PART: element.PART,
+                  SON: son.SON,
+                  companyId: companyId,
+                },
+                {
+                  conflictPaths: ["PART", "SON", "companyId"],
+                  skipUpdateIfNoValuesChanged: true,
+                }
+              );
+            }
           }
-        );
-        element.PARTARC_SUBFORM.map(async (son) => {
-          const prod = new PriorityProductsHierarchy();
-          (prod.PART = element.PART),
-            (prod.SON = son.SON),
-            await this.PartHierarchyRepository.save(prod);
-        });
-      } catch (error) {
-        console.log(error);
+        } catch (error) {
+          console.log("Failed importing part", element.PART, error);
+        }
       }
-    });
 
-    // await this._DbLogService.create({
-    //   subject: 'priority orders',
-    //   message: 'end import orders orders: ' + LinesInserted.toString(),
-    //   level: '',
-    //   context: '',
-    //   metadata: '',
-    //   companyId: 0
-    // });
-    this.isLocked = false;
-    return true;
+      return true;
+    } finally {
+      this.isLocked = false;
+    }
   }
 
   async findAll(companyId: string) {
@@ -231,8 +258,8 @@ export class priorityProductsService {
     const sqlQuery = `
   SELECT PP.PARTNAME, PP.BARCODE, PL.location, PL.stockDate, PL.quantity, Z.zoneName
   FROM priorityProducts AS P
-  LEFT JOIN priorityProductsHierarchy AS C ON P.PART = C.PART
-  LEFT JOIN priorityProducts AS PP ON PP.PART = C.SON
+  LEFT JOIN priorityProductsHierarchy AS C ON P.PART = C.PART and P.companyId =  C.companyId
+  LEFT JOIN priorityProducts AS PP ON PP.PART = C.SON and P.companyId =  C.companyId
   LEFT JOIN priorityProductsLocation AS PL ON PL.priorityProductsId = PP.id
   LEFT JOIN zone AS Z ON Z.id = PL.zoneId
   WHERE P.PARTNAME = ? AND p.companyId = ?
@@ -246,25 +273,5 @@ export class priorityProductsService {
     return res;
   }
 
-  // async findChildByParent(id: string) {
-  //   //   let sqlQuery =
-  //   SELECT    P.PART,    C.SON,    DT.PARTNAME,    DT.PARTDES,    DT.BARCODE FROM priorityProducts P
-  // LEFT JOIN priorityProductsHierarchy C   ON P.PART = C.PART LEFT JOIN priorityProducts DT    ON DT.PART = C.SON
-  // WHERE P.PARTNAME = 'TCDP04W1910GASW';
-  //   sqlQuery += " where   P.[id] = '" + id + "'";
-  //   //} else {
-  //   //  sqlQuery += " AND  P.[PARTNAME] = '" + id + "'";
-  //   //}
 
-  //   const res = await this.PartRepository.query(sqlQuery);
-  //   return res;
-  // }
-
-  // async update(id: number, updatePartDto: UpdatePartDto) {
-  //   return await this.PartRepository.update(id, updatePartDto);
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} part`;
-  // }
 }

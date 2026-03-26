@@ -9,6 +9,8 @@ export class PriorityProductsHierarchy {
   PART: number;
   @Column()
   SON: number;
+  @Column()
+  companyId: string;
   @ManyToOne(
     () => PriorityProducts,
     (priorityProducts) => priorityProducts.PriorityProductsHierarchy,
@@ -17,10 +19,10 @@ export class PriorityProductsHierarchy {
   @JoinColumn({ name: 'PART', referencedColumnName: 'PART' })
   priorityProducts: PriorityProducts;
   @ManyToOne(
-  () => PriorityProducts,
-  (priorityProducts) => priorityProducts.PriorityProductsHierarchy,
-  { nullable: false },
-)
-@JoinColumn({ name: 'SON', referencedColumnName: 'PART' })
-sonPriorityProduct: PriorityProducts;
+    () => PriorityProducts,
+    (priorityProducts) => priorityProducts.PriorityProductsHierarchy,
+    { nullable: false },
+  )
+  @JoinColumn({ name: 'SON', referencedColumnName: 'PART' })
+  sonPriorityProduct: PriorityProducts;
 }

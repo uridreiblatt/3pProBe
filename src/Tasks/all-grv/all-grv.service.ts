@@ -44,7 +44,7 @@ export class AllGrvService {
   private isRunning = false;
 
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async handleCron() {
     if (this.isRunning) {
       this.logger.warn('Cron skipped - previous run still in progress');
@@ -122,6 +122,7 @@ export class AllGrvService {
         resCompantSettings.companySetting.priorityApiPassword
       );
       const basicAuth = "Basic " + credentials;
+      console.log(url)
 
       const data = await lastValueFrom(
         this.httpService
@@ -171,7 +172,10 @@ export class AllGrvService {
           allGrv.company.id = companyId;
 
           const foundOne = await this.AllGrvRepository.findOne({
-            where: { orderName: allGrv.orderName },
+            where: {
+              orderName: allGrv.orderName,
+              company: { id: companyId },
+            },
           });
 
           if (foundOne === null) {

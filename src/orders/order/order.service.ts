@@ -26,6 +26,7 @@ import { rolesEnum } from "src/auth/entities/role.enum";
 import { CompanyService } from "src/usersCompanies/company/company.service";
 import { OrderBoxesItems } from "../order-box-items/entities/order-box-item.entity";
 import { OrderBoxItemsService } from "../order-box-items/order-box-items.service";
+import { PartCqaunt } from "src/settings/part-cqaunt/entities/part-cqaunt.entity";
 
 @Injectable()
 export class OrderService {
@@ -39,6 +40,12 @@ export class OrderService {
   constructor(
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
+    @InjectRepository(PartCqaunt)
+    private partCqauntRepository: Repository<PartCqaunt>,
+
+
+
+
     @InjectRepository(OrderBoxesItems)
     private orderBoxesItemsRepository: Repository<OrderBoxesItems>,
 
@@ -49,6 +56,8 @@ export class OrderService {
     private taskUserService: TaskUserService,
     private companyService: CompanyService,
     private orderBoxItemsService: OrderBoxItemsService
+
+
   ) {
     this._orderLinesService = orderLinesService;
     this._orderBoxesService = orderBoxesService;
@@ -228,6 +237,16 @@ export class OrderService {
     //   })
     // );
 
+    const partCount = await this.partCqauntRepository.find({
+      where: { company: { id: res.user.selectedCompany } },
+      select: { partName: true },
+    });
+
+    const filteredOrderLines = res.orderLines.filter((e) => {
+      const exists = partCount.find((pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase());
+      return !exists;
+    });
+
     const resAll = {
       id: res.id,
       ORDNAME: res.ORDNAME,
@@ -245,7 +264,7 @@ export class OrderService {
       status: res.taskStatus.status,
       orderNote: res.orderNote,
       ordertext: res.ordertext,
-      orderLines: res.orderLines, // ✅ real objects, not promises
+      orderLines: filteredOrderLines, // ✅ real objects, not promises
       role: res.role.roleDisplayName,
       taskStatus: { status: res.taskStatus.status },
     };

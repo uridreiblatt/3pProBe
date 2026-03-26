@@ -13,7 +13,7 @@ export class UserRoleService {
   constructor(
     @InjectRepository(UsersRoles)
     private userRoleRepository: Repository<UsersRoles>
-  ) {}
+  ) { }
   async create(createUserRoleDto: CreateUserRoleDto) {
     const ins = new UsersRoles();
     const rl = new Role();
@@ -21,55 +21,56 @@ export class UserRoleService {
     //ins.role.push(rl);
     ins.role = rl;
     const u = new User();
-    u.id = createUserRoleDto.userId;    
+    u.id = createUserRoleDto.userId;
     ins.users = u;
     return await this.userRoleRepository.save(ins);
   }
 
-  async findAll(companyId:  string): Promise<any> {
-    const res =  await this.userRoleRepository.find({
-      where : {users: {userCompany: {id: companyId}}},
+  async findAll(companyId: string): Promise<any> {
+    console.log(companyId)
+    const res = await this.userRoleRepository.find({
+      where: { users: { userCompany: { company: { id: companyId } } } },
       relations: {
         users: true,
         role: true,
       },
       //select: ['id', 'userName', 'usermail', 'usersRoles', 'color'],
     });
-    const resAll  =  res.map((userRole) => {
-    
+    const resAll = res.map((userRole) => {
 
-    return {
-      id: userRole.id,             
-      role: userRole.role.role,
-      user: userRole.users.userName,
-      //roles: userCompany.role.role,
-      isActive: userRole.isActive ? 'Active': 'InActive',
-    };
-  });
+
+      return {
+        id: userRole.id,
+        role: userRole.role.role,
+        user: userRole.users.userName,
+        //roles: userCompany.role.role,
+        isActive: userRole.isActive ? 'Active' : 'InActive',
+      };
+    });
     return resAll;
   }
 
   async findOne(id: string, companyId: string) {
-    const res =  await this.userRoleRepository.findOne({
-      where:{
-        id:id,
-        users:  {userCompany: {company: {id: companyId}}},
+    const res = await this.userRoleRepository.findOne({
+      where: {
+        id: id,
+        users: { userCompany: { company: { id: companyId } } },
       },
       relations: {
-        users: {userCompany: true,},
+        users: { userCompany: true, },
         role: true,
       },
       //select: ['id', 'userName', 'usermail', 'usersRoles', 'color'],
     });
-    const resAll  =  {
-      id: res.id,             
+    const resAll = {
+      id: res.id,
       //role: res.role.role,
       user: res.users.userName,
       userId: res.users.id,
       role: res.role.role,
       roleId: res.role.id,
 
-      isActive: res.isActive ? 'Active': 'InActive',
+      isActive: res.isActive ? 'Active' : 'InActive',
     };
     return resAll;
   }
@@ -81,11 +82,11 @@ export class UserRoleService {
     //ins.role.push(rl);
     ins.role = rl;
     const u = new User();
-    u.id = updateUserRoleDto.userId;    
+    u.id = updateUserRoleDto.userId;
     //ins.users.push(u);
     ins.users = u;
-    
-    
+
+
 
     return await this.userRoleRepository.update(id, ins);
   }
