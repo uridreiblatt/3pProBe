@@ -274,7 +274,7 @@ export class OrderService {
   }
 
   async findOneGetOrder(id: string) {
-    return await this.orderRepository.findOne({
+    const res = await this.orderRepository.findOne({
       where: {
         id: id,
       },
@@ -289,6 +289,20 @@ export class OrderService {
         role: true,
       },
     });
+
+    const partCount = await this.partCqauntRepository.find({
+      where: { company: { id: res.user.selectedCompany } },
+      select: { partName: true },
+    });
+
+    const filteredOrderLines = res.orderLines.filter((e) => {
+      const exists = partCount.find((pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase());
+      return !exists;
+    });
+
+    res.orderLines = filteredOrderLines;
+    return res;
+
   }
 
   async getOrderByBasket(basket: string, roleId: number) {
