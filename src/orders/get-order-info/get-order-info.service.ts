@@ -540,6 +540,7 @@ export class GetOrderInfoService {
         const updShipRushRes = {
           shipRushStatus: "Pending",
           shipRushShipmentId: shipRushRes.AddOrderResponse.OrderId,
+          shData: 'Pending Complete from ShipRush',
           //trackingNumber: shipRushRes.AddOrderResponse.OrderId,
         };
         await this._orderService.updateData(Id, updShipRushRes);

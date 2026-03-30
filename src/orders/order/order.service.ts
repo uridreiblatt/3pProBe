@@ -305,12 +305,14 @@ export class OrderService {
   async getOrderBoxItems(orderId: string) {
     const res = await this.orderRepository.findOne({
       where: {
-        id: orderId,
+        id: orderId,        
       },
       relations: {
         orderBoxes: { orderBoxesItems: true, boxSize: true },
         orderLines: true,
-      }
+        taskStatus:true,
+      },
+      order: { orderBoxes: {createdAt:'ASC'} },
     });
     const orderLines = await Promise.all(
       res.orderLines.map(async (ol) => {
@@ -331,6 +333,7 @@ export class OrderService {
     );
     const resAll = {
       id: res.id,
+      taskStatus: res.taskStatus,
       orderLines,
       //orderLines: res.orderLines,
       orderBoxes: res.orderBoxes, // ✅ real objects, not promises
