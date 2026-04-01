@@ -70,6 +70,13 @@ export interface Value {
   STATDES: string;
   FBCM_RETREASONCODE: string;
   FBCM_RETREASONDES: string;
+  INTERNALDIALOGTEXT_SUBFORM: INTERNALDIALOGTEXT_SUBFORM;
   
+  
+}
+
+
+export interface INTERNALDIALOGTEXT_SUBFORM {
+  TEXT: string;
   
 }

@@ -13,6 +13,7 @@ import { CompanyService } from "src/usersCompanies/company/company.service";
 import { RootRmaPriority } from "./dto/create-all-rma.dto";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { TaskRma } from "../task-rma/entities/task-rma.entity";
+import { title } from "process";
 
 @Injectable()
 export class AllRmaService {
@@ -90,16 +91,14 @@ export class AllRmaService {
 
 
       this.isLocked = true;
-      //const resCompantSettings = await this._CompanyService.findOne(companyId);
-      //const urlEndPoint = `/DOCUMENTS_m?$filter=STATDES eq 'Open' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
-      const urlEndPointPriority = `/DOCUMENTS_m?$filter=STATDES eq '${resCompantSettings.companySetting.priorityRmaStatus}' &$select=CUSTNAME,CUSTDES,CURDATE,DOCNO,DETAILS,FBCM_RETREASONCODE,FBCM_RETREASONDES,STATDES&$top=10`;
+       const urlEndPointPriority = `/DOCUMENTS_m?$filter=STATDES eq '${resCompantSettings.companySetting.priorityRmaStatus}' &$top=20&$expand=INTERNALDIALOGTEXT_SUBFORM`;
 
-      console.log('syncAllNewRmaFromPriority', resCompantSettings.name)
+   
       const url =
         //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
         resCompantSettings.companySetting.priorityApiUrl +
         resCompantSettings.companySetting.priorityApiCompany +
-        urlEndPointPriority;
+        urlEndPointPriority;  
 
       const credentials = btoa(
         resCompantSettings.companySetting.priorityApiUser +
@@ -125,8 +124,9 @@ export class AllRmaService {
             })
           )
       );
+      
       const RmaInfo: RootRmaPriority = data;
-
+      
       this._DbLogService.create({
         subject: "priority rmas",
         message: "start import rmas " + RmaInfo.value.length.toString(),
@@ -152,7 +152,27 @@ export class AllRmaService {
           rma.user = new User();
           rma.user.id = "aaa-bbb-ccc"; // unAssigned
           rma.taskStatus = new TaskStatus();
-          rma.Title = "";
+          let tmpText = "";
+          try {
+            tmpText = element.INTERNALDIALOGTEXT_SUBFORM?.TEXT|| '';
+            console.log("tmpText", tmpText);
+            if (tmpText) {
+              const ind = tmpText.lastIndexOf("</style>");
+              if (ind !== -1) {
+                tmpText = tmpText.substring(ind + 8);
+              }
+
+              tmpText = tmpText
+                .replace(/<[^>]*>/g, "")
+                .replace(/&nbsp;/g, " ")
+                .replace(/\s+/g, " ")
+                .trim();
+            }           
+          } catch (error) {
+            console.log(error);           
+          }       
+          console.log("tmpText", tmpText);
+          rma.Title = tmpText || "";
           rma.trackingNumber = "";
           rma.remarks = "";
           rma.taskStatus.id = 1;
@@ -256,6 +276,7 @@ export class AllRmaService {
       remarks: res.remarks,
       status: res.taskStatus.status,
       userName: res.user.userName,
+      title: res.Title,
       taskRma: res.taskRma.map((rma) => {
         return {
           id: rma.id,
