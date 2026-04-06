@@ -195,7 +195,7 @@ export class TaskUserService {
     });
     if (tasksUser.length > 0) return true;
     const setOrderstatus = {
-      taskStatus: { id: TaskStatusEnum.In_Progress }, // return status to in progress
+      taskStatus: { id: TaskStatusEnum.Assistant_Complete }, // return status to in progress
     };
     await this._orderService.updateData(taskUser.orderid, setOrderstatus);
     return true;

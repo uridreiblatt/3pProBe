@@ -154,8 +154,7 @@ export class AllRmaService {
           rma.taskStatus = new TaskStatus();
           let tmpText = "";
           try {
-            tmpText = element.INTERNALDIALOGTEXT_SUBFORM?.TEXT|| '';
-            console.log("tmpText", tmpText);
+            tmpText = element.INTERNALDIALOGTEXT_SUBFORM?.TEXT|| '';            
             if (tmpText) {
               const ind = tmpText.lastIndexOf("</style>");
               if (ind !== -1) {
@@ -171,7 +170,6 @@ export class AllRmaService {
           } catch (error) {
             console.log(error);           
           }       
-          console.log("tmpText", tmpText);
           rma.Title = tmpText || "";
           rma.trackingNumber = "";
           rma.remarks = "";
@@ -197,12 +195,12 @@ export class AllRmaService {
         companyId: resCompantSettings.id,
       });
       this.isLocked = false;
-    } catch (error) {
+    } catch (error: any) {
       this.isLocked = false;
-      console.log(error.message)
+      console.log(error.message ??  '')
       this._DbLogService.create({
         subject: "priority rmas error",
-        message: error.message,
+        message: error.message ?? '',
         level: "",
         context: "",
         metadata: "",

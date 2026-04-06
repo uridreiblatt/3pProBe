@@ -143,6 +143,11 @@ export class OrderService {
       },
       order: { priorityOrder: "ASC", shipmentOrder: "DESC", CURDATE: "ASC" },
     });
+    const partCount = await this.partCqauntRepository.find({
+      where: { company: { id: companyId } },
+      select: { partName: true },
+    });
+    
     const resAll = await Promise.all(
       res.map(async (ord) => {
         //   const result = await this.orderRepository.query(
@@ -168,8 +173,12 @@ export class OrderService {
           STDES: ord.STDES,
           status: ord.taskStatus.status,
           //orderLines: ord.orderLines,
-          orderLines: ord.orderLines.map((b) => ({ TBALANCE: b.TBALANCE })),
+          orderLines: ord.orderLines.filter((e) => {
+      const exists = partCount.find((pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase());
+      return !exists;
+    }).map((b) => ({ TBALANCE: b.TBALANCE })),
 
+          //orderLines: ord.orderLines.map((b) => ({ TBALANCE: b.TBALANCE })),
           role: ord.role.roleDisplayName,
           roleId: ord.role.id,
           taskStatus: {
@@ -325,30 +334,60 @@ export class OrderService {
         orderBoxes: { orderBoxesItems: true, boxSize: true },
         orderLines: true,
         taskStatus:true,
+        comapny: true,
       },
       order: { orderBoxes: {createdAt:'ASC'} },
     });
-    const orderLines = await Promise.all(
-      res.orderLines.map(async (ol) => {
-        const result = await this.orderRepository.query(
-          `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
+    const grouped = Object.values(
+  (res.orderLines || []).reduce((acc: any, ol: any) => {
+    const key = String(ol.BARCODE);
+
+    if (!acc[key]) {
+      acc[key] = {
+        ...ol,
+        TBALANCE: 0,
+      };
+    }
+
+    acc[key].TBALANCE += Number(ol.TBALANCE || 0);
+
+    return acc;
+  }, {})
+);
+
+
+const orderLines = await Promise.all(
+  grouped.map(async (ol: any) => {
+    const result = await this.orderRepository.query(
+      `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
        FROM p3pro.order_boxes_items obi
        WHERE obi.orderId = ? AND obi.partNumber = ?`,
-          [res.id, ol.BARCODE]
-        );
-
-        const collected = result[0]?.total ?? 0;
-
-        return {
-          ...ol,
-          collected,
-        };
-      })
+      [res.id, ol.BARCODE]
     );
+
+    return {
+      ...ol,
+      totalBalance: ol.TBALANCE,
+      collected: Number(result[0]?.total ?? 0),
+    };
+  })
+);
+    const partCount = await this.partCqauntRepository.find({
+      where: { company: { id: res.comapny.id } },
+      select: { partName: true },
+    });
+    const filteredOrderLines = orderLines.filter((e) => {
+      const exists = partCount.find((pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase());
+      return !exists;
+    });
+    console.log("filteredOrderLines", filteredOrderLines);
+
+
+
     const resAll = {
       id: res.id,
       taskStatus: res.taskStatus,
-      orderLines,
+      orderLines:filteredOrderLines,
       //orderLines: res.orderLines,
       orderBoxes: res.orderBoxes, // ✅ real objects, not promises
 

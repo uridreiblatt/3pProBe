@@ -87,10 +87,10 @@ export class GetOrderInfoService {
 
       try {
         await this.GetAllOrder(company.id);
-      } catch (error) {
+      } catch (error: any) {
         this.logger.error(
           `cron error GetAllOrder for company ${company.id}`,
-          error?.message || error
+          error?.message ?? error
         );
       }
     }

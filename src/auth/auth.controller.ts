@@ -40,11 +40,11 @@ export class AuthController {
     resUser.userPasswordEnc = "";
     const jwtDetails = new JwtDetails();
     jwtDetails.userName = resUser.userName;
-    const maxValueOfY = Math.max(
-      ...resUser.usersRoles.map((o) => o.role["id"]),
-      0
+    const maxValueOfY = Math.min(
+      ...resUser.usersRoles.map((o) => o.role["id"])
     );
 
+    console.log(resUser.usersRoles, maxValueOfY)
     //const user =
     jwtDetails.userEmail = resUser.userMail;
     jwtDetails.userRole = maxValueOfY.toString();
