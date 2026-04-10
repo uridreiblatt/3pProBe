@@ -5,32 +5,32 @@ import {
   Inject,
   Injectable,
   Logger,
-} from "@nestjs/common";
-import { UpdateTaskUserDto } from "./dto/update-task-user.dto";
-import { TaskUser } from "./entities/task-user.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Equal, Not, Repository } from "typeorm";
-import { OrderService } from "src/orders/order/order.service";
-import { User } from "src/usersCompanies/users/entities/user.entity";
+} from '@nestjs/common';
+import { UpdateTaskUserDto } from './dto/update-task-user.dto';
+import { TaskUser } from './entities/task-user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Equal, Not, Repository } from 'typeorm';
+import { OrderService } from 'src/orders/order/order.service';
+import { User } from 'src/usersCompanies/users/entities/user.entity';
 import {
   TaskType,
   TaskTypesEnum,
-} from "src/settings/task-type/entities/task-type.entity";
+} from 'src/settings/task-type/entities/task-type.entity';
 import {
   TaskStatus,
   TaskStatusEnum,
-} from "src/settings/task-status/entities/task-status.entity";
-import { Company } from "src/usersCompanies/company/entities/company.entity";
-import { DbLogService } from "src/db-log/db-log.service";
-import { catchError, lastValueFrom, map } from "rxjs";
-import { HttpService } from "@nestjs/axios";
-import { CreateTaskUserDto, RootPoPriority } from "./dto/create-task-user.dto";
-import { ConfigService } from "@nestjs/config";
-import { EOrderUser, OrderStatusEnum } from "src/orders/order/enums/enum";
-import { TaskGrv } from "../task-grv/entities/task-grv.entity";
-import { CompanyService } from "src/usersCompanies/company/company.service";
-import { syncBuiltinESMExports } from "module";
-import { Cron, CronExpression } from "@nestjs/schedule";
+} from 'src/settings/task-status/entities/task-status.entity';
+import { Company } from 'src/usersCompanies/company/entities/company.entity';
+import { DbLogService } from 'src/db-log/db-log.service';
+import { catchError, lastValueFrom, map } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { CreateTaskUserDto, RootPoPriority } from './dto/create-task-user.dto';
+import { ConfigService } from '@nestjs/config';
+import { EOrderUser, OrderStatusEnum } from 'src/orders/order/enums/enum';
+import { TaskGrv } from '../task-grv/entities/task-grv.entity';
+import { CompanyService } from 'src/usersCompanies/company/company.service';
+import { syncBuiltinESMExports } from 'module';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class TaskUserService {
@@ -54,7 +54,7 @@ export class TaskUserService {
     private DbLogService: DbLogService,
     private configService: ConfigService,
     private httpService: HttpService,
-    private CompanyService: CompanyService
+    private CompanyService: CompanyService,
   ) {
     this._orderService = orderService;
     this._DbLogService = DbLogService;
@@ -63,11 +63,8 @@ export class TaskUserService {
     this._CompanyService = CompanyService;
   }
 
-
-
-
   async findAll(companyId: string) {
-    console.log('findAll task User', companyId)
+    //console.log('findAll task User', companyId)
     const res = await this.taskUsersRepository.find({
       where: {
         company: { id: companyId },
@@ -78,15 +75,15 @@ export class TaskUserService {
         taskType: true,
         user: true,
       },
-      order: { taskPriority: "DESC", updatedAt: "ASC" },
+      order: { taskPriority: 'DESC', updatedAt: 'ASC' },
     });
     const result = res.map((task) => {
       const { user, taskStatus, taskType, ...rest } = task;
       return {
         ...rest,
-        userName: user ? `${user.userName}` : "Unassigned",
-        taskType: taskType ? `${taskType.role}` : "Unassigned",
-        taskStatus: taskStatus ? `${taskStatus.status}` : "Unassigned",
+        userName: user ? `${user.userName}` : 'Unassigned',
+        taskType: taskType ? `${taskType.role}` : 'Unassigned',
+        taskStatus: taskStatus ? `${taskStatus.status}` : 'Unassigned',
       };
     });
     return result;
@@ -108,9 +105,9 @@ export class TaskUserService {
     return {
       ...rest,
       //...user,
-      userName: user ? `${user.userName}` : "Unassigned",
-      taskType: taskType ? `${taskType.role}` : "Unassigned",
-      taskStatus: taskStatus ? `${taskStatus.status}` : "Unassigned",
+      userName: user ? `${user.userName}` : 'Unassigned',
+      taskType: taskType ? `${taskType.role}` : 'Unassigned',
+      taskStatus: taskStatus ? `${taskStatus.status}` : 'Unassigned',
     };
   }
 

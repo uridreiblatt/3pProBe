@@ -1,15 +1,15 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
-import { CreateOrderBoxDto } from "./dto/create-order-box.dto";
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { CreateOrderBoxDto } from './dto/create-order-box.dto';
 //import { UpdateOrderBoxDto } from './dto/update-order-box.dto';
-import { OrderBoxes } from "./entities/order-box.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { OrderBoxes } from './entities/order-box.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 //import { Boxsize } from 'src/boxes/entities/box.entity';
 //import { Order } from 'src/order/entities/order.entity';
-import { UpdateOrderBoxDto } from "./dto/update-order-box.dto";
-import { Order } from "../order/entities/order.entity";
-import { Boxsize } from "src/maintenence/boxes/entities/box.entity";
-import { OrderBoxesItems } from "../order-box-items/entities/order-box-item.entity";
+import { UpdateOrderBoxDto } from './dto/update-order-box.dto';
+import { Order } from '../order/entities/order.entity';
+import { Boxsize } from 'src/maintenence/boxes/entities/box.entity';
+import { OrderBoxesItems } from '../order-box-items/entities/order-box-item.entity';
 
 @Injectable()
 export class OrderBoxesService {
@@ -17,12 +17,12 @@ export class OrderBoxesService {
     @InjectRepository(OrderBoxes)
     private OrderBoxesRepository: Repository<OrderBoxes>,
     @InjectRepository(OrderBoxesItems)
-    private OrderBoxesItemsRepository: Repository<OrderBoxesItems>
+    private OrderBoxesItemsRepository: Repository<OrderBoxesItems>,
   ) {}
   async create(createOrderBoxDto: CreateOrderBoxDto) {
     const itemsCount = createOrderBoxDto.orderBoxLines.reduce(
       (sum, obl) => sum + (obl.itemsCount ?? 0),
-      0
+      0,
     );
     const ordB = new OrderBoxes();
     //ordB.boxNo = createOrderBoxDto.boxNo;
@@ -50,7 +50,7 @@ export class OrderBoxesService {
         ins.orderId = createOrderBoxDto.orderId;
         //console.log(insLine);
         return this.OrderBoxesItemsRepository.save(ins);
-      })
+      }),
     );
 
     //throw BadRequestException
@@ -112,7 +112,7 @@ export class OrderBoxesService {
     const { boxId, companyId, orderBoxLines, ...rest } = updateOrderBoxDto;
     const itemsCount = updateOrderBoxDto.orderBoxLines.reduce(
       (sum, obl) => sum + (obl.itemsCount ?? 0),
-      0
+      0,
     );
 
     const data = {
@@ -132,13 +132,13 @@ export class OrderBoxesService {
         };
 
         if (lineId) {
-          console.log("upd", data);
+          //console.log("upd", data);
           return this.OrderBoxesItemsRepository.update(lineId, data);
         }
 
-        console.log("ins", data);
+        //console.log("ins", data);
         return this.OrderBoxesItemsRepository.save(data);
-      })
+      }),
     );
     return res;
     //throw BadRequestException
@@ -153,7 +153,7 @@ export class OrderBoxesService {
     await Promise.all(
       olbx.map(async (ol) => {
         return this.OrderBoxesItemsRepository.delete(ol.id);
-      })
+      }),
     );
     return await this.OrderBoxesRepository.delete(id);
   }

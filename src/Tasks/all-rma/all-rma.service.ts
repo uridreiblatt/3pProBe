@@ -1,19 +1,19 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { AllRma } from "./entities/all-rma.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Not, Repository } from "typeorm";
-import { TaskStatus } from "src/settings/task-status/entities/task-status.entity";
-import { Company } from "src/usersCompanies/company/entities/company.entity";
-import { User } from "src/usersCompanies/users/entities/user.entity";
-import { HttpService } from "@nestjs/axios";
-import { ConfigService } from "@nestjs/config";
-import { lastValueFrom, map, catchError } from "rxjs";
-import { DbLogService } from "src/db-log/db-log.service";
-import { CompanyService } from "src/usersCompanies/company/company.service";
-import { RootRmaPriority } from "./dto/create-all-rma.dto";
-import { Cron, CronExpression } from "@nestjs/schedule";
-import { TaskRma } from "../task-rma/entities/task-rma.entity";
-import { title } from "process";
+import { Injectable, Logger } from '@nestjs/common';
+import { AllRma } from './entities/all-rma.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Not, Repository } from 'typeorm';
+import { TaskStatus } from 'src/settings/task-status/entities/task-status.entity';
+import { Company } from 'src/usersCompanies/company/entities/company.entity';
+import { User } from 'src/usersCompanies/users/entities/user.entity';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
+import { lastValueFrom, map, catchError } from 'rxjs';
+import { DbLogService } from 'src/db-log/db-log.service';
+import { CompanyService } from 'src/usersCompanies/company/company.service';
+import { RootRmaPriority } from './dto/create-all-rma.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { TaskRma } from '../task-rma/entities/task-rma.entity';
+import { title } from 'process';
 
 @Injectable()
 export class AllRmaService {
@@ -29,14 +29,13 @@ export class AllRmaService {
     private httpService: HttpService,
     private configService: ConfigService,
     private DbLogService: DbLogService,
-    private CompanyService: CompanyService
+    private CompanyService: CompanyService,
   ) {
     this._DbLogService = DbLogService;
     this._CompanyService = CompanyService;
   }
 
   private isRunning = false;
-
 
   @Cron(CronExpression.EVERY_10_MINUTES)
   async handleCron() {
@@ -46,7 +45,7 @@ export class AllRmaService {
     }
 
     this.isRunning = true;
-    this.logger.log("cron Called getAllNewRmaFromPriority EVERY_MINUTE");
+    this.logger.log('cron Called getAllNewRmaFromPriority EVERY_MINUTE');
 
     try {
       const allCompanies = await this._CompanyService.findAll();
@@ -61,51 +60,41 @@ export class AllRmaService {
 
           this.logger.log(`Finished company ${company.name}`);
         } catch (err) {
-          this.logger.error(
-            `Error processing company ${company.name}`,
-            err
-          );
+          this.logger.error(`Error processing company ${company.name}`, err);
           // continues to next company
         }
       }
-
     } catch (error) {
-      this.logger.error("Error in handleCron rma", error);
+      this.logger.error('Error in handleCron rma', error);
     } finally {
       this.isRunning = false;
     }
   }
 
-
   async getAllNewRmaFromPriority(companyId: string): Promise<any> {
     const company = await this._CompanyService.findOne(companyId);
     if (company.companySetting) await this.syncAllNewRmaFromPriority(company);
-
-
   }
   async syncAllNewRmaFromPriority(resCompantSettings: Company): Promise<any> {
     if (this.isLocked) {
-      return "is locked";
+      return 'is locked';
     }
     try {
-
-
       this.isLocked = true;
-       const urlEndPointPriority = `/DOCUMENTS_m?$filter=STATDES eq '${resCompantSettings.companySetting.priorityRmaStatus}' &$top=20&$expand=INTERNALDIALOGTEXT_SUBFORM`;
+      const urlEndPointPriority = `/DOCUMENTS_m?$filter=STATDES eq '${resCompantSettings.companySetting.priorityRmaStatus}' &$top=20&$expand=INTERNALDIALOGTEXT_SUBFORM`;
 
-   
       const url =
         //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
         resCompantSettings.companySetting.priorityApiUrl +
         resCompantSettings.companySetting.priorityApiCompany +
-        urlEndPointPriority;  
+        urlEndPointPriority;
 
       const credentials = btoa(
         resCompantSettings.companySetting.priorityApiUser +
-        ":" +
-        resCompantSettings.companySetting.priorityApiPassword
+          ':' +
+          resCompantSettings.companySetting.priorityApiPassword,
       );
-      const basicAuth = "Basic " + credentials;
+      const basicAuth = 'Basic ' + credentials;
       const data = await lastValueFrom(
         this.httpService
           .get(url, {
@@ -118,21 +107,21 @@ export class AllRmaService {
             catchError((error) => {
               this.isLocked = false;
               console.log(
-                `An error happened. Msg: ${JSON.stringify(error.request)}`
+                `An error happened. Msg: ${JSON.stringify(error.request)}`,
               );
               throw `An error happened. Msg: ${JSON.stringify(error.request)}`;
-            })
-          )
+            }),
+          ),
       );
-      
+
       const RmaInfo: RootRmaPriority = data;
-      
+
       this._DbLogService.create({
-        subject: "priority rmas",
-        message: "start import rmas " + RmaInfo.value.length.toString(),
-        level: "",
-        context: "",
-        metadata: "",
+        subject: 'priority rmas',
+        message: 'start import rmas ' + RmaInfo.value.length.toString(),
+        level: '',
+        context: '',
+        metadata: '',
         companyId: resCompantSettings.id,
       });
       let LinesInserted = 0;
@@ -140,39 +129,39 @@ export class AllRmaService {
       RmaInfo.value.forEach(async (element) => {
         if (element !== null) {
           const rma: AllRma = new AllRma();
-          rma.CUSTNAME = element.CUSTNAME || "";
+          rma.CUSTNAME = element.CUSTNAME || '';
           rma.CUSTDES = element.CUSTDES;
           rma.CURDATE = element.CURDATE;
           rma.DOCNO = element.DOCNO;
           rma.STATDES = element.STATDES;
-          rma.DETAILS = element.DETAILS || "";
-          rma.FBCM_RETREASONCODE = element.FBCM_RETREASONCODE || "";
-          rma.FBCM_RETREASONDES = element.FBCM_RETREASONDES || "";
+          rma.DETAILS = element.DETAILS || '';
+          rma.FBCM_RETREASONCODE = element.FBCM_RETREASONCODE || '';
+          rma.FBCM_RETREASONDES = element.FBCM_RETREASONDES || '';
           rma.taskPriority = 10;
           rma.user = new User();
-          rma.user.id = "aaa-bbb-ccc"; // unAssigned
+          rma.user.id = 'aaa-bbb-ccc'; // unAssigned
           rma.taskStatus = new TaskStatus();
-          let tmpText = "";
+          let tmpText = '';
           try {
-            tmpText = element.INTERNALDIALOGTEXT_SUBFORM?.TEXT|| '';            
+            tmpText = element.INTERNALDIALOGTEXT_SUBFORM?.TEXT || '';
             if (tmpText) {
-              const ind = tmpText.lastIndexOf("</style>");
+              const ind = tmpText.lastIndexOf('</style>');
               if (ind !== -1) {
                 tmpText = tmpText.substring(ind + 8);
               }
 
               tmpText = tmpText
-                .replace(/<[^>]*>/g, "")
-                .replace(/&nbsp;/g, " ")
-                .replace(/\s+/g, " ")
+                .replace(/<[^>]*>/g, '')
+                .replace(/&nbsp;/g, ' ')
+                .replace(/\s+/g, ' ')
                 .trim();
-            }           
+            }
           } catch (error) {
-            console.log(error);           
-          }       
-          rma.Title = tmpText || "";
-          rma.trackingNumber = "";
-          rma.remarks = "";
+            console.log(error);
+          }
+          rma.Title = tmpText || '';
+          rma.trackingNumber = '';
+          rma.remarks = '';
           rma.taskStatus.id = 1;
           rma.company = new Company();
           rma.company.id = resCompantSettings.id;
@@ -187,23 +176,23 @@ export class AllRmaService {
         }
       });
       this._DbLogService.create({
-        subject: "priority rmas",
-        message: "end import rma inserted lines: " + LinesInserted.toString(),
-        level: "",
-        context: "",
-        metadata: "",
+        subject: 'priority rmas',
+        message: 'end import rma inserted lines: ' + LinesInserted.toString(),
+        level: '',
+        context: '',
+        metadata: '',
         companyId: resCompantSettings.id,
       });
       this.isLocked = false;
     } catch (error: any) {
       this.isLocked = false;
-      console.log(error.message ??  '')
+      console.log(error.message ?? '');
       this._DbLogService.create({
-        subject: "priority rmas error",
+        subject: 'priority rmas error',
         message: error.message ?? '',
-        level: "",
-        context: "",
-        metadata: "",
+        level: '',
+        context: '',
+        metadata: '',
         companyId: resCompantSettings.id,
       });
     }
@@ -222,7 +211,7 @@ export class AllRmaService {
   }
 
   async findAll(companyId: string) {
-    console.log('findAll Rma', companyId)
+    //console.log('findAll Rma', companyId)
     const res = await this.allRmaRepository.find({
       where: {
         company: { id: companyId },
@@ -246,7 +235,7 @@ export class AllRmaService {
         FBCM_RETREASONDES: rma.FBCM_RETREASONDES,
         taskPriority: rma.taskPriority,
         status: rma.taskStatus.status,
-        userName: rma.user?.userName || "UnAssigned",
+        userName: rma.user?.userName || 'UnAssigned',
       };
     });
     return resAll;
@@ -312,7 +301,7 @@ export class AllRmaService {
 
   async remove(id: string) {
     await this.TaskRmaRepository.delete({
-      allRma: { id: id }
+      allRma: { id: id },
     });
     return await this.allRmaRepository.delete(id);
   }

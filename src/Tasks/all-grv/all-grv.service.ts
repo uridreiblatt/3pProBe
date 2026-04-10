@@ -14,8 +14,14 @@ import { CompanyService } from 'src/usersCompanies/company/company.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { catchError, lastValueFrom, map } from 'rxjs';
 import { User } from 'src/usersCompanies/users/entities/user.entity';
-import { TaskType, TaskTypesEnum } from 'src/settings/task-type/entities/task-type.entity';
-import { TaskStatus, TaskStatusEnum } from 'src/settings/task-status/entities/task-status.entity';
+import {
+  TaskType,
+  TaskTypesEnum,
+} from 'src/settings/task-type/entities/task-type.entity';
+import {
+  TaskStatus,
+  TaskStatusEnum,
+} from 'src/settings/task-status/entities/task-status.entity';
 import { Company } from 'src/usersCompanies/company/entities/company.entity';
 import { EOrderUser, OrderStatusEnum } from 'src/orders/order/enums/enum';
 
@@ -34,15 +40,13 @@ export class AllGrvService {
     private DbLogService: DbLogService,
     private configService: ConfigService,
     private httpService: HttpService,
-    private CompanyService: CompanyService
+    private CompanyService: CompanyService,
   ) {
-
     this._DbLogService = DbLogService;
     this._CompanyService = CompanyService;
   }
 
   private isRunning = false;
-
 
   @Cron(CronExpression.EVERY_10_MINUTES)
   async handleCron() {
@@ -52,7 +56,7 @@ export class AllGrvService {
     }
 
     this.isRunning = true;
-    this.logger.log("cron Called SyncAllNewPoFromPriority EVERY_MINUTE");
+    this.logger.log('cron Called SyncAllNewPoFromPriority EVERY_MINUTE');
 
     try {
       const allCompanies = await this._CompanyService.findAll();
@@ -67,37 +71,24 @@ export class AllGrvService {
 
           this.logger.log(`Finished company ${company.name}`);
         } catch (err) {
-          this.logger.error(
-            `Error processing company ${company.name}`,
-            err
-          );
+          this.logger.error(`Error processing company ${company.name}`, err);
           // continues to next company
         }
       }
-
     } catch (error) {
-      this.logger.error("Error in handleCron rma", error);
+      this.logger.error('Error in handleCron rma', error);
     } finally {
       this.isRunning = false;
     }
   }
 
-
-
-
-
-
-
-
-
   async getAllNewPoFromPriority(companyId: string): Promise<any> {
-
     return await this.SyncAllNewPoFromPriority(companyId);
   }
 
   async SyncAllNewPoFromPriority(companyId: string): Promise<any> {
     if (this.isLocked) {
-      return "is locked";
+      return 'is locked';
     }
 
     try {
@@ -118,11 +109,11 @@ export class AllGrvService {
       //const credentials = btoa(this.username + ":" + this.pwd);
       const credentials = btoa(
         resCompantSettings.companySetting.priorityApiUser +
-        ":" +
-        resCompantSettings.companySetting.priorityApiPassword
+          ':' +
+          resCompantSettings.companySetting.priorityApiPassword,
       );
-      const basicAuth = "Basic " + credentials;
-      console.log(url)
+      const basicAuth = 'Basic ' + credentials;
+      //console.log(url)
 
       const data = await lastValueFrom(
         this.httpService
@@ -136,19 +127,19 @@ export class AllGrvService {
             catchError((error) => {
               this.isLocked = false;
               console.log(
-                `An error happened. Msg: ${JSON.stringify(error.request)}`
+                `An error happened. Msg: ${JSON.stringify(error.request)}`,
               );
               throw `An error happened. Msg: ${JSON.stringify(error.request)}`;
-            })
-          )
+            }),
+          ),
       );
       const GrvInfo: RootPoPriority = data;
       this._DbLogService.create({
-        subject: "priority Po",
-        message: "start import Po: " + GrvInfo.value.length.toString(),
-        level: "",
-        context: "",
-        metadata: "",
+        subject: 'priority Po',
+        message: 'start import Po: ' + GrvInfo.value.length.toString(),
+        level: '',
+        context: '',
+        metadata: '',
         companyId: companyId,
       });
       let LinesInserted = 0;
@@ -161,7 +152,7 @@ export class AllGrvService {
           allGrv.DataInfo = element.CDES;
           allGrv.Supplier = element.SUPNAME;
           allGrv.taskInfo = element.DETAILS;
-          allGrv.PartNumber = "";
+          allGrv.PartNumber = '';
           allGrv.user = new User();
           allGrv.user.id = EOrderUser.unAssigned;
           allGrv.taskType = new TaskType();
@@ -199,27 +190,26 @@ export class AllGrvService {
         }
       });
       this._DbLogService.create({
-        subject: "priority Po",
-        message: "end import Po inserted lines: " + LinesInserted.toString(),
-        level: "Info",
-        context: "",
-        metadata: "",
+        subject: 'priority Po',
+        message: 'end import Po inserted lines: ' + LinesInserted.toString(),
+        level: 'Info',
+        context: '',
+        metadata: '',
         companyId: companyId,
       });
       this.isLocked = false;
-    } catch (error) {
+    } catch (error: any) {
       this.isLocked = false;
       this._DbLogService.create({
-        subject: "priority Po",
+        subject: 'priority Po',
         message: error.message,
-        level: "error",
-        context: "getAllNewPoFromPriority",
-        metadata: "",
+        level: 'error',
+        context: 'getAllNewPoFromPriority',
+        metadata: '',
         companyId: companyId,
       });
     }
   }
-
 
   // create(createAllGrvDto: CreateAllGrvDto) {
   //   return 'This action adds a new allGrv';
@@ -236,7 +226,7 @@ export class AllGrvService {
         taskType: true,
         user: true,
       },
-      order: { taskPriority: "DESC", CURDATE: "ASC" },
+      order: { taskPriority: 'DESC', CURDATE: 'ASC' },
     });
     const result = res.map((task) => {
       const { user, taskStatus, taskType, ...rest } = task;
@@ -247,9 +237,9 @@ export class AllGrvService {
         PO: rest.PO,
         taskPriority: rest.taskPriority,
         taskInfo: rest.taskInfo,
-        userName: user ? `${user.userName}` : "Unassigned",
-        taskType: taskType ? `${taskType.role}` : "Good received",
-        taskStatus: taskStatus ? `${taskStatus.status}` : "New",
+        userName: user ? `${user.userName}` : 'Unassigned',
+        taskType: taskType ? `${taskType.role}` : 'Good received',
+        taskStatus: taskStatus ? `${taskStatus.status}` : 'New',
       };
     });
     return result;
@@ -271,22 +261,25 @@ export class AllGrvService {
     return {
       ...rest,
       //...user,
-      userName: user ? `${user.userName}` : "Unassigned",
-      taskType: taskType ? `${taskType.role}` : "Unassigned",
-      taskStatus: taskStatus ? `${taskStatus.status}` : "Unassigned",
+      userName: user ? `${user.userName}` : 'Unassigned',
+      taskType: taskType ? `${taskType.role}` : 'Unassigned',
+      taskStatus: taskStatus ? `${taskStatus.status}` : 'Unassigned',
     };
   }
 
   async update(id: string, updateAllGrvDto: UpdateAllGrvDto) {
-    const { companyId, userId, taskStatusId, taskGrv, ...rest } = updateAllGrvDto;
+    const { companyId, userId, taskStatusId, taskGrv, ...rest } =
+      updateAllGrvDto;
     const data = {
       ...rest,
       ...(taskStatusId && { taskStatus: { id: taskStatusId } }),
       ...(userId && { user: { id: userId } }),
     };
     taskGrv.forEach(async (tskGrv) => {
-      const resTask = await this.taskGrvRepository.update(tskGrv.id, { Total: tskGrv.Total })
-    })
+      const resTask = await this.taskGrvRepository.update(tskGrv.id, {
+        Total: tskGrv.Total,
+      });
+    });
 
     const res = await this.AllGrvRepository.update(id, data);
     return res;
@@ -294,9 +287,8 @@ export class AllGrvService {
 
   async remove(id: string) {
     await this.taskGrvRepository.delete({
-      allGrv: { id: id }
-    }
-    );
+      allGrv: { id: id },
+    });
     return await this.AllGrvRepository.delete(id);
   }
 }

@@ -8,49 +8,53 @@ import {
   Request,
   HttpException,
   HttpStatus,
-} from "@nestjs/common";
-import { Response } from "express";
-import { AuthService } from "./auth.service";
+} from '@nestjs/common';
+import { Response } from 'express';
+import { AuthService } from './auth.service';
 import {
   CreateAuthDto,
   CreateAuthSwitchCompanyDto,
   JwtDetails,
   role,
   SwitchCompanyDto,
-} from "./dto/create-auth.dto";
-import { ApiTags } from "@nestjs/swagger";
-import { AuthGuard } from "./auth.guard";
-import { SkipCookieMatch } from "src/auth/entities/skip-cookie-match.decorator";
+} from './dto/create-auth.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from './auth.guard';
+import { SkipCookieMatch } from 'src/auth/entities/skip-cookie-match.decorator';
 
-@ApiTags("auth")
-@Controller("auth")
+@ApiTags('auth')
+@Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
   @SkipCookieMatch()
-  @Post("login")
+  @Post('login')
   async signIn(
     @Body() signInDto: CreateAuthDto,
-    @Res({ passthrough: true }) response: Response
+    @Res({ passthrough: true }) response: Response,
   ) {
     const resUserAll = await this.authService.signIn(signInDto);
     const resUser = resUserAll.user;
     if (resUser === undefined || resUser === null) {
-      throw new HttpException("Forbidden", HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);
     }
-    resUser.userPasswordEnc = "";
+    resUser.userPasswordEnc = '';
     const jwtDetails = new JwtDetails();
     jwtDetails.userName = resUser.userName;
-    const maxValueOfY = Math.min(
-      ...resUser.usersRoles.map((o) => o.role["id"])
+    const maxValueOfY = Math.max(
+      ...resUser.usersRoles.map((o) => o.role['id']),
+    );
+    const minValueOfY = Math.min(
+      ...resUser.usersRoles.map((o) => o.role['id']),
     );
 
-    console.log(resUser.usersRoles, maxValueOfY)
+    console.log(resUser.usersRoles, maxValueOfY);
     //const user =
     jwtDetails.userEmail = resUser.userMail;
-    jwtDetails.userRole = maxValueOfY.toString();
+    if (maxValueOfY > 5) jwtDetails.userRole = maxValueOfY.toString();
+    else jwtDetails.userRole = minValueOfY.toString();
     jwtDetails.uuid = resUser.id;
     jwtDetails.userComapny =
-      resUser.selectedCompany === "0"
+      resUser.selectedCompany === '0'
         ? resUser.userCompany[0].company.id
         : resUser.selectedCompany;
 
@@ -71,19 +75,19 @@ export class AuthController {
       jwtDetails.users = resUserAll.users.map((u) => {
         return { id: u.id, userName: u.userName };
       });
-      jwtDetails.roles = resUser.usersRoles
-        .filter((o) => jwtDetails.qcRequired || o.role.role !== "QC")
-        .sort((a, b) => a.role.id - b.role.id)
-        .map((o) => ({
-          id: o.role.id,
-          name: o.role.role,
-        }));
+    jwtDetails.roles = resUser.usersRoles
+      .filter((o) => jwtDetails.qcRequired || o.role.role !== 'QC')
+      .sort((a, b) => a.role.id - b.role.id)
+      .map((o) => ({
+        id: o.role.id,
+        name: o.role.role,
+      }));
 
     const jwtToken = await this.authService.signAsyncCookie(jwtDetails);
-    response.cookie("access_token", jwtToken.access_token, {
+    response.cookie('access_token', jwtToken.access_token, {
       httpOnly: true,
       secure: false,
-      sameSite: "lax",
+      sameSite: 'lax',
       maxAge: 25200000,
     });
     const resLogin = {
@@ -101,7 +105,11 @@ export class AuthController {
       boxItemsCount:
         resUser.userCompany[0]?.company.companySetting.boxItemsCount,
       userRoles: resUser.usersRoles
-        .filter((o) => resUser.userCompany[0]?.company.companySetting.qcRequired || o.role.role !== "QC")
+        .filter(
+          (o) =>
+            resUser.userCompany[0]?.company.companySetting.qcRequired ||
+            o.role.role !== 'QC',
+        )
         .sort((a, b) => a.role.id - b.role.id)
         .map((o) => ({
           id: o.role.id,
@@ -131,44 +139,44 @@ export class AuthController {
     return req.user;
   }
   @UseGuards(AuthGuard)
-  @Post("SwitchCompany")
+  @Post('SwitchCompany')
   async SwitchCompany(
     @Request() req,
     @Body() switchCompanyDto: SwitchCompanyDto,
-    @Res({ passthrough: true }) response: Response
+    @Res({ passthrough: true }) response: Response,
   ) {
     const createAuthSwitchCompanyDto: CreateAuthSwitchCompanyDto = {
       companyId: switchCompanyDto.companyId,
       UserUuid: req.user.userUuid,
     };
     const resUser = await this.authService.SwitchCompany(
-      createAuthSwitchCompanyDto
+      createAuthSwitchCompanyDto,
     );
     if (resUser === undefined || resUser === null) {
-      throw new HttpException("Forbidden", HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);
     }
     const companyExists = resUser.userCompany.find((cpm) => {
       if (cpm.id.toString() === switchCompanyDto.companyId) return true;
     });
     if (companyExists === undefined)
-      throw new HttpException("Forbidden", HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);
 
-    resUser.userPasswordEnc = "";
+    resUser.userPasswordEnc = '';
     const jwtDetails = new JwtDetails();
     jwtDetails.userName = resUser.userName;
     const maxValueOfY = Math.max(
-      ...resUser.usersRoles.map((o) => o.role["id"]),
-      0
+      ...resUser.usersRoles.map((o) => o.role['id']),
+      0,
     );
     jwtDetails.userRole = maxValueOfY.toString();
     jwtDetails.uuid = resUser.userUuid;
 
     jwtDetails.userComapny = switchCompanyDto.companyId;
     const jwtToken = await this.authService.signAsyncCookie(jwtDetails);
-    response.cookie("access_token", jwtToken.access_token, {
+    response.cookie('access_token', jwtToken.access_token, {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: 'none',
       maxAge: 25200000,
     });
     const resLogin = {

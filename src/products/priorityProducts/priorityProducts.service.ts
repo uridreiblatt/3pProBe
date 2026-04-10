@@ -1,15 +1,15 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { PriorityProducts } from "./entities/priorityProducts.entity";
-import { In, Not, Repository } from "typeorm";
-import { InjectRepository } from "@nestjs/typeorm";
-import { ConfigService } from "@nestjs/config";
-import { catchError, lastValueFrom, map } from "rxjs";
-import { HttpService } from "@nestjs/axios";
-import { Company } from "src/usersCompanies/company/entities/company.entity";
-import { PriorityProductsHierarchy } from "../priorityProductsHierarchy/entities/priority-products-hierarchy.entity";
-import { CompanyService } from "src/usersCompanies/company/company.service";
-import { Cron, CronExpression } from "@nestjs/schedule";
-import { ProductStatusService } from "../product-status/product-status.service";
+import { Injectable, Logger } from '@nestjs/common';
+import { PriorityProducts } from './entities/priorityProducts.entity';
+import { In, Not, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
+import { catchError, lastValueFrom, map } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { Company } from 'src/usersCompanies/company/entities/company.entity';
+import { PriorityProductsHierarchy } from '../priorityProductsHierarchy/entities/priority-products-hierarchy.entity';
+import { CompanyService } from 'src/usersCompanies/company/company.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { ProductStatusService } from '../product-status/product-status.service';
 
 @Injectable()
 export class priorityProductsService {
@@ -29,11 +29,11 @@ export class priorityProductsService {
     private CompanyService: CompanyService,
     private configService: ConfigService,
     private httpService: HttpService,
-    private productStatusService: ProductStatusService
+    private productStatusService: ProductStatusService,
   ) {
-    this.username = this.configService.get<string>("PRIORITY_USER");
-    this.pwd = this.configService.get<string>("PRIORITY_PWD");
-    this.comapny = this.configService.get<string>("COMPANY") || "";
+    this.username = this.configService.get<string>('PRIORITY_USER');
+    this.pwd = this.configService.get<string>('PRIORITY_PWD');
+    this.comapny = this.configService.get<string>('COMPANY') || '';
     this._CompanyService = CompanyService;
     this._ProductStatusService = productStatusService;
   }
@@ -47,7 +47,7 @@ export class priorityProductsService {
     }
 
     this.isRunning = true;
-    this.logger.log("cron Called getAllNewRmaFromPriority EVERY_MINUTE");
+    this.logger.log('cron Called getAllNewRmaFromPriority EVERY_MINUTE');
 
     try {
       const allCompanies = await this._CompanyService.findAll();
@@ -63,21 +63,16 @@ export class priorityProductsService {
 
           this.logger.log(`Finished company ${company.name}`);
         } catch (err) {
-          this.logger.error(
-            `Error processing company ${company.name}`,
-            err
-          );
+          this.logger.error(`Error processing company ${company.name}`, err);
           // continues to next company
         }
       }
-
     } catch (error) {
-      this.logger.error("Error in handleCron rma", error);
+      this.logger.error('Error in handleCron rma', error);
     } finally {
       this.isRunning = false;
     }
   }
-
 
   // @Cron(CronExpression.EVERY_WEEKEND)
   // async handleCronWeekly() {
@@ -93,7 +88,7 @@ export class priorityProductsService {
   }
   async SyncPriorityParts(companyId: string, fullSync: boolean): Promise<any> {
     if (this.isLocked) {
-      return "is locked";
+      return 'is locked';
     }
 
     this.isLocked = true;
@@ -106,8 +101,8 @@ export class priorityProductsService {
         resCompantSettings.companySetting.priorityApiCompany;
 
       const select =
-        "$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES,PART";
-      const expand = "$expand=PARTARC_SUBFORM($select=SONNAME,TYPE,SON)";
+        '$select=PARTNAME,BARCODE,PARTDES,TYPE,FAMILYNAME,STATDES,PART';
+      const expand = '$expand=PARTARC_SUBFORM($select=SONNAME,TYPE,SON)';
 
       const now = new Date();
       const startOfDayUTC = new Date(
@@ -117,11 +112,11 @@ export class priorityProductsService {
           now.getUTCDate() - 7,
           0,
           0,
-          0
-        )
+          0,
+        ),
       );
 
-      const isoDate = startOfDayUTC.toISOString().split(".")[0] + "Z";
+      const isoDate = startOfDayUTC.toISOString().split('.')[0] + 'Z';
       const filter = `UDATE gt ${isoDate}`;
 
       const path = fullSync
@@ -129,10 +124,10 @@ export class priorityProductsService {
         : `/LOGPART?$filter=${encodeURIComponent(filter)}&${select}&${expand}`;
 
       const urlEndPointPriority = base + path;
-      console.log("part url", urlEndPointPriority);
+      //console.log("part url", urlEndPointPriority);
 
-      const credentials = btoa(this.username + ":" + this.pwd);
-      const basicAuth = "Basic " + credentials;
+      const credentials = btoa(this.username + ':' + this.pwd);
+      const basicAuth = 'Basic ' + credentials;
 
       const data = await lastValueFrom(
         this.httpService
@@ -145,25 +140,25 @@ export class priorityProductsService {
           .pipe(
             catchError((error) => {
               throw new Error(
-                `An error happened. Msg: ${JSON.stringify(error.request)}`
+                `An error happened. Msg: ${JSON.stringify(error.request)}`,
               );
-            })
-          )
+            }),
+          ),
       );
 
       const orderInfo: any = data;
 
-      console.log(
-        "priority parts ",
-        "start import parts " + orderInfo.value.length.toString()
-      );
+      //console.log(
+      //  "priority parts ",
+      //  "start import parts " + orderInfo.value.length.toString()
+      //);
 
       for (const element of orderInfo.value) {
         try {
           await this.PartRepository.upsert(
             {
               PARTNAME: element.PARTNAME,
-              BARCODE: element.BARCODE || "",
+              BARCODE: element.BARCODE || '',
               PARTDES: element.PARTDES,
               STATDES: element.STATDES,
               PART: element.PART,
@@ -171,9 +166,9 @@ export class priorityProductsService {
               company: { id: companyId },
             },
             {
-              conflictPaths: ["PART", "company"],
+              conflictPaths: ['PART', 'company'],
               skipUpdateIfNoValuesChanged: true,
-            }
+            },
           );
 
           if (Array.isArray(element.PARTARC_SUBFORM)) {
@@ -185,14 +180,14 @@ export class priorityProductsService {
                   companyId: companyId,
                 },
                 {
-                  conflictPaths: ["PART", "SON", "companyId"],
+                  conflictPaths: ['PART', 'SON', 'companyId'],
                   skipUpdateIfNoValuesChanged: true,
-                }
+                },
               );
             }
           }
         } catch (error) {
-          console.log("Failed importing part", element.PART, error);
+          console.log('Failed importing part', element.PART, error);
         }
       }
 
@@ -206,7 +201,7 @@ export class priorityProductsService {
     const sql = `SELECT productstatus FROM p3pro.product_status where companyId ='${companyId}' and is_active = 0`;
     const newProductStatus = await this.PartRepository.query(sql);
     const newProductStatusArray: string[] = newProductStatus.map(
-      (row: any) => row.productstatus
+      (row: any) => row.productstatus,
     );
     console.log(newProductStatusArray);
     const res = await this.PartRepository.find({
@@ -221,7 +216,7 @@ export class priorityProductsService {
         PriorityProductsLocation: { zone: true },
       },
 
-      order: { PART: "ASC" },
+      order: { PART: 'ASC' },
     });
     return res;
   }
@@ -268,10 +263,8 @@ export class priorityProductsService {
 
     const res = await this.PartRepository.query(sqlQuery, [id, companyId]);
     if (res.length === 0) {
-      return []
+      return [];
     }
     return res;
   }
-
-
 }

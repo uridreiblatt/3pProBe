@@ -3,30 +3,30 @@ import {
   forwardRef,
   Inject,
   Injectable,
-} from "@nestjs/common";
+} from '@nestjs/common';
 //import { CreateOrderDto } from './dto/create-order.dto';
 //import { UpdateOrderDto } from './dto/update-order.dto';
-import { Order } from "./entities/order.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Not, Repository } from "typeorm";
-import { TaskStatus } from "src/settings/task-status/entities/task-status.entity";
-import { User } from "src/usersCompanies/users/entities/user.entity";
-import { Role } from "src/usersCompanies/role/entities/role.entity";
-import { CreateOrderDto } from "./dto/create-order.dto";
-import { UpdateOrderDto } from "./dto/update-order.dto";
-import { OrderLinesService } from "src/orders/order-lines/order-lines.service";
-import { OrderBoxesService } from "src/orders/order-boxes/order-boxes.service";
-import { OrderBasketService } from "src/orders/order-basket/order-basket.service";
-import { TaskUserService } from "src/Tasks/task-user/task-user.service";
-import { CreateDeliverySettingDto } from "src/shipments/delivery-setting/dto/create-delivery-setting.dto";
-import { Company } from "src/usersCompanies/company/entities/company.entity";
-import { role } from "src/auth/dto/create-auth.dto";
-import { EOrderUser, OrderStatusEnum } from "./enums/enum";
-import { rolesEnum } from "src/auth/entities/role.enum";
-import { CompanyService } from "src/usersCompanies/company/company.service";
-import { OrderBoxesItems } from "../order-box-items/entities/order-box-item.entity";
-import { OrderBoxItemsService } from "../order-box-items/order-box-items.service";
-import { PartCqaunt } from "src/settings/part-cqaunt/entities/part-cqaunt.entity";
+import { Order } from './entities/order.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Not, Repository } from 'typeorm';
+import { TaskStatus } from 'src/settings/task-status/entities/task-status.entity';
+import { User } from 'src/usersCompanies/users/entities/user.entity';
+import { Role } from 'src/usersCompanies/role/entities/role.entity';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrderLinesService } from 'src/orders/order-lines/order-lines.service';
+import { OrderBoxesService } from 'src/orders/order-boxes/order-boxes.service';
+import { OrderBasketService } from 'src/orders/order-basket/order-basket.service';
+import { TaskUserService } from 'src/Tasks/task-user/task-user.service';
+import { CreateDeliverySettingDto } from 'src/shipments/delivery-setting/dto/create-delivery-setting.dto';
+import { Company } from 'src/usersCompanies/company/entities/company.entity';
+import { role } from 'src/auth/dto/create-auth.dto';
+import { EOrderUser, OrderStatusEnum } from './enums/enum';
+import { rolesEnum } from 'src/auth/entities/role.enum';
+import { CompanyService } from 'src/usersCompanies/company/company.service';
+import { OrderBoxesItems } from '../order-box-items/entities/order-box-item.entity';
+import { OrderBoxItemsService } from '../order-box-items/order-box-items.service';
+import { PartCqaunt } from 'src/settings/part-cqaunt/entities/part-cqaunt.entity';
 
 @Injectable()
 export class OrderService {
@@ -43,9 +43,6 @@ export class OrderService {
     @InjectRepository(PartCqaunt)
     private partCqauntRepository: Repository<PartCqaunt>,
 
-
-
-
     @InjectRepository(OrderBoxesItems)
     private orderBoxesItemsRepository: Repository<OrderBoxesItems>,
 
@@ -55,9 +52,7 @@ export class OrderService {
     @Inject(forwardRef(() => TaskUserService))
     private taskUserService: TaskUserService,
     private companyService: CompanyService,
-    private orderBoxItemsService: OrderBoxItemsService
-
-
+    private orderBoxItemsService: OrderBoxItemsService,
   ) {
     this._orderLinesService = orderLinesService;
     this._orderBoxesService = orderBoxesService;
@@ -101,7 +96,7 @@ export class OrderService {
     orderFromDto.NAME = createOrderDto.NAME;
     orderFromDto.CUSTDES = createOrderDto.CUSTDES;
     orderFromDto.PHONENUM = createOrderDto.PHONENUM;
-    orderFromDto.shipRushStatus = "new";
+    orderFromDto.shipRushStatus = 'new';
     orderFromDto.orderRemarks = createOrderDto.orderRemarks;
     orderFromDto.priorityOrder = 100;
     const role = new Role();
@@ -121,7 +116,7 @@ export class OrderService {
 
   async findAllComplete(): Promise<any> {
     const queryViewFields =
-      "SELECT * FROM v_orders_complete v order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) ";
+      'SELECT * FROM v_orders_complete v order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) ';
     return await this.orderRepository.query(queryViewFields);
   }
 
@@ -141,13 +136,13 @@ export class OrderService {
         role: true,
         orderBasket: true,
       },
-      order: { priorityOrder: "ASC", shipmentOrder: "DESC", CURDATE: "ASC" },
+      order: { priorityOrder: 'ASC', shipmentOrder: 'DESC', CURDATE: 'ASC' },
     });
     const partCount = await this.partCqauntRepository.find({
       where: { company: { id: companyId } },
       select: { partName: true },
     });
-    
+
     const resAll = await Promise.all(
       res.map(async (ord) => {
         //   const result = await this.orderRepository.query(
@@ -173,10 +168,14 @@ export class OrderService {
           STDES: ord.STDES,
           status: ord.taskStatus.status,
           //orderLines: ord.orderLines,
-          orderLines: ord.orderLines.filter((e) => {
-      const exists = partCount.find((pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase());
-      return !exists;
-    }).map((b) => ({ TBALANCE: b.TBALANCE })),
+          orderLines: ord.orderLines
+            .filter((e) => {
+              const exists = partCount.find(
+                (pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase(),
+              );
+              return !exists;
+            })
+            .map((b) => ({ TBALANCE: b.TBALANCE })),
 
           //orderLines: ord.orderLines.map((b) => ({ TBALANCE: b.TBALANCE })),
           role: ord.role.roleDisplayName,
@@ -186,7 +185,7 @@ export class OrderService {
           },
           orderBasket: ord.orderBasket.map((b) => ({ basketId: b.basketId })),
         };
-      })
+      }),
     );
     return resAll;
     //
@@ -208,7 +207,7 @@ export class OrderService {
   async FindP3UncompelteShipDocument(): Promise<Order[]> {
     return await this.orderRepository.find({
       where: {
-        shipRushStatus: "Pending",
+        shipRushStatus: 'Pending',
       },
     });
   }
@@ -252,7 +251,9 @@ export class OrderService {
     });
 
     const filteredOrderLines = res.orderLines.filter((e) => {
-      const exists = partCount.find((pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase());
+      const exists = partCount.find(
+        (pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase(),
+      );
       return !exists;
     });
 
@@ -305,18 +306,19 @@ export class OrderService {
     });
 
     const filteredOrderLines = res.orderLines.filter((e) => {
-      const exists = partCount.find((pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase());
+      const exists = partCount.find(
+        (pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase(),
+      );
       return !exists;
     });
 
     res.orderLines = filteredOrderLines;
     return res;
-
   }
 
   async getOrderByBasket(basket: string, roleId: number) {
     return await this.orderRepository.findOne({
-      select: ["id"],
+      select: ['id'],
       where: {
         role: { id: roleId },
         orderBasket: { basketId: basket },
@@ -328,91 +330,84 @@ export class OrderService {
   async getOrderBoxItems(orderId: string) {
     const res = await this.orderRepository.findOne({
       where: {
-        id: orderId,        
+        id: orderId,
       },
       relations: {
         orderBoxes: { orderBoxesItems: true, boxSize: true },
         orderLines: true,
-        taskStatus:true,
+        taskStatus: true,
         comapny: true,
       },
-      order: { orderBoxes: {createdAt:'ASC'} },
+      order: { orderBoxes: { createdAt: 'ASC' } },
     });
     const grouped = Object.values(
-  (res.orderLines || []).reduce((acc: any, ol: any) => {
-    const key = String(ol.BARCODE);
+      (res.orderLines || []).reduce((acc: any, ol: any) => {
+        const key = String(ol.BARCODE);
 
-    if (!acc[key]) {
-      acc[key] = {
-        ...ol,
-        TBALANCE: 0,
-      };
-    }
+        if (!acc[key]) {
+          acc[key] = {
+            ...ol,
+            TBALANCE: 0,
+          };
+        }
 
-    acc[key].TBALANCE += Number(ol.TBALANCE || 0);
+        acc[key].TBALANCE += Number(ol.TBALANCE || 0);
 
-    return acc;
-  }, {})
-);
-
-
-const orderLines = await Promise.all(
-  grouped.map(async (ol: any) => {
-    const result = await this.orderRepository.query(
-      `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
-       FROM p3pro.order_boxes_items obi
-       WHERE obi.orderId = ? AND obi.partNumber = ?`,
-      [res.id, ol.BARCODE]
+        return acc;
+      }, {}),
     );
 
-    return {
-      ...ol,
-      totalBalance: ol.TBALANCE,
-      collected: Number(result[0]?.total ?? 0),
-    };
-  })
-);
+    const orderLines = await Promise.all(
+      grouped.map(async (ol: any) => {
+        const result = await this.orderRepository.query(
+          `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
+       FROM p3pro.order_boxes_items obi
+       WHERE obi.orderId = ? AND obi.partNumber = ?`,
+          [res.id, ol.BARCODE],
+        );
+
+        return {
+          ...ol,
+          totalBalance: ol.TBALANCE,
+          collected: Number(result[0]?.total ?? 0),
+        };
+      }),
+    );
     const partCount = await this.partCqauntRepository.find({
       where: { company: { id: res.comapny.id } },
       select: { partName: true },
     });
     const filteredOrderLines = orderLines.filter((e) => {
-      const exists = partCount.find((pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase());
+      const exists = partCount.find(
+        (pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase(),
+      );
       return !exists;
     });
-    console.log("filteredOrderLines", filteredOrderLines);
-
-
+    //console.log("filteredOrderLines", filteredOrderLines);
 
     const resAll = {
       id: res.id,
       taskStatus: res.taskStatus,
-      orderLines:filteredOrderLines,
+      orderLines: filteredOrderLines,
       //orderLines: res.orderLines,
       orderBoxes: res.orderBoxes, // ✅ real objects, not promises
-
     };
 
     return resAll;
-
-
   }
 
-
-
-
   async updateTrackingNumberFromShipRush(
-    createDeliverySettingDto: CreateDeliverySettingDto
+    createDeliverySettingDto: CreateDeliverySettingDto,
   ): Promise<any> {
     const res = await this.orderRepository.findOne({
-      select: ["id"],
+      select: ['id'],
       where: {
         shipRushShipmentId: createDeliverySettingDto.shipmentId,
       },
     });
     const setTarckingNumber = {
       trackingNumber: createDeliverySettingDto.trackingNumber,
-      shipRushStatus: "Complete",
+      shipRushStatus: 'Complete',
     };
     return await this.orderRepository.update(res.id, setTarckingNumber);
   }
@@ -438,27 +433,30 @@ const orderLines = await Promise.all(
     let orderStatus = updateOrderDto.taskStatus.id; // new  3-complete 2 - inproress
     let userInOrder = updateOrderDto.user.id;
     const resCompantSettings = await this._companyService.findOne(
-      updateOrderDto.companyId
+      updateOrderDto.companyId,
     );
     if (resCompantSettings.companySetting.boxItemsCount) {
       if (
         orderStatus === OrderStatusEnum.Complete &&
         newRole === rolesEnum.Packer
       ) {
-        const barcodeTotals = updateOrderDto.orderLines.reduce((acc, ol) => {
-          const barcode = ol.BARCODE;
+        const barcodeTotals = updateOrderDto.orderLines.reduce(
+          (acc, ol) => {
+            const barcode = ol.BARCODE;
 
-          if (!acc[barcode]) {
-            acc[barcode] = {
-              PARTNAME: ol.PARTNAME,
-              TBALANCE: 0,
-            };
-          }
+            if (!acc[barcode]) {
+              acc[barcode] = {
+                PARTNAME: ol.PARTNAME,
+                TBALANCE: 0,
+              };
+            }
 
-          acc[barcode].TBALANCE += Number(ol.TBALANCE || 0);
+            acc[barcode].TBALANCE += Number(ol.TBALANCE || 0);
 
-          return acc;
-        }, {} as Record<string, { PARTNAME: string; TBALANCE: number }>);
+            return acc;
+          },
+          {} as Record<string, { PARTNAME: string; TBALANCE: number }>,
+        );
 
         const itmQtyData = await Promise.all(
           Object.entries(barcodeTotals).map(async ([barcode, data]) => {
@@ -471,18 +469,18 @@ const orderLines = await Promise.all(
               cnt: data.TBALANCE, // summed TBALANCE
               boxitems: itm.reduce((sum, item) => sum + item.itemsCount, 0),
             };
-          })
+          }),
         );
         const itemQtyCheck = itmQtyData.filter(
-          (itmError) => itmError.cnt !== itmError.boxitems
+          (itmError) => itmError.cnt !== itmError.boxitems,
         );
 
         if (itemQtyCheck.length > 0) {
           throw new BadRequestException({
             message:
-              "Incorrect quantity in boxes Table:" +
+              'Incorrect quantity in boxes Table:' +
               itemQtyCheck.map(
-                (x) => `${x.itm}  expected=${x.cnt}, inBoxes=${x.boxitems} ##`
+                (x) => `${x.itm}  expected=${x.cnt}, inBoxes=${x.boxitems} ##`,
               ),
           });
         }
@@ -495,9 +493,9 @@ const orderLines = await Promise.all(
       //findTasksOpenByOrder
       const ts = await this._taskUserService.findTasksOpenByOrder(orderId);
       if (ts !== null) {
-        throw new BadRequestException("Please Close All taks for this order ", {
+        throw new BadRequestException('Please Close All taks for this order ', {
           cause: new Error(),
-          description: "Tasks not marked as completed",
+          description: 'Tasks not marked as completed',
         });
       }
     }
@@ -518,9 +516,9 @@ const orderLines = await Promise.all(
         Currentorder.user.id !== EOrderUser.unAssigned &&
         Currentorder.user.id !== userInOrder
       ) {
-        throw new BadRequestException("Order assigned to another user", {
+        throw new BadRequestException('Order assigned to another user', {
           cause: new Error(),
-          description: "Order assigned to another user",
+          description: 'Order assigned to another user',
         });
       }
     }

@@ -1,19 +1,19 @@
-import { Injectable } from "@nestjs/common";
-import { CreateUserRoleDto } from "./dto/create-user-role.dto";
-import { UpdateUserRoleDto } from "./dto/update-user-role.dto";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { UsersRoles } from "./entities/user-role.entity";
-import { Role } from "src/usersCompanies/role/entities/role.entity";
-import { User } from "src/usersCompanies/users/entities/user.entity";
-import { Company } from "../company/entities/company.entity";
+import { Injectable } from '@nestjs/common';
+import { CreateUserRoleDto } from './dto/create-user-role.dto';
+import { UpdateUserRoleDto } from './dto/update-user-role.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UsersRoles } from './entities/user-role.entity';
+import { Role } from 'src/usersCompanies/role/entities/role.entity';
+import { User } from 'src/usersCompanies/users/entities/user.entity';
+import { Company } from '../company/entities/company.entity';
 
 @Injectable()
 export class UserRoleService {
   constructor(
     @InjectRepository(UsersRoles)
-    private userRoleRepository: Repository<UsersRoles>
-  ) { }
+    private userRoleRepository: Repository<UsersRoles>,
+  ) {}
   async create(createUserRoleDto: CreateUserRoleDto) {
     const ins = new UsersRoles();
     const rl = new Role();
@@ -27,7 +27,7 @@ export class UserRoleService {
   }
 
   async findAll(companyId: string): Promise<any> {
-    console.log(companyId)
+    //console.log(companyId)
     const res = await this.userRoleRepository.find({
       where: { users: { userCompany: { company: { id: companyId } } } },
       relations: {
@@ -37,8 +37,6 @@ export class UserRoleService {
       //select: ['id', 'userName', 'usermail', 'usersRoles', 'color'],
     });
     const resAll = res.map((userRole) => {
-
-
       return {
         id: userRole.id,
         role: userRole.role.role,
@@ -57,7 +55,7 @@ export class UserRoleService {
         users: { userCompany: { company: { id: companyId } } },
       },
       relations: {
-        users: { userCompany: true, },
+        users: { userCompany: true },
         role: true,
       },
       //select: ['id', 'userName', 'usermail', 'usersRoles', 'color'],
@@ -85,8 +83,6 @@ export class UserRoleService {
     u.id = updateUserRoleDto.userId;
     //ins.users.push(u);
     ins.users = u;
-
-
 
     return await this.userRoleRepository.update(id, ins);
   }

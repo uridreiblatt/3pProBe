@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateCompanyDto } from 'src/usersCompanies/company/dto/create-company.dto';
@@ -24,33 +34,30 @@ export class UsersController {
   //     return await this.usersService.findAllRoles();
   //   }
 
-    @Post()
-      create( @Body() createUserDto: CreateUserDto) {
-        return this.usersService.create(createUserDto);
-      }
-      //@SkipCookieMatch()
-      @Get()
-      async findAll(@Request() req,) {        
-         return await this.usersService.findAll(req.user.selectCompany);
-      }
-    
-      @Get(':id')
-      async findOne(@Param('id') id: string) {
-        return this.usersService.findOne(id);
-      }
-      @SkipCookieMatch()
-      @Patch(':id')
-      async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-        return this.usersService.update(id, updateUserDto);
-      }
-    
-      @Delete(':id')
-      async remove(@Request() req,@Param('id') id: string) {
-         const res = await this.usersService.findOne(id);
-            //validateCompany (req.user.selectCompany , res.userCompany.id);
-            return this.usersService.remove(+id);
-      }
+  @Post()
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto);
+  }
+  //@SkipCookieMatch()
+  @Get()
+  async findAll(@Request() req) {
+    return await this.usersService.findAll(req.user.selectCompany);
+  }
 
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
+  }
+  @SkipCookieMatch()
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
+  }
+
+  @Delete(':id')
+  async remove(@Request() req, @Param('id') id: string) {
+    const res = await this.usersService.findOne(id);
+    //validateCompany (req.user.selectCompany , res.userCompany.id);
+    return this.usersService.remove(+id);
+  }
 }
-
-

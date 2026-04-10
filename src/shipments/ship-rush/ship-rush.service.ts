@@ -48,34 +48,32 @@ export class ShipRushService {
   // }
 
   async create(createShipRushDto: CreateShipRushDto) {
-    
     const order = await this._orderService.getOrderByShipmentIdFromShipRush(
       createShipRushDto.shipmentId,
     );
 
-console.log('getOrderByShipmentIdFromShipRush', order);
+    //console.log('getOrderByShipmentIdFromShipRush', order);
 
-
-    const resCompantSettings = await this._CompanyService.findOne(order.comapny.id)
+    const resCompantSettings = await this._CompanyService.findOne(
+      order.comapny.id,
+    );
 
     try {
       const resPriorityUpdateDoc = await this.UpdatePriorityShippingDoc(
-      order,
-      createShipRushDto,
-      resCompantSettings,
-      
-    );
-    console.log('resPriorityUpdateDoc', resPriorityUpdateDoc);
+        order,
+        createShipRushDto,
+        resCompantSettings,
+      );
+      //console.log('resPriorityUpdateDoc', resPriorityUpdateDoc);
     } catch (error) {
       console.log('resPriorityUpdateDoc', error);
     }
-    
-    
+
     const updOrderPriority = {
       trackingNumber: createShipRushDto.trackingNumber.toString(),
       shipRushStatus: 'Final',
     };
-    console.log(updOrderPriority);
+    //console.log(updOrderPriority);
     await this._orderService.updateData(order.id, updOrderPriority);
   }
 
@@ -93,11 +91,16 @@ console.log('getOrderByShipmentIdFromShipRush', order);
     const url =
       //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +
       resCompantSettings.companySetting.priorityApiUrl +
-      resCompantSettings.companySetting.priorityApiCompany +    `/DOCUMENTS_D`;
-      const credentials = btoa(resCompantSettings.companySetting.priorityApiUser + ':' + resCompantSettings.companySetting.priorityApiPassword);
-    
+      resCompantSettings.companySetting.priorityApiCompany +
+      `/DOCUMENTS_D`;
+    const credentials = btoa(
+      resCompantSettings.companySetting.priorityApiUser +
+        ':' +
+        resCompantSettings.companySetting.priorityApiPassword,
+    );
+
     const basicAuth = 'Basic ' + credentials;
-     console.log('UpdatePriorityShippingDoc', url);
+    console.log('UpdatePriorityShippingDoc', url);
     const dt = {
       DOCNO: order.DOCUMENT_DOCNO, // order.ORDNAME,
       DOC: Number(order.DOCUMENT_DOC), //order.DOCUMENT_DOCNO,
@@ -115,7 +118,9 @@ console.log('getOrderByShipmentIdFromShipRush', order);
         .pipe(map((resp) => resp.data))
         .pipe(
           catchError((error) => {
-            console.error(`An error happened(priorityt close sh error). Msg: ${JSON.stringify(error)}`);            
+            console.error(
+              `An error happened(priorityt close sh error). Msg: ${JSON.stringify(error)}`,
+            );
             throw error;
           }),
         ),
