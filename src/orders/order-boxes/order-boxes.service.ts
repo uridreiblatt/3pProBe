@@ -158,14 +158,7 @@ export class OrderBoxesService {
     return await this.OrderBoxesRepository.delete(id);
   }
   async removeByOrderId(id: string) {
-    // const olbx = await this.OrderBoxesRepository.find({
-    //   where: {
-    //     order: { id: id },
-    //   },
-    // });
-    // olbx.forEach(async (ol) => {
-    //   await this.OrderBoxesRepository.delete(ol.id);
-    // });
+    await this.OrderBoxesItemsRepository.delete({ orderId: id });
     await this.OrderBoxesRepository.delete({ order: { id: id } });
   }
 }

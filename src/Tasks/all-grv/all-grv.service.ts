@@ -48,7 +48,7 @@ export class AllGrvService {
 
   private isRunning = false;
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  @Cron(CronExpression.EVERY_30_MINUTES)
   async handleCron() {
     if (this.isRunning) {
       this.logger.warn('Cron skipped - previous run still in progress');
@@ -56,7 +56,7 @@ export class AllGrvService {
     }
 
     this.isRunning = true;
-    this.logger.log('cron Called SyncAllNewPoFromPriority EVERY_MINUTE');
+    this.logger.log('cron Called SyncAllNewPoFromPriority EVERY_30_MINUTES');
 
     try {
       const allCompanies = await this._CompanyService.findAll();

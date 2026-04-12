@@ -607,6 +607,7 @@ export class OrderService {
   async remove(id: string) {
     await this._orderBoxItemsService.removeByOrderId(id);
     await this._orderLinesService.removeByOrderId(id);
+
     await this._orderBoxesService.removeByOrderId(id);
     await this._orderBasketService.removeByOrderId(id);
     return await this.orderRepository.delete(id);

@@ -76,9 +76,9 @@ export class GetOrderInfoService {
     this._PartCqauntService = PartCqauntService;
     this._CompanyService = CompanyService;
   }
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  @Cron(CronExpression.EVERY_30_MINUTES)
   async handleCron() {
-    this.logger.log('cron get all orders Called EVERY_10_MINUTES');
+    this.logger.log('cron get all orders Called EVERY_30_MINUTES');
 
     const allCompanies = await this._CompanyService.findAll();
 
@@ -113,6 +113,7 @@ export class GetOrderInfoService {
       resCompantSettings.companySetting.priorityApiCompany +
       `/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq '${resCompantSettings.companySetting.priorityOrderStatus}'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
 
+    console.log('urlEndPointPriority', urlEndPointPriority);
     const credentials = btoa(
       resCompantSettings.companySetting.priorityApiUser +
         ':' +
