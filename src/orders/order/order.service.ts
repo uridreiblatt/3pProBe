@@ -387,6 +387,7 @@ export class OrderService {
 
     const resAll = {
       id: res.id,
+      ORDNAME: res.ORDNAME,
       taskStatus: res.taskStatus,
       orderLines: filteredOrderLines,
       //orderLines: res.orderLines,
