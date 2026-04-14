@@ -40,7 +40,6 @@ export class GetOrderInfoService {
   // private readonly pwd: string;
   // private readonly priorityShipRushUrl: string;
 
-  private readonly comapny: string;
   private readonly _orderService: OrderService;
   private readonly _orderLinesService: OrderLinesService;
   private readonly _deliverySettingService: DeliverySettingService;
@@ -65,7 +64,6 @@ export class GetOrderInfoService {
     //@InjectRepository(MirshamimLines) private mirshamimLinesRepository: Repository<MirshamimLines>
     // this.username = this.configService.get<string>('PRIORITY_USER');
     // this.pwd = this.configService.get<string>('PRIORITY_PWD');
-    // this.comapny = this.configService.get<string>('COMPANY') || '';
     // this.priorityShipRushUrl =
     //   this.configService.get<string>('PRIORITY_SPRSH_CALL_BACK') || '';
     this._orderService = orderService;
@@ -1014,14 +1012,12 @@ export class GetOrderInfoService {
     companyId: string,
   ): Promise<string> {
     const resCompantSettings = await this._CompanyService.findOne(companyId);
-    const shipRushConfig = await this._deliverySettingService.findOneBySite(
-      this.comapny,
-    );
+    const shipRushConfig =
+      await this._deliverySettingService.findOneBySite(companyId);
     if (!shipRushConfig) {
       throw new BadRequestException('ShipRush configuration not found', {
         cause: new Error(),
-        description:
-          'ShipRush configuration not found for company ' + this.comapny,
+        description: 'ShipRush configuration not found for company ',
       });
     }
     let tmpAddress = order.ADDRESS2;

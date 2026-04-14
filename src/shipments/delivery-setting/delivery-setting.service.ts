@@ -1,5 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CreateDeliverySettingDto, DeliverySettingDto } from './dto/create-delivery-setting.dto';
+import {
+  CreateDeliverySettingDto,
+  DeliverySettingDto,
+} from './dto/create-delivery-setting.dto';
 import { OrderService } from 'src/orders/order/order.service';
 import { catchError, lastValueFrom, map } from 'rxjs';
 import { Order } from 'src/orders/order/entities/order.entity';
@@ -18,25 +21,19 @@ import { Company } from 'src/usersCompanies/company/entities/company.entity';
 export class DeliverySettingService {
   private readonly logger = new Logger(DeliverySettingService.name);
   private readonly _orderService: OrderService;
-  comapny: string;
-  username: string;
-  pwd: string;
 
   constructor(
     private orderService: OrderService,
     private httpService: HttpService,
     private configService: ConfigService,
     @InjectRepository(DeliverySetting)
-    private ShipRushRepository: Repository<DeliverySetting>,
+    private DeliverySettingRepository: Repository<DeliverySetting>,
   ) {
     this._orderService = orderService;
-    this.comapny = this.configService.get<string>('COMPANY') || '';
-    this.username = this.configService.get<string>('PRIORITY_USER');
-    this.pwd = this.configService.get<string>('PRIORITY_PWD');
   }
 
   async findOneBySite(companyId: string) {
-    return await this.ShipRushRepository.findOne({
+    return await this.DeliverySettingRepository.findOne({
       where: {
         company: { id: companyId },
       },
@@ -44,67 +41,75 @@ export class DeliverySettingService {
   }
 
   async findOne(id: string) {
-    return await this.ShipRushRepository.find({
+    return await this.DeliverySettingRepository.find({
       where: {
         id: id,
       },
     });
   }
-  async createShipRus(createDeliverySettingDto: CreateDeliverySettingDto) {
-    const order = await this._orderService.getOrderByShipmentIdFromShipRush(
-      createDeliverySettingDto.shipmentId,
-    );
+  // async createShipRus(createDeliverySettingDto: CreateDeliverySettingDto,companyId: string,) {
+  //   const order = await this._orderService.getOrderByShipmentIdFromShipRush(
+  //     createDeliverySettingDto.shipmentId,
+  //   );
 
-    const resPriorityUpdateDoc = await this.UpdatePriorityShippingDoc(
-      order,
-      createDeliverySettingDto,
-    );
-    const updOrderPriority = {
-      trackingNumber: createDeliverySettingDto.trackingNumber.toString(),
-      shipRushStatus: 'Final',
-    };
+  //   const resPriorityUpdateDoc = await this.UpdatePriorityShippingDoc(
+  //     order,
+  //     createDeliverySettingDto,
+  //     companyId,
+  //   );
+  //   const updOrderPriority = {
+  //     trackingNumber: createDeliverySettingDto.trackingNumber.toString(),
+  //     shipRushStatus: 'Final',
+  //   };
 
-    await this._orderService.updateData(order.id, updOrderPriority);
-  }
+  //   await this._orderService.updateData(order.id, updOrderPriority);
+  // }
 
-  async UpdatePriorityShippingDoc(
-    order: Order,
-    createDeliverySettingDto: CreateDeliverySettingDto,
-  ) {
-    const url =
-      `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-      this.comapny +
-      `/DOCUMENTS_D`;
-    const credentials = btoa(this.username + ':' + this.pwd);
-    const basicAuth = 'Basic ' + credentials;
-    const dt = {
-      DOCNO: order.DOCUMENT_DOCNO, // order.ORDNAME,
-      DOC: Number(order.DOCUMENT_DOC), //order.DOCUMENT_DOCNO,
-      STATDES: 'Final',
-      AIRWAYBILL: createDeliverySettingDto.trackingNumber.toString(),
-    };
-    const data = await lastValueFrom(
-      this.httpService
-        .patch(url, dt, {
-          headers: {
-            Authorization: basicAuth,
-          },
-        })
-        .pipe(map((resp) => resp.data))
-        .pipe(
-          catchError((error) => {
-            //console.log('priorityt close sh error', error);
-            throw `An error happened. Msg: ${JSON.stringify(error)}`;
-          }),
-        ),
-    );
-    return data;
-  }
+  // async UpdatePriorityShippingDoc(
+  //   order: Order,
+  //   createDeliverySettingDto: CreateDeliverySettingDto,
+  //   companyId: string,
+  // ) {
+  //   const resCompantSettings = await this._CompanyService.findOne(companyId);
+
+  //   const urlEndPointPriority =
+  //     resCompantSettings.companySetting.priorityApiUrl +
+  //     resCompantSettings.companySetting.priorityApiCompany +
+  //     `/DOCUMENTS_D`;
+
+  //   const credentials = btoa(
+  //     resCompantSettings.companySetting.priorityApiUser +
+  //       ':' +
+  //       resCompantSettings.companySetting.priorityApiPassword,
+  //   );
+  //   const basicAuth = 'Basic ' + credentials;
+  //   const dt = {
+  //     DOCNO: order.DOCUMENT_DOCNO, // order.ORDNAME,
+  //     DOC: Number(order.DOCUMENT_DOC), //order.DOCUMENT_DOCNO,
+  //     STATDES: 'Final',
+  //     AIRWAYBILL: createDeliverySettingDto.trackingNumber.toString(),
+  //   };
+  //   const data = await lastValueFrom(
+  //     this.httpService
+  //       .patch(url, dt, {
+  //         headers: {
+  //           Authorization: basicAuth,
+  //         },
+  //       })
+  //       .pipe(map((resp) => resp.data))
+  //       .pipe(
+  //         catchError((error) => {
+  //           //console.log('priorityt close sh error', error);
+  //           throw `An error happened. Msg: ${JSON.stringify(error)}`;
+  //         }),
+  //       ),
+  //   );
+  //   return data;
+  // }
 
   async findAll(companyId: string) {
-
-    return await this.ShipRushRepository.findOne({
-      where: {company: {id:companyId}},
+    return await this.DeliverySettingRepository.findOne({
+      where: { company: { id: companyId } },
       //relations: {company: true}
     });
   }
@@ -113,7 +118,7 @@ export class DeliverySettingService {
     const ins = new DeliverySetting();
     ins.Address1 = deliverySettingDto.Address1;
     ins.Address2 = deliverySettingDto.Address2;
-    ins.City = deliverySettingDto.City;    
+    ins.City = deliverySettingDto.City;
     ins.Company = deliverySettingDto.Company;
     ins.Country = deliverySettingDto.Country;
     ins.FirstName = deliverySettingDto.FirstName;
@@ -129,15 +134,14 @@ export class DeliverySettingService {
     ins.upsAcountNumber = deliverySettingDto.upsAcountNumber;
     ins.company = new Company();
     ins.company.id = deliverySettingDto.companyId;
-    
-    return await this.ShipRushRepository.save(ins);
 
+    return await this.DeliverySettingRepository.save(ins);
   }
-  async update(id: string ,deliverySettingDto: DeliverySettingDto) {
+  async update(id: string, deliverySettingDto: DeliverySettingDto) {
     const ins = new DeliverySetting();
     ins.Address1 = deliverySettingDto.Address1;
     ins.Address2 = deliverySettingDto.Address2;
-    ins.City = deliverySettingDto.City;    
+    ins.City = deliverySettingDto.City;
     ins.Company = deliverySettingDto.Company;
     ins.Country = deliverySettingDto.Country;
     ins.FirstName = deliverySettingDto.FirstName;
@@ -153,11 +157,9 @@ export class DeliverySettingService {
     ins.upsAcountNumber = deliverySettingDto.upsAcountNumber;
     ins.company = new Company();
     ins.company.id = deliverySettingDto.companyId;
-    return await this.ShipRushRepository.update(id, ins);
+    return await this.DeliverySettingRepository.update(id, ins);
   }
   async remove(id: string) {
-
-    return await this.ShipRushRepository.delete(id);
+    return await this.DeliverySettingRepository.delete(id);
   }
-  
 }
