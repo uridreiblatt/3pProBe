@@ -16,17 +16,15 @@ export class CylinderService {
   async findAll(companyId: string) {
     const res = await this.cylinderRepository.find({
       where: {
-        company: {id:companyId},
+        company: { id: companyId },
       },
       //relations: {company:true},
-
     });
     const resAll = res.map((cylinder) => {
       return {
         id: cylinder.id,
         partName: cylinder.partName,
-        description: cylinder.description
-
+        description: cylinder.description,
       };
     });
     return resAll;
@@ -38,28 +36,27 @@ export class CylinderService {
         id: id,
       },
       //relations: {company:true},
-
     });
   }
 
-  async update(id: number, updateCylinderDto: UpdateCylinderDto) {
-    const ins =  new Cylinder();
+  async update(id: string, updateCylinderDto: UpdateCylinderDto) {
+    const ins = new Cylinder();
     ins.description = updateCylinderDto.description;
     ins.partName = updateCylinderDto.partName;
-    ins.company =  new Company();
+    ins.company = new Company();
     ins.company.id = updateCylinderDto.companyId;
     return this.cylinderRepository.update(id, ins);
   }
-  async create( createCylinderDto: CreateCylinderDto) {
-    const ins =  new Cylinder();
+  async create(createCylinderDto: CreateCylinderDto) {
+    const ins = new Cylinder();
     ins.description = createCylinderDto.description;
     ins.partName = createCylinderDto.partName;
-    ins.company =  new Company();
+    ins.company = new Company();
     ins.company.id = createCylinderDto.companyId;
-    return this.cylinderRepository.save( ins);
+    return this.cylinderRepository.save(ins);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return await this.cylinderRepository.delete(id);
   }
 }

@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsInt, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsInt, IsString } from 'class-validator';
 
 export class CreateCylinderDto {
   @ApiProperty()
@@ -9,8 +9,7 @@ export class CreateCylinderDto {
   @ApiProperty()
   @IsString()
   description: string;
-  @ApiProperty({ default: 0 })
-  @Type(() => Number) // "1" -> 1
+  @ApiProperty({ default: '0' })
   @IsString()
   companyId: string;
 }

@@ -167,15 +167,27 @@ export class OrderService {
           COUNTRYNAME: ord.COUNTRYNAME,
           STDES: ord.STDES,
           status: ord.taskStatus.status,
-          //orderLines: ord.orderLines,
-          orderLines: ord.orderLines
+
+          orderLinesItemsCount: ord.orderLines
             .filter((e) => {
               const exists = partCount.find(
                 (pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase(),
               );
               return !exists;
             })
-            .map((b) => ({ TBALANCE: b.TBALANCE })),
+            .map((b) => ({ TBALANCE: b.TBALANCE }))
+            .reduce((sum, line) => sum + Number(line.TBALANCE || 0), 0),
+          orderLines: [],
+
+          //orderLines: ord.orderLines,
+          // orderLines: ord.orderLines
+          //   .filter((e) => {
+          //     const exists = partCount.find(
+          //       (pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase(),
+          //     );
+          //     return !exists;
+          //   })
+          //   .map((b) => ({ TBALANCE: b.TBALANCE })),
 
           //orderLines: ord.orderLines.map((b) => ({ TBALANCE: b.TBALANCE })),
           role: ord.role.roleDisplayName,

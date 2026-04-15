@@ -1,14 +1,14 @@
-import { Injectable, Dependencies } from "@nestjs/common";
-import { InjectRepository, getRepositoryToken } from "@nestjs/typeorm";
-import { User } from "./entities/user.entity";
-import { Repository } from "typeorm";
-import { CreateAuthDto } from "src/auth/dto/create-auth.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { randomUUID } from "crypto";
-import { UserCompany } from "../user-company/entities/user-company.entity";
-import { Company } from "../company/entities/company.entity";
-import { UsersRoles } from "../user-role/entities/user-role.entity";
+import { Injectable, Dependencies } from '@nestjs/common';
+import { InjectRepository, getRepositoryToken } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { CreateAuthDto } from 'src/auth/dto/create-auth.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { randomUUID } from 'crypto';
+import { UserCompany } from '../user-company/entities/user-company.entity';
+import { Company } from '../company/entities/company.entity';
+import { UsersRoles } from '../user-role/entities/user-role.entity';
 
 @Injectable()
 @Dependencies(getRepositoryToken(User))
@@ -17,10 +17,11 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     @InjectRepository(UserCompany)
-    private userCompanyRepository: Repository<UserCompany>
-  ) // @InjectRepository(UsersRoles)
-  // private userRolesRepository: Repository<UsersRoles>,
-  {}
+    private userCompanyRepository: Repository<UserCompany>,
+  ) {
+    // @InjectRepository(UsersRoles)
+    // private userRolesRepository: Repository<UsersRoles>,
+  }
   async create(createUserDto: CreateUserDto) {
     const ins = new User();
     ins.userName = createUserDto.userName;
@@ -29,7 +30,7 @@ export class UsersService {
     ins.userMobile = createUserDto.userMobile;
     ins.userPasswordEnc = createUserDto.userPasswordEnc;
     ins.isActive = createUserDto.isActive;
-    ins.userSurname = createUserDto.userSurname || "not required";
+    ins.userSurname = createUserDto.userSurname || 'not required';
     ins.selectedCompany = createUserDto.companyId;
     const res = await this.userRepository.save(ins);
 
@@ -39,9 +40,8 @@ export class UsersService {
     insUserCompant.users = new User();
     insUserCompant.users.id = res.id;
 
-    const resUserCompany = await this.userCompanyRepository.save(
-      insUserCompant
-    );
+    const resUserCompany =
+      await this.userCompanyRepository.save(insUserCompant);
 
     return res;
   }
@@ -78,13 +78,14 @@ export class UsersService {
   }
 
   findAllWithDbProc() {
-    return this.userRepository.query("ggg @param1=1 ");
+    return this.userRepository.query('ggg @param1=1 ');
   }
   async signIn(createAuthDto: CreateAuthDto): Promise<User> {
     return await this.userRepository.findOne({
       where: {
         userMail: createAuthDto.email,
         userPasswordEnc: createAuthDto.password,
+        isActive: true,
       },
       relations: {
         usersRoles: {
@@ -123,6 +124,7 @@ export class UsersService {
       usermail: resUser.userMail,
       userPasswordEnc: resUser.userPasswordEnc,
       selectedCompany: resUser.selectedCompany,
+      isActive: resUser.isActive,
       userRoles: resUser.usersRoles.map((o) => {
         return { id: o.role.id, role: o.role.role };
       }),

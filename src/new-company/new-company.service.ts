@@ -1,17 +1,23 @@
-import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
-import { CreateNewCompanyDto } from "./dto/create-new-company.dto";
-import { UpdateNewCompanyDto } from "./dto/update-new-company.dto";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Company } from "src/usersCompanies/company/entities/company.entity";
-import { UserCompany } from "src/usersCompanies/user-company/entities/user-company.entity";
-import { CompanySetting } from "src/settings/company-settings/entities/company-setting.entity";
-import { User } from "src/usersCompanies/users/entities/user.entity";
-import { UsersRoles } from "src/usersCompanies/user-role/entities/user-role.entity";
-import { Role } from "src/usersCompanies/role/entities/role.entity";
-import { Boxsize } from "src/maintenence/boxes/entities/box.entity";
-import { comapny } from "src/auth/dto/create-auth.dto";
-import { randomUUID } from "crypto";
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { CreateNewCompanyDto } from './dto/create-new-company.dto';
+import { UpdateNewCompanyDto } from './dto/update-new-company.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Company } from 'src/usersCompanies/company/entities/company.entity';
+import { UserCompany } from 'src/usersCompanies/user-company/entities/user-company.entity';
+import { CompanySetting } from 'src/settings/company-settings/entities/company-setting.entity';
+import { User } from 'src/usersCompanies/users/entities/user.entity';
+import { UsersRoles } from 'src/usersCompanies/user-role/entities/user-role.entity';
+import { Role } from 'src/usersCompanies/role/entities/role.entity';
+import { Boxsize } from 'src/maintenence/boxes/entities/box.entity';
+import { comapny } from 'src/auth/dto/create-auth.dto';
+import { randomUUID } from 'crypto';
+import { Cylinder } from 'src/maintenence/cylinder/entities/cylinder.entity';
+import { DeliverySetting } from 'src/shipments/delivery-setting/entities/delivery-setting.entity';
 
 @Injectable()
 export class NewCompanyService {
@@ -27,25 +33,33 @@ export class NewCompanyService {
     @InjectRepository(UsersRoles)
     private userRoleRepository: Repository<UsersRoles>,
     @InjectRepository(Boxsize)
-    private boxSizeRepository: Repository<Boxsize>
+    private boxSizeRepository: Repository<Boxsize>,
+    @InjectRepository(Cylinder)
+    private cylinderRepository: Repository<Cylinder>,
+    @InjectRepository(DeliverySetting)
+    private deliverySettingRepository: Repository<DeliverySetting>,
   ) {}
   async create(createNewCompanyDto: CreateNewCompanyDto) {
-    if (createNewCompanyDto.AdminPassword !== "DannyCompulockyAdmin")
+    if (createNewCompanyDto.AdminPassword !== 'DannyCompulockyAdmin')
       throw UnauthorizedException;
     const comapnyExits = await this.companyRepository.findOne({
-      where: {companySetting:{priorityApiUrl : createNewCompanyDto.priorityApiUrl , 
-        priorityApiCompany: createNewCompanyDto.priorityApiCompany }}
-    })
+      where: {
+        companySetting: {
+          priorityApiUrl: createNewCompanyDto.priorityApiUrl,
+          priorityApiCompany: createNewCompanyDto.priorityApiCompany,
+        },
+      },
+    });
     if (comapnyExits)
-      throw new BadRequestException("Company already exists ", {
-          cause: new Error(),
-          description: "Company already exists",
-        });
+      throw new BadRequestException('Company already exists ', {
+        cause: new Error(),
+        description: 'Company already exists',
+      });
 
-    ////////////////// CompanySetting /////////////////////////////  
-    console.log("start companySettingRepository");
+    ////////////////// CompanySetting /////////////////////////////
+    console.log('start companySettingRepository');
     const cmpSetting = new CompanySetting();
-    
+
     cmpSetting.priorityApiCompany = createNewCompanyDto.priorityApiCompany;
     cmpSetting.priorityApiPassword = createNewCompanyDto.priorityApiPassword;
     cmpSetting.priorityApiUrl = createNewCompanyDto.priorityApiUrl;
@@ -60,10 +74,9 @@ export class NewCompanyService {
     cmpSetting.addtionalPickingInfo = createNewCompanyDto.addtionalPickingInfo;
     cmpSetting.qcRequired = createNewCompanyDto.qcRequired;
     cmpSetting.boxItemsCount = createNewCompanyDto.boxItemsCount;
-    const resCompanySetting = await this.companySettingRepository.save(
-      cmpSetting
-    );
-     console.log("end companySettingRepository");
+    const resCompanySetting =
+      await this.companySettingRepository.save(cmpSetting);
+    console.log('end companySettingRepository');
     ////////////////// Company ////////////////////////////////////
     const cmp = new Company();
     cmp.name = createNewCompanyDto.priorityApiCompany;
@@ -72,18 +85,18 @@ export class NewCompanyService {
     cmp.companySetting = new CompanySetting();
     cmp.companySetting.id = resCompanySetting.id;
     const resCompany = await this.companyRepository.save(cmp);
-     console.log("end companyRepository");
+    console.log('end companyRepository');
     ////////////////// User ////////////////////////////////////
     const usr = new User();
-    usr.userName = createNewCompanyDto.priorityApiCompany + "Admin";
-    usr.userPasswordEnc = createNewCompanyDto.priorityApiCompany + "#Zbq";
-    usr.userSurname = createNewCompanyDto.priorityApiCompany + "Admin";
-    usr.userUuid =  randomUUID();
+    usr.userName = createNewCompanyDto.priorityApiCompany + 'Admin';
+    usr.userPasswordEnc = createNewCompanyDto.priorityApiCompany + '#Zbq';
+    usr.userSurname = createNewCompanyDto.priorityApiCompany + 'Admin';
+    usr.userUuid = randomUUID();
     usr.userMail = createNewCompanyDto.priorityApiCompany + 'Admin@mail.com';
     usr.userMobile = '+001-';
     usr.selectedCompany = resCompany.id;
     const resUser = await this.userRepository.save(usr);
-    console.log("end userRepository");
+    console.log('end userRepository');
     ////////////////// UserCompany ////////////////////////////////////
     const usrCompany = new UserCompany();
     usrCompany.users = { id: resUser.id } as User;
@@ -95,23 +108,47 @@ export class NewCompanyService {
     usrRole.users.id = resUser.id;
     usrRole.role = new Role();
     usrRole.role.id = 7;
-    console.log(usrRole)
+    console.log(usrRole);
     const resUserRole = await this.userRoleRepository.save(usrRole);
     ////////////////// BoxSize ////////////////////////////////////
     let boxSize = new Boxsize();
     boxSize.company = new Company();
     boxSize.company.id = resCompany.id;
-    boxSize.sizeDesc = "Pallet";
+    boxSize.sizeDesc = 'Pallet';
     await this.boxSizeRepository.save(boxSize);
     boxSize = new Boxsize();
     boxSize.company = new Company();
     boxSize.company.id = resCompany.id;
-    boxSize.sizeDesc = "Custom";
+    boxSize.sizeDesc = 'Custom';
     await this.boxSizeRepository.save(boxSize);
+    let cylinder = new Cylinder();
+    cylinder.company = new Company();
+    cylinder.company.id = resCompany.id;
+    cylinder.partName = 'Not-Needed';
+    cylinder.description = 'Not-Needed';
+    await this.cylinderRepository.save(cylinder);
+    let deliverySetting = new DeliverySetting();
+    deliverySetting.company = new Company();
+    deliverySetting.company.id = resCompany.id;
+    deliverySetting.Address1 = 'Standard';
+    deliverySetting.City = 'Standard';
+    deliverySetting.Company = 'Standard';
+    deliverySetting.Country = 'Standard';
+    deliverySetting.uomLength = 'KGS';
+    deliverySetting.uomLength = 'CM';
+    deliverySetting.Phone = 'Standard';
+    deliverySetting.PostalCode = 'Standard';
+    deliverySetting.State = 'Standard';
+    deliverySetting.PickupReadyTime = 'Standard';
+    deliverySetting.LatestPickupTime = 'Standard';
+    deliverySetting.FirstName = 'Standard';
+    deliverySetting.upsAcountNumber = 'Standard';
+    deliverySetting.siteName = 'Standard';
+    await this.deliverySettingRepository.save(deliverySetting);
 
     return {
-      AdminUser: createNewCompanyDto.priorityApiCompany + "Admin@mail.com",
-      AdminPassword: createNewCompanyDto.priorityApiCompany + "#Zbq",
+      AdminUser: createNewCompanyDto.priorityApiCompany + 'Admin@mail.com',
+      AdminPassword: createNewCompanyDto.priorityApiCompany + '#Zbq',
     };
 
     //companyBox
@@ -130,12 +167,11 @@ export class NewCompanyService {
   // }
 
   async remove(id: string, AdminPassword: string) {
-     if (AdminPassword !== "DannyCompulockyAdmin")
-      throw UnauthorizedException;
+    if (AdminPassword !== 'DannyCompulockyAdmin') throw UnauthorizedException;
     await this.boxSizeRepository.delete({
       company: { id: id },
     });
-    console.log("end boxSizeRepository");
+    console.log('end boxSizeRepository');
     const users = await this.userCompanyRepository.find({
       where: { company: { id: id } },
     });
@@ -144,27 +180,27 @@ export class NewCompanyService {
         users: { id: u.id },
       });
     });
-    console.log("end userRoleRepository");
+    console.log('end userRoleRepository');
     await this.userCompanyRepository.delete({
       company: { id: id },
     });
-    console.log("end userCompanyRepository");
+    console.log('end userCompanyRepository');
 
     const resUser = await this.userRepository.delete({
-      selectedCompany : id
+      selectedCompany: id,
     });
-  console.log("end userRepository");
+    console.log('end userRepository');
     const resComp = await this.companyRepository.findOne({
       where: { id: id },
     });
-    console.log("find userCompanyRepository", resComp);
+    console.log('find userCompanyRepository', resComp);
     const res = await this.companyRepository.delete(id);
-    console.log("end companyRepository");
-    if (resComp && resComp.companySetting ) {
-      await this.companySettingRepository.delete(resComp.companySetting.id );
+    console.log('end companyRepository');
+    if (resComp && resComp.companySetting) {
+      await this.companySettingRepository.delete(resComp.companySetting.id);
     }
-    console.log("end companySettingRepository");
-    
+    console.log('end companySettingRepository');
+
     return res;
   }
 }

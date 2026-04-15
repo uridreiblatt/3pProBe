@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { CylinderService } from './cylinder.service';
 import { ApiTags } from '@nestjs/swagger';
 import { UpdateCylinderDto } from './dto/update-cylinder.dto';
@@ -17,26 +27,31 @@ export class CylinderController {
     return this.cylinderService.create(createCylinderDto);
   }
 
-   @Get()
-    async findAll(@Request() req) {
-      return await this.cylinderService.findAll(req.user.selectCompany);
-    }
-    @Get(":id")
-    async findOne(@Request() req, @Param("id") id: string) {
-      const res = await this.cylinderService.findOne(id);
-      validateCompany (req.user.selectCompany , res.company.id);
-      return res;
-    }
-
-  @Patch(':id')
-  update(@Request() req,@Param('id') id: string, @Body() updateCylinderDto: UpdateCylinderDto) {
-    return this.cylinderService.update(+id, updateCylinderDto);
+  @Get()
+  async findAll(@Request() req) {
+    return await this.cylinderService.findAll(req.user.selectCompany);
+  }
+  @Get(':id')
+  async findOne(@Request() req, @Param('id') id: string) {
+    const res = await this.cylinderService.findOne(id);
+    //validateCompany(req.user.selectCompany, res.company.id);
+    return res;
   }
 
-  @Delete(":id")
-  async remove(@Request() req, @Param("id") id: string) {
+  @Patch(':id')
+  update(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() updateCylinderDto: UpdateCylinderDto,
+  ) {
+    return this.cylinderService.update(id, updateCylinderDto);
+  }
+
+  @Delete(':id')
+  async remove(@Request() req, @Param('id') id: string) {
     const res = await this.cylinderService.findOne(id);
-    validateCompany (req.user.selectCompany , res.company.id);
-    return this.cylinderService.remove(+id);
+    console.log(id, res);
+    //validateCompany(req.user.selectCompany, res.company.id);
+    return this.cylinderService.remove(id);
   }
 }
