@@ -82,6 +82,7 @@ export class GetOrderInfoService {
 
     for (const company of allCompanies) {
       if (!company.companySetting) continue;
+      if (!company.isActive) continue;
 
       try {
         await this.GetAllOrder(company.id);

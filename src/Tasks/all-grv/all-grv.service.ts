@@ -63,6 +63,7 @@ export class AllGrvService {
 
       for (const company of allCompanies) {
         if (!company.companySetting) continue;
+        if (!company.isActive) continue;
 
         try {
           this.logger.log(`Processing company ${company.name}`);
