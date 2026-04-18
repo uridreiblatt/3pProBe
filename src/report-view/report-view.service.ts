@@ -24,7 +24,7 @@ export class ReportViewService {
       ' , taskTypeId ' +
       // " ,userId " +
       ' , count(*)  as count ' +
-      ' from task_user tu ' +
+      ' from `task_user` tu ' +
       " where tu.companyId = '" +
       companyId +
       "' " +
@@ -39,7 +39,7 @@ export class ReportViewService {
       ' ,roleId ' +
       ' , count(*)  as count ' +
       ' ,userId ' +
-      ' FROM p3pro.order o ' +
+      ' FROM `order` o ' +
       " where o.comapnyId = '" +
       companyId +
       "' " +
@@ -55,7 +55,7 @@ export class ReportViewService {
       ' ,userId' +
       ' , count(*) as count' +
       ' ,userId ' +
-      ' from all_rma ar' +
+      ' from `all_rma` ar' +
       " where ar.companyId = '" +
       companyId +
       "' " +
@@ -63,13 +63,13 @@ export class ReportViewService {
     const dataRma = await this.reportViewRepository.query(queryRma);
 
     const queryOrderalert =
-      'SELECT count(*) as count FROM p3pro.order p WHERE  taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )';
+      'SELECT count(*) as count FROM `order` p WHERE  taskStatusId = 4   OR (    p.created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )';
     const orderalert = await this.reportViewRepository.query(queryOrderalert);
     const queryRmaalert =
-      'SELECT count(*) as count FROM p3pro.all_rma p WHERE  taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )';
+      'SELECT count(*) as count FROM `all_rma` p WHERE  taskStatusId = 4   OR (    p.created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )';
     const rmaAlert = await this.reportViewRepository.query(queryRmaalert);
     const queryTaskalert =
-      'SELECT count(*) as count FROM p3pro.task_user p WHERE  taskStatusId = 4   OR (    created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )';
+      'SELECT count(*) as count FROM `task_user` p WHERE  taskStatusId = 4   OR (    p.created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )';
     const taskAlert = await this.reportViewRepository.query(queryTaskalert);
     const allData = {
       tasks: dataTasks,
@@ -84,17 +84,17 @@ export class ReportViewService {
 
   async Notification(companyId: string, roleId: number, userId: string) {
     const queryOrderalert =
-      'SELECT * FROM p3pro.order p WHERE  comapnyId = ? and (taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  ))';
+      'SELECT * FROM `order` p WHERE  comapnyId = ? and (taskStatusId = 4   OR (    p.CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  ))';
     const orderalert = await this.reportViewRepository.query(queryOrderalert, [
       companyId,
     ]);
     const queryRmaalert =
-      'SELECT * FROM p3pro.all_rma p WHERE  companyId = ? and (taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  ))';
+      'SELECT * FROM `all_rma` p WHERE  companyId = ? and (taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  ))';
     const rmaAlert = await this.reportViewRepository.query(queryRmaalert, [
       companyId,
     ]);
     const queryTaskalert =
-      'SELECT * FROM p3pro.task_user p WHERE  companyId = ? and ( taskStatusId = 4   OR (  created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3 ))';
+      'SELECT * FROM `task_user` p WHERE  companyId = ? and ( taskStatusId = 4   OR (  created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3 ))';
     const taskAlert = await this.reportViewRepository.query(queryTaskalert, [
       companyId,
     ]);

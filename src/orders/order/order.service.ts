@@ -373,7 +373,7 @@ export class OrderService {
       grouped.map(async (ol: any) => {
         const result = await this.orderRepository.query(
           `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
-       FROM p3pro.order_boxes_items obi
+       FROM order_boxes_items obi
        WHERE obi.orderId = ? AND obi.partNumber = ?`,
           [res.id, ol.BARCODE],
         );

@@ -13,7 +13,7 @@ export class ProductStatusService {
       ) {}
 
   async create(companyId: string) {
-    const sql = `SELECT distinct STATDES  FROM p3pro.priorityproducts where companyId  ='${companyId}'`;
+    const sql = `SELECT distinct STATDES  FROM priorityproducts where companyId  ='${companyId}'`;
     console.log(sql);
     const newProductStatus = await this.productStatusRepository.query(sql);
     newProductStatus.forEach((element) => {      const productStatus = new ProductStatus();

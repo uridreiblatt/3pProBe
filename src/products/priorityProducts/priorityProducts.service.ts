@@ -199,7 +199,7 @@ export class priorityProductsService {
   }
 
   async findAll(companyId: string) {
-    const sql = `SELECT productstatus FROM p3pro.product_status where companyId ='${companyId}' and is_active = 0`;
+    const sql = `SELECT productstatus FROM product_status where companyId ='${companyId}' and is_active = 0`;
     const newProductStatus = await this.PartRepository.query(sql);
     const newProductStatusArray: string[] = newProductStatus.map(
       (row: any) => row.productstatus,

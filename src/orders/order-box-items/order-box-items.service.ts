@@ -33,7 +33,7 @@ export class OrderBoxItemsService {
       res.map(async (e) => {
         const result = await this.OrderBoxesItemsRepository.query(
           `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
-       FROM p3pro.order_boxes_items obi
+       FROM order_boxes_items obi
        WHERE obi.orderId = ? AND obi.partNumber = ? and obi.id != ?`,
           [e.orderId, e.partNumber, e.id ]
         );
@@ -54,8 +54,8 @@ export class OrderBoxItemsService {
     const sql =
       `  SELECT orderId,BARCODE, ` +
       ` sum(ol.TBALANCE) orderQty, ` +
-      ` (select IFNULL (sum(obi.itemsCount),0) FROM p3pro.order_boxes_items obi  where  ol.orderId= obi.orderId and obi.partNumber = ol.BARCODE ) as collected ` +
-      ` FROM p3pro.order_line ol ` +
+      ` (select IFNULL (sum(obi.itemsCount),0) FROM order_boxes_items obi  where  ol.orderId= obi.orderId and obi.partNumber = ol.BARCODE ) as collected ` +
+      ` FROM order_line ol ` +
       ` where orderId= '` +
       orderId +
       `' ` +
