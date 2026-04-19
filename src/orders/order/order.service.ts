@@ -235,6 +235,7 @@ export class OrderService {
         orderBoxes: {
           boxSize: true,
         },
+        comapny: true,
         //orderBasket: true,
         role: true,
       },
@@ -258,16 +259,18 @@ export class OrderService {
     // );
 
     const partCount = await this.partCqauntRepository.find({
-      where: { company: { id: res.user.selectedCompany } },
+      where: { company: { id: res.comapny.id } },
       select: { partName: true },
     });
 
-    const filteredOrderLines = res.orderLines.filter((e) => {
-      const exists = partCount.find(
-        (pc) => pc.partName.toLowerCase() === e.PARTNAME.toLowerCase(),
-      );
-      return !exists;
-    });
+    console.log('partCount', res.comapny.id);
+    const normalize = (str?: string) => str?.toLowerCase() ?? '';
+
+    const partNamesSet = new Set(partCount.map((pc) => normalize(pc.partName)));
+
+    const filteredOrderLines = res.orderLines.filter(
+      (e) => !partNamesSet.has(normalize(e.PARTNAME)),
+    );
 
     const resAll = {
       id: res.id,
