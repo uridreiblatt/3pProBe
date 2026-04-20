@@ -74,9 +74,9 @@ export class GetOrderInfoService {
     this._PartCqauntService = PartCqauntService;
     this._CompanyService = CompanyService;
   }
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async handleCron() {
-    this.logger.log('cron get all orders Called EVERY_30_MINUTES');
+    this.logger.log('cron get all orders Called EVERY_10_MINUTES');
 
     const allCompanies = await this._CompanyService.findAll();
 
@@ -563,7 +563,7 @@ export class GetOrderInfoService {
           level: '',
           context: '',
           metadata: '',
-          companyId: '',
+          companyId: companyId,
         };
         await this._DbLogService.create(errLog);
 

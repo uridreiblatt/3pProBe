@@ -9,28 +9,27 @@ import { UserCompany } from 'src/usersCompanies/user-company/entities/user-compa
 import { UsersRoles } from 'src/usersCompanies/user-role/entities/user-role.entity';
 import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
 @Entity('user')
-export class User extends Tablestamp{
+export class User extends Tablestamp {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  @Column({unique: true , default: ''})
+  @Column({ default: '' })
   userName: string;
-  @Column({default: ''})
+  @Column({ default: '' })
   userSurname: string;
   @Column()
   userUuid: string;
-  @Column({default: ''})
+  @Column({ unique: true, default: '' })
   userMail: string;
-  @Column({default: ''})
+  @Column({ default: '' })
   userMobile: string;
-  @Column({default: 'grey'})
+  @Column({ default: 'grey' })
   color: string;
   @Column({ select: false })
   userPasswordEnc: string;
-  
-  @Column({ default:0 })
+
+  @Column({ default: 0 })
   selectedCompany: string;
 
-  
   @OneToMany(() => UsersRoles, (userRole) => userRole.users)
   usersRoles: UsersRoles[];
   @JoinColumn()
@@ -41,12 +40,10 @@ export class User extends Tablestamp{
   // @JoinColumn()
   // UserCompanyId: number;
 
-  
-
   // @ManyToOne(() => UserRole, (userRole) => userRole.id)
   // userRole: UserRole[];
   // @JoinColumn()
   // userRole: UserRole;
-  @Column({default: '0'})
+  @Column({ default: '0' })
   otp: string;
 }

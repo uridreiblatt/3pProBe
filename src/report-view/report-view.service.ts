@@ -143,6 +143,9 @@ ORDER BY ORDINAL_POSITION;`;
     const dtFields = await this.reportViewRepository.query(queryViewFields, [
       rpt.reportName,
     ]);
+    const cleanDtFields = dtFields.map(
+      ({ companyId, created_at, ...rest }) => rest,
+    );
 
     const sql = `
   SELECT *
@@ -154,7 +157,7 @@ ORDER BY ORDINAL_POSITION;`;
     const cleanedData = data.map(({ companyId, created_at, ...rest }) => rest);
     const allData = {
       currentReport: rpt,
-      fields: dtFields,
+      fields: cleanDtFields,
       data: cleanedData,
     };
     return allData;

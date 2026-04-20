@@ -88,6 +88,7 @@ export class AllGrvService {
   }
 
   async SyncAllNewPoFromPriority(companyId: string): Promise<any> {
+    //console.log(this.isLocked);
     if (this.isLocked) {
       return 'is locked';
     }
@@ -108,6 +109,7 @@ export class AllGrvService {
       //   this.comapny +
       //   this.urlEndPoint;
       //const credentials = btoa(this.username + ":" + this.pwd);
+      //console.log(url);
       const credentials = btoa(
         resCompantSettings.companySetting.priorityApiUser +
           ':' +
@@ -165,7 +167,7 @@ export class AllGrvService {
 
           const foundOne = await this.AllGrvRepository.findOne({
             where: {
-              orderName: allGrv.orderName,
+              PO: element.ORDNAME,
               company: { id: companyId },
             },
           });
@@ -179,7 +181,7 @@ export class AllGrvService {
               ins.allGrv = new AllGrv();
               ins.allGrv.id = EOrderUser.unAssigned;
               ins.allGrv.id = newPo.id;
-              ins.PartNumber = subForm.BARCODE;
+              ins.PartNumber = subForm.BARCODE || subForm.PARTNAME;
               ins.DataInfo = '';
               ins.productName = subForm.PARTNAME;
               ins.productDescription = subForm.PDES;

@@ -15,9 +15,9 @@ import { ProductStatusService } from '../product-status/product-status.service';
 export class priorityProductsService {
   private isLocked = false;
   private readonly logger = new Logger(priorityProductsService.name);
-  private readonly username: string;
-  private readonly pwd: string;
-  private readonly comapny: string;
+  // private readonly username: string;
+  // private readonly pwd: string;
+  // private readonly comapny: string;
   private readonly _CompanyService: CompanyService;
   private readonly _ProductStatusService: ProductStatusService;
 
@@ -31,9 +31,9 @@ export class priorityProductsService {
     private httpService: HttpService,
     private productStatusService: ProductStatusService,
   ) {
-    this.username = this.configService.get<string>('PRIORITY_USER');
-    this.pwd = this.configService.get<string>('PRIORITY_PWD');
-    this.comapny = this.configService.get<string>('COMPANY') || '';
+    // this.username = this.configService.get<string>('PRIORITY_USER');
+    // this.pwd = this.configService.get<string>('PRIORITY_PWD');
+    // this.comapny = this.configService.get<string>('COMPANY') || '';
     this._CompanyService = CompanyService;
     this._ProductStatusService = productStatusService;
   }
@@ -127,7 +127,12 @@ export class priorityProductsService {
       const urlEndPointPriority = base + path;
       //console.log("part url", urlEndPointPriority);
 
-      const credentials = btoa(this.username + ':' + this.pwd);
+      //const credentials = btoa(this.username + ':' + this.pwd);
+      const credentials = btoa(
+        resCompantSettings.companySetting.priorityApiUser +
+          ':' +
+          resCompantSettings.companySetting.priorityApiPassword,
+      );
       const basicAuth = 'Basic ' + credentials;
 
       const data = await lastValueFrom(
