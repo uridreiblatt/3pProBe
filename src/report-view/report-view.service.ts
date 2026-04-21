@@ -143,10 +143,10 @@ ORDER BY ORDINAL_POSITION;`;
     const dtFields = await this.reportViewRepository.query(queryViewFields, [
       rpt.reportName,
     ]);
-    const cleanDtFields = dtFields.map(
-      ({ companyId, created_at, ...rest }) => rest,
+    const cleanDtFields = dtFields.filter(
+      ({ COLUMN_NAME }) =>
+        COLUMN_NAME !== 'companyId' && COLUMN_NAME !== 'created_at',
     );
-
     const sql = `
   SELECT *
   FROM ${rpt.reportName}

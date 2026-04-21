@@ -26,9 +26,9 @@ export class UsersService {
     const ins = new User();
     ins.userName = createUserDto.userName;
     ins.userUuid = randomUUID();
-    ins.userMail = createUserDto.usermail;
+    ins.userMail = createUserDto.userMail;
     ins.userMobile = createUserDto.userMobile;
-    ins.userPasswordEnc = createUserDto.userPasswordEnc;
+    ins.userPasswordEnc = createUserDto.userPasswordEnc || 'aaa12345';
     ins.isActive = createUserDto.isActive;
     ins.userSurname = createUserDto.userSurname || 'not required';
     ins.selectedCompany = createUserDto.companyId;
@@ -121,7 +121,7 @@ export class UsersService {
       id: resUser.id,
       userName: resUser.userName,
       userLastName: resUser.userSurname,
-      usermail: resUser.userMail,
+      userMail: resUser.userMail,
       userPasswordEnc: resUser.userPasswordEnc,
       selectedCompany: resUser.selectedCompany,
       isActive: resUser.isActive,
@@ -135,14 +135,26 @@ export class UsersService {
     return resLogin;
   }
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const ins = new User();
-    ins.userName = updateUserDto.userName;
-    ins.userMail = updateUserDto.usermail;
-    ins.userMobile = updateUserDto.userMobile;
-    ins.userPasswordEnc = updateUserDto.userPasswordEnc;
-    ins.isActive = updateUserDto.isActive;
-    ins.selectedCompany = updateUserDto.selectedCompany;
-    return await this.userRepository.update(id, ins);
+    // const ins = new User();
+    // ins.userName = updateUserDto.userName;
+    // ins.userMail = updateUserDto.userMail;
+    // ins.userMobile = updateUserDto.userMobile;
+    // ins.userPasswordEnc = updateUserDto.userPasswordEnc;
+    // ins.isActive = updateUserDto.isActive;
+    // ins.selectedCompany = updateUserDto.selectedCompany;
+    const payload = {
+      ...updateUserDto,
+      ...(updateUserDto.userPasswordEnc
+        ? { userPasswordEnc: updateUserDto.userPasswordEnc }
+        : {}),
+    };
+    delete payload.companyId;
+    if (updateUserDto.userPasswordEnc === '') {
+      delete payload.userPasswordEnc;
+    }
+    console.log('payload', payload);
+
+    return await this.userRepository.update(id, payload);
   }
 
   async remove(id: number) {

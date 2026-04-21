@@ -263,7 +263,6 @@ export class OrderService {
       select: { partName: true },
     });
 
-    console.log('partCount', res.comapny.id);
     const normalize = (str?: string) => str?.toLowerCase() ?? '';
 
     const partNamesSet = new Set(partCount.map((pc) => normalize(pc.partName)));

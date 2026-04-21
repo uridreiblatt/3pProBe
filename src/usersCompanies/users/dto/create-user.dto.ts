@@ -6,7 +6,7 @@ export class CreateUserDto {
   @IsString()
   userName: string;
 
-  @ApiProperty({default:''})
+  @ApiProperty({ default: '' })
   @IsString()
   @IsOptional()
   userSurname: string;
@@ -16,7 +16,7 @@ export class CreateUserDto {
   @IsOptional()
   userUuid: string;
   @IsEmail()
-  usermail: string;
+  userMail: string;
   @ApiProperty()
   @IsString()
   userMobile: string;
@@ -27,10 +27,10 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   otp: string;
- @ApiProperty() 
- @IsBoolean()
+  @ApiProperty()
+  @IsBoolean()
   isActive: boolean;
-   @ApiProperty()
+  @ApiProperty()
   @IsString()
   @IsOptional()
   id: string;
@@ -39,32 +39,21 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   role: string;
- @ApiProperty()
+  @ApiProperty()
   @IsString()
   @IsOptional()
   companyId: string;
-@ApiProperty()
+  @ApiProperty()
   @IsString()
   @IsOptional()
   status: string;
-@ApiProperty()
+  @ApiProperty()
   @IsString()
   @IsOptional()
   avatarUrl: string;
 
-@ApiProperty()
+  @ApiProperty()
   @IsString()
   @IsOptional()
   selectedCompany: string;
-  
-
-
-
-  
-
-
-  
-
-  
-  
 }
