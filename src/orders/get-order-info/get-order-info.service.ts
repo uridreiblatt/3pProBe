@@ -195,7 +195,7 @@ export class GetOrderInfoService {
           if (ind > 0) {
             tmpText = tmpText.substring(tmpText.lastIndexOf('</style>') + 8);
             tmpText = tmpText.replace(/<[^>]*>/g, ' ');
-            tmpText = tmpText.replaceAll('&nbsp', '');
+            tmpText = tmpText.replaceAll('&nbsp', ' ');
           }
         } catch (error) {
           this.logger.error(error);
