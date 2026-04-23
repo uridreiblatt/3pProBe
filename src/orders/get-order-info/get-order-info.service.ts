@@ -110,7 +110,7 @@ export class GetOrderInfoService {
     const urlEndPointPriority =
       resCompantSettings.companySetting.priorityApiUrl +
       resCompantSettings.companySetting.priorityApiCompany +
-      `/ORDERS?$select=CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq '${resCompantSettings.companySetting.priorityOrderStatus}'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
+      `/ORDERS?$select=REFERENCE,CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq '${resCompantSettings.companySetting.priorityOrderStatus}'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
 
     console.log('urlEndPointPriority', urlEndPointPriority);
     const credentials = btoa(
@@ -186,7 +186,8 @@ export class GetOrderInfoService {
         createOrderDto.shipRushShipmentId = '';
         createOrderDto.accountId = '';
         createOrderDto.accountZip = '';
-        createOrderDto.DETAILS = '';
+        createOrderDto.DETAILS = element.DETAILS || '';
+        createOrderDto.CustomerPO = element.REFERENCE || '';
 
         let tmpText = '';
         try {

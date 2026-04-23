@@ -67,25 +67,25 @@ export class Order {
   NAME: string;
   @Column()
   PHONENUM: string;
-  @Column({ nullable: true , default:''})
+  @Column({ nullable: true, default: '' })
   FAX: string;
-  @Column({ nullable: true, default:'' })
+  @Column({ nullable: true, default: '' })
   trackingNumber: string;
   @Column()
   shipRushStatus: string;
-  @Column({ nullable: true, default:'' })
+  @Column({ nullable: true, default: '' })
   shipRushDeliveryId: string;
-  @Column({ nullable: true, default:'' })
+  @Column({ nullable: true, default: '' })
   DOCUMENT_DOCNO: string;
-  @Column({ nullable: true, default:'' })
+  @Column({ nullable: true, default: '' })
   DOCUMENT_DOC: string;
-  @Column({ nullable: true, default:'' })
+  @Column({ nullable: true, default: '' })
   shipRushShipmentId: string;
-  @Column({ nullable: true, default:'' })
+  @Column({ nullable: true, default: '' })
   accountId: string;
-  @Column({ nullable: true, default:'' })
+  @Column({ nullable: true, default: '' })
   accountZip: string;
-  @Column({ nullable: true, default:'', length: 2000 })
+  @Column({ nullable: true, default: '', length: 2000 })
   orderNote: string;
   @ManyToOne(() => User, (user) => user.id)
   user: User;
@@ -117,4 +117,6 @@ export class Order {
   @ManyToOne(() => Company, (comapny) => comapny.id)
   //@JoinColumn({ name: 'taskStatusId' })
   comapny: Company;
+  @Column({ nullable: true, default: '', length: 2000 })
+  CustomerPO: string;
 }

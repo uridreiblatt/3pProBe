@@ -98,4 +98,6 @@ export class CreateOrderDto {
   companyId: string;
   @ApiProperty()
   roleId: number;
+  @ApiProperty()
+  CustomerPO: string;
 }

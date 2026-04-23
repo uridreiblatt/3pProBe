@@ -11,6 +11,7 @@ export interface Value {
   STDES: string;
   CDES: string;
   DETAILS: string;
+  REFERENCE: string;
   ORDERITEMS_SUBFORM: OrderitemsSubform[];
   SHIPTO2_SUBFORM?: Shipto2Subform;
   ORDERSTEXT_SUBFORM?: OrderstextSubform;
