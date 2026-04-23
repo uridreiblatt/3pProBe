@@ -282,6 +282,8 @@ export class OrderService {
       ADDRESS: res.ADDRESS,
       ADDRESS2: res.ADDRESS2,
       ADDRESS3: res.ADDRESS3,
+      CustomerPO: res.CustomerPO,
+      DETAILS: res.DETAILS,
       ZIP: res.ZIP,
       STATE: res.STATE,
       STDES: res.STDES,
@@ -403,6 +405,8 @@ export class OrderService {
       id: res.id,
       ORDNAME: res.ORDNAME,
       taskStatus: res.taskStatus,
+      CustomerPO: res.CustomerPO,
+      DETAILS: res.DETAILS,
       orderLines: filteredOrderLines,
       //orderLines: res.orderLines,
       orderBoxes: res.orderBoxes, // ✅ real objects, not promises

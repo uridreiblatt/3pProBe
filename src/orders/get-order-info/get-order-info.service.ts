@@ -205,6 +205,7 @@ export class GetOrderInfoService {
         createOrderDto.CURDATE = element.CURDATE;
         createOrderDto.userId = EOrderUser.unAssigned;
         createOrderDto.taskStatusId = OrderStatusEnum.New; //EOrderUser.unAssigned;
+
         let checkLines = element.ORDERITEMS_SUBFORM.find((ln) => {
           if (ln.TBALANCE > 0) return true;
           return false;
@@ -234,6 +235,7 @@ export class GetOrderInfoService {
                 createOrderDto,
                 companyId,
               );
+
               LinesInserted += 1;
             } catch (error) {
               console.log(error);
