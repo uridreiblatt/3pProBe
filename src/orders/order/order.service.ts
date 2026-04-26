@@ -73,6 +73,7 @@ export class OrderService {
     orderFromDto.CURDATE = createOrderDto.CURDATE;
     orderFromDto.ordertext = createOrderDto.ordertext;
     orderFromDto.DETAILS = createOrderDto.DETAILS;
+    orderFromDto.CustomerPO = createOrderDto.CustomerPO;
     orderFromDto.ShData = createOrderDto.ShData;
     orderFromDto.CUSTNO = createOrderDto.CUSTNO;
     orderFromDto.ORDNAME = createOrderDto.ORDNAME;
