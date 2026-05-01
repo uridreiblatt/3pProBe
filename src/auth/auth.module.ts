@@ -5,11 +5,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { HttpModule } from '@nestjs/axios';
 import { UsersModule } from 'src/usersCompanies/users/users.module';
+import { DeliverySettingModule } from 'src/shipments/delivery-setting/delivery-setting.module';
 
 @Module({
   imports: [
     HttpModule,
     UsersModule,
+    DeliverySettingModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,

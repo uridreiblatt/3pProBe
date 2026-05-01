@@ -82,7 +82,7 @@ export class AllRmaService {
     }
     try {
       this.isLocked = true;
-      const urlEndPointPriority = `/DOCUMENTS_m?$filter=STATDES eq '${resCompantSettings.companySetting.priorityRmaStatus}' &$top=20&$expand=INTERNALDIALOGTEXT_SUBFORM`;
+      const urlEndPointPriority = `/DOCUMENTS_m?$filter=STATDES eq '${resCompantSettings.companySetting.priorityRmaStatus}' &$top=100&$expand=INTERNALDIALOGTEXT_SUBFORM`;
 
       const url =
         //`https://win01.maclocks.com/odata/Priority/tabula.ini/` +

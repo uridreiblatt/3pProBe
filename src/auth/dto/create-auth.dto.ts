@@ -3,7 +3,6 @@ import { IsEmail, IsString } from 'class-validator';
 
 export class CreateAuthDto {
   @ApiProperty({ default: 'urid@gmail.com' })
-
   @IsEmail()
   email: string;
   @ApiProperty({
@@ -14,14 +13,14 @@ export class CreateAuthDto {
 }
 export class SwitchCompanyDto {
   @ApiProperty()
-  companyId: string;  
+  companyId: string;
 }
 
 export class CreateAuthSwitchCompanyDto {
   @ApiProperty()
-  companyId: string; 
+  companyId: string;
   @ApiProperty()
-  UserUuid: string;  
+  UserUuid: string;
 }
 export class AuthOtp {
   @ApiProperty()
@@ -31,15 +30,15 @@ export class AuthOtp {
 }
 export class comapny {
   @ApiProperty()
-  id: string; 
+  id: string;
   @ApiProperty()
-  name: string;  
+  name: string;
 }
 export class role {
   @ApiProperty()
-  id: number; 
+  id: number;
   @ApiProperty()
-  name: string;  
+  name: string;
 }
 
 export class JwtDetails {
@@ -62,14 +61,15 @@ export class JwtDetails {
   @ApiProperty()
   qcRequired: boolean;
   @ApiProperty()
-  boxItemsCount:boolean;
+  boxItemsCount: boolean;
   @ApiProperty()
   users: user[];
-  
+  @ApiProperty()
+  uomWeight: string;
 }
 export class user {
   @ApiProperty()
-  id: string; 
+  id: string;
   @ApiProperty()
-  userName: string;  
+  userName: string;
 }

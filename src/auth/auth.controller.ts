@@ -53,6 +53,7 @@ export class AuthController {
     if (maxValueOfY > 5) jwtDetails.userRole = maxValueOfY.toString();
     else jwtDetails.userRole = minValueOfY.toString();
     jwtDetails.uuid = resUser.id;
+    jwtDetails.uomWeight = resUserAll.uomWeight;
     jwtDetails.userComapny =
       resUser.selectedCompany === '0'
         ? resUser.userCompany[0].company.id
@@ -97,6 +98,7 @@ export class AuthController {
       userName: resUser.userName,
       userLastName: resUser.userSurname,
       usermail: resUser.userMail,
+      uomWeight: jwtDetails.uomWeight,
 
       userSelectedCompany: resUser.userCompany[0]?.company.id || 0,
       addtionalPickingInfo:
@@ -138,75 +140,75 @@ export class AuthController {
   getProfile(@Request() req) {
     return req.user;
   }
-  @UseGuards(AuthGuard)
-  @Post('SwitchCompany')
-  async SwitchCompany(
-    @Request() req,
-    @Body() switchCompanyDto: SwitchCompanyDto,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const createAuthSwitchCompanyDto: CreateAuthSwitchCompanyDto = {
-      companyId: switchCompanyDto.companyId,
-      UserUuid: req.user.userUuid,
-    };
-    const resUser = await this.authService.SwitchCompany(
-      createAuthSwitchCompanyDto,
-    );
-    if (resUser === undefined || resUser === null) {
-      throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);
-    }
-    const companyExists = resUser.userCompany.find((cpm) => {
-      if (cpm.id.toString() === switchCompanyDto.companyId) return true;
-    });
-    if (companyExists === undefined)
-      throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);
+  // @UseGuards(AuthGuard)
+  // @Post('SwitchCompany')
+  // async SwitchCompany(
+  //   @Request() req,
+  //   @Body() switchCompanyDto: SwitchCompanyDto,
+  //   @Res({ passthrough: true }) response: Response,
+  // ) {
+  //   const createAuthSwitchCompanyDto: CreateAuthSwitchCompanyDto = {
+  //     companyId: switchCompanyDto.companyId,
+  //     UserUuid: req.user.userUuid,
+  //   };
+  //   const resUser = await this.authService.SwitchCompany(
+  //     createAuthSwitchCompanyDto,
+  //   );
+  //   if (resUser === undefined || resUser === null) {
+  //     throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);
+  //   }
+  //   const companyExists = resUser.userCompany.find((cpm) => {
+  //     if (cpm.id.toString() === switchCompanyDto.companyId) return true;
+  //   });
+  //   if (companyExists === undefined)
+  //     throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);
 
-    resUser.userPasswordEnc = '';
-    const jwtDetails = new JwtDetails();
-    jwtDetails.userName = resUser.userName;
-    const maxValueOfY = Math.max(
-      ...resUser.usersRoles.map((o) => o.role['id']),
-      0,
-    );
-    jwtDetails.userRole = maxValueOfY.toString();
-    jwtDetails.uuid = resUser.userUuid;
+  //   resUser.userPasswordEnc = '';
+  //   const jwtDetails = new JwtDetails();
+  //   jwtDetails.userName = resUser.userName;
+  //   const maxValueOfY = Math.max(
+  //     ...resUser.usersRoles.map((o) => o.role['id']),
+  //     0,
+  //   );
+  //   jwtDetails.userRole = maxValueOfY.toString();
+  //   jwtDetails.uuid = resUser.userUuid;
 
-    jwtDetails.userComapny = switchCompanyDto.companyId;
-    const jwtToken = await this.authService.signAsyncCookie(jwtDetails);
-    response.cookie('access_token', jwtToken.access_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 25200000,
-    });
-    const resLogin = {
-      id: resUser.id,
-      isSignedIn: true,
-      userName: resUser.userName,
-      userLastName: resUser.userSurname,
-      usermail: resUser.userMail,
-      userRoles: resUser.usersRoles
-        .sort((a, b) => a.role.id - b.role.id) // 👈 order by role.id ASC
-        .map((o) => {
-          return {
-            id: o.role.id,
-            role: o.role.role,
-          };
-        }),
-      userSelectedCompany: switchCompanyDto.companyId,
-      addtionalPickingInfo:
-        resUser.userCompany[0]?.company.companySetting.addtionalPickingInfo,
-      boxItemsCount:
-        resUser.userCompany[0]?.company.companySetting.boxItemsCount,
-      userRoleName: resUser.usersRoles.find((ur) => {
-        if (ur.role.id === maxValueOfY) return true;
-      }).role.role,
-      userCompanies: resUser.userCompany.map((o) => {
-        return { id: o.company.id, companyName: o.company.name };
-      }),
-      color: resUser.color,
-      userRoleId: maxValueOfY,
-    };
-    return resLogin;
-  }
+  //   jwtDetails.userComapny = switchCompanyDto.companyId;
+  //   const jwtToken = await this.authService.signAsyncCookie(jwtDetails);
+  //   response.cookie('access_token', jwtToken.access_token, {
+  //     httpOnly: true,
+  //     secure: true,
+  //     sameSite: 'none',
+  //     maxAge: 25200000,
+  //   });
+  //   const resLogin = {
+  //     id: resUser.id,
+  //     isSignedIn: true,
+  //     userName: resUser.userName,
+  //     userLastName: resUser.userSurname,
+  //     usermail: resUser.userMail,
+  //     userRoles: resUser.usersRoles
+  //       .sort((a, b) => a.role.id - b.role.id) // 👈 order by role.id ASC
+  //       .map((o) => {
+  //         return {
+  //           id: o.role.id,
+  //           role: o.role.role,
+  //         };
+  //       }),
+  //     userSelectedCompany: switchCompanyDto.companyId,
+  //     addtionalPickingInfo:
+  //       resUser.userCompany[0]?.company.companySetting.addtionalPickingInfo,
+  //     boxItemsCount:
+  //       resUser.userCompany[0]?.company.companySetting.boxItemsCount,
+  //     userRoleName: resUser.usersRoles.find((ur) => {
+  //       if (ur.role.id === maxValueOfY) return true;
+  //     }).role.role,
+  //     userCompanies: resUser.userCompany.map((o) => {
+  //       return { id: o.company.id, companyName: o.company.name };
+  //     }),
+  //     color: resUser.color,
+  //     userRoleId: maxValueOfY,
+  //   };
+  //   return resLogin;
+  // }
 }

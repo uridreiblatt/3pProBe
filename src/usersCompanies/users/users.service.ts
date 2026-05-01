@@ -48,12 +48,20 @@ export class UsersService {
 
   async findAll(companyId: string): Promise<any> {
     const resUser = await this.userRepository.find({
-      where: {
-        userCompany: { company: { id: companyId } },
-      },
+      where: [
+        {
+          id: 'aaa-bbb-ccc',
+        },
+        {
+          userCompany: { company: { id: companyId } },
+        },
+      ],
       relations: {
         usersRoles: { role: true },
         userCompany: { company: true },
+      },
+      order: {
+        userName: 'ASC', // or 'DESC'
       },
       //select: ["id", "userName", "userMail", "usersRoles",  "userMobile", "isActive"],
     });

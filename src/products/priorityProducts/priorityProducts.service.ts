@@ -260,10 +260,10 @@ export class priorityProductsService {
   SELECT PP.PARTNAME, PP.BARCODE, PL.location, PL.stockDate, PL.quantity, Z.zoneName
   FROM priorityProducts AS P
   LEFT JOIN priorityProductsHierarchy AS C ON P.PART = C.PART and P.companyId =  C.companyId
-  LEFT JOIN priorityProducts AS PP ON PP.PART = C.SON and P.companyId =  C.companyId
+  LEFT JOIN priorityProducts AS PP ON PP.PART = C.SON and P.companyId =  PP.companyId
   LEFT JOIN priorityProductsLocation AS PL ON PL.priorityProductsId = PP.id
   LEFT JOIN zone AS Z ON Z.id = PL.zoneId
-  WHERE P.PARTNAME = ? AND p.companyId = ?
+  WHERE P.PARTNAME = ? AND p.companyId = ? 
   ORDER BY Z.priority DESC, stockDate
 `;
 
