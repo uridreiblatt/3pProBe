@@ -230,10 +230,22 @@ export class priorityProductsService {
   async findOne(id: string, companyId: string) {
     return this.PartRepository.createQueryBuilder('part')
       .leftJoinAndSelect('part.PriorityProductsLocation', 'location')
-      .leftJoinAndSelect('part.PriorityProductsHierarchy', 'hierarchy')
-      .leftJoinAndSelect('hierarchy.sonPriorityProduct', 'sonPriorityProduct')
+      .leftJoinAndSelect(
+        'part.PriorityProductsHierarchy',
+        'hierarchy',
+        'hierarchy.companyId = :companyId',
+        { companyId },
+      )
+      .leftJoinAndMapOne(
+        'hierarchy.sonPriorityProduct',
+        PriorityProducts,
+        'sonPriorityProduct',
+        `
+      sonPriorityProduct.part = hierarchy.son
+      AND sonPriorityProduct.companyId = hierarchy.companyId
+    `,
+      )
       .where('part.id = :id', { id })
-      .andWhere('hierarchy.companyId = :companyId', { companyId })
       .getOne();
   }
 
