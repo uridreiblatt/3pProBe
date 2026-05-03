@@ -116,17 +116,22 @@ export class OrderService {
   }
 
   async findAllComplete(companyId: string): Promise<any> {
-    const queryViewFields = `SELECT * FROM v_orders_complete v  where v.companyId = '${companyId}' order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) `;
-    return await this.orderRepository.query(queryViewFields);
+    // const queryViewFields = `SELECT * FROM v_orders_complete v  where v.companyId = '${companyId}' order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) `;
+    // return await this.orderRepository.query(queryViewFields);
+    return await this.findAll(companyId, true);
   }
 
-  async findAll(companyId: string): Promise<any> {
+  async findAll(companyId: string, complete: boolean = false): Promise<any> {
     // const queryViewFields =
     //   'SELECT * FROM v_orders v order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) ';
     // return await this.orderRepository.query(queryViewFields);
     const res = await this.orderRepository.find({
       where: {
-        taskStatus: { id: Not(OrderStatusEnum.Complete) },
+        taskStatus: {
+          id: complete
+            ? OrderStatusEnum.Complete
+            : Not(OrderStatusEnum.Complete),
+        },
         comapny: { id: companyId },
       },
       relations: {
