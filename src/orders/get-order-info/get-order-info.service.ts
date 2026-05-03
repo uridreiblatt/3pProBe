@@ -76,7 +76,7 @@ export class GetOrderInfoService {
   }
   @Cron(CronExpression.EVERY_10_MINUTES)
   async handleCron() {
-    this.logger.log('cron get all orders Called EVERY_10_MINUTES');
+    //this.logger.log('cron get all orders Called EVERY_10_MINUTES');
 
     const allCompanies = await this._CompanyService.findAll();
 

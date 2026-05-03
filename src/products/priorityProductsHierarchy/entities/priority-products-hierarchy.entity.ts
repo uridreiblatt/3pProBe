@@ -1,5 +1,11 @@
 import { PriorityProducts } from 'src/products/priorityProducts/entities/priorityProducts.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('priorityProductsHierarchy')
 export class PriorityProductsHierarchy {

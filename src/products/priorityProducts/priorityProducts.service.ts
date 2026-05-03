@@ -47,7 +47,7 @@ export class priorityProductsService {
     }
 
     this.isRunning = true;
-    this.logger.log('cron Called getAllNewRmaFromPriority EVERY_30_MINUTES');
+    //this.logger.log('cron Called getAllNewRmaFromPriority EVERY_30_MINUTES');
 
     try {
       const allCompanies = await this._CompanyService.findAll();
@@ -227,16 +227,14 @@ export class priorityProductsService {
     return res;
   }
 
-  async findOne(id: string) {
-    return await this.PartRepository.findOne({
-      where: {
-        id: id,
-      },
-      relations: {
-        PriorityProductsLocation: true,
-        PriorityProductsHierarchy: { sonPriorityProduct: true },
-      },
-    });
+  async findOne(id: string, companyId: string) {
+    return this.PartRepository.createQueryBuilder('part')
+      .leftJoinAndSelect('part.PriorityProductsLocation', 'location')
+      .leftJoinAndSelect('part.PriorityProductsHierarchy', 'hierarchy')
+      .leftJoinAndSelect('hierarchy.sonPriorityProduct', 'sonPriorityProduct')
+      .where('part.id = :id', { id })
+      .andWhere('hierarchy.companyId = :companyId', { companyId })
+      .getOne();
   }
 
   async findBarcode(barcode: string, companyId: string) {

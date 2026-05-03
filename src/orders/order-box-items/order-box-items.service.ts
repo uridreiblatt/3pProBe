@@ -1,16 +1,16 @@
-import { Injectable } from "@nestjs/common";
-import { CreateOrderBoxItemDto } from "./dto/create-order-box-item.dto";
-import { UpdateOrderBoxItemDto } from "./dto/update-order-box-item.dto";
-import { OrderBoxesItems } from "./entities/order-box-item.entity";
-import { Repository } from "typeorm";
-import { InjectRepository } from "@nestjs/typeorm";
-import { OrderBoxes } from "../order-boxes/entities/order-box.entity";
+import { Injectable } from '@nestjs/common';
+import { CreateOrderBoxItemDto } from './dto/create-order-box-item.dto';
+import { UpdateOrderBoxItemDto } from './dto/update-order-box-item.dto';
+import { OrderBoxesItems } from './entities/order-box-item.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { OrderBoxes } from '../order-boxes/entities/order-box.entity';
 
 @Injectable()
 export class OrderBoxItemsService {
   constructor(
     @InjectRepository(OrderBoxesItems)
-    private OrderBoxesItemsRepository: Repository<OrderBoxesItems>
+    private OrderBoxesItemsRepository: Repository<OrderBoxesItems>,
   ) {}
   async create(createOrderBoxItemDto: CreateOrderBoxItemDto) {
     const ins = new OrderBoxesItems();
@@ -35,7 +35,7 @@ export class OrderBoxItemsService {
           `SELECT IFNULL(SUM(obi.itemsCount), 0) AS total
        FROM order_boxes_items obi
        WHERE obi.orderId = ? AND obi.partNumber = ? and obi.id != ?`,
-          [e.orderId, e.partNumber, e.id ]
+          [e.orderId, e.partNumber, e.id],
         );
 
         const collected = result[0]?.total ?? 0;
@@ -44,7 +44,7 @@ export class OrderBoxItemsService {
           ...e,
           collected,
         };
-      })
+      }),
     );
 
     return data;
@@ -65,7 +65,7 @@ export class OrderBoxItemsService {
     return lineDiff
       .filter((e: any) => Number(e.orderQty) !== Number(e.collected))
       .map((e: any) => ({
-        countStatus: "Invalid Qty",
+        countStatus: 'Invalid Qty',
         partNumber: e.BARCODE,
         orderQty: Number(e.orderQty),
         collected: Number(e.collected),
@@ -81,7 +81,7 @@ export class OrderBoxItemsService {
   async update(id: string, updateOrderBoxItemDto: UpdateOrderBoxItemDto) {
     return await this.OrderBoxesItemsRepository.update(
       id,
-      updateOrderBoxItemDto
+      updateOrderBoxItemDto,
     );
   }
 

@@ -115,9 +115,8 @@ export class OrderService {
     return orderFromDto;
   }
 
-  async findAllComplete(): Promise<any> {
-    const queryViewFields =
-      'SELECT * FROM v_orders_complete v order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) ';
+  async findAllComplete(companyId: string): Promise<any> {
+    const queryViewFields = `SELECT * FROM v_orders_complete v  where v.companyId = '${companyId}' order by v.priorityOrder ,  v.shipmentOrder , SUBSTRING( v.ORDNAME ,3,8) `;
     return await this.orderRepository.query(queryViewFields);
   }
 

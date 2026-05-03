@@ -45,7 +45,7 @@ export class AllRmaService {
     }
 
     this.isRunning = true;
-    this.logger.log('cron Called getAllNewRmaFromPriority EVERY_30_MINUTES');
+    //this.logger.log('cron Called getAllNewRmaFromPriority EVERY_30_MINUTES');
 
     try {
       const allCompanies = await this._CompanyService.findAll();

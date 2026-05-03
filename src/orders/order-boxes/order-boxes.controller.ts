@@ -45,6 +45,10 @@ export class OrderBoxesController {
   ) {
     return await this.orderBoxesService.update(id, updateOrderBoxDto);
   }
+  @Patch('cloneBoxItems/:id')
+  cloneBoxItems(@Param('id') id: string, @Body() updateOrderBoxItemDto: any) {
+    return this.orderBoxesService.cloneBoxItems(id);
+  }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {

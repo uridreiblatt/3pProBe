@@ -35,8 +35,8 @@ export class OrderController {
   }
   @Get('findAllComplete')
   //findAll(@Request() req) {
-  async findAllComplete() {
-    return await this.orderService.findAllComplete();
+  async findAllComplete(@Request() req) {
+    return await this.orderService.findAllComplete(req.user.selectCompany);
   }
 
   @Get(':id')

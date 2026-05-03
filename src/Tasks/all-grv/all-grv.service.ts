@@ -56,7 +56,7 @@ export class AllGrvService {
     }
 
     this.isRunning = true;
-    this.logger.log('cron Called SyncAllNewPoFromPriority EVERY_30_MINUTES');
+    //this.logger.log('cron Called SyncAllNewPoFromPriority EVERY_30_MINUTES');
 
     try {
       const allCompanies = await this._CompanyService.findAll();

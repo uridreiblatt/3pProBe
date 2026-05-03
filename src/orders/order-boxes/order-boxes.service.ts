@@ -108,6 +108,44 @@ export class OrderBoxesService {
     return resAll;
   }
 
+  async cloneBoxItems(id: string) {
+    const existing = await this.OrderBoxesRepository.findOne({
+      where: { id },
+      relations: {
+        orderBoxesItems: true,
+        order: true,
+        boxSize: true,
+      },
+    });
+
+    if (!existing) {
+      throw new Error('Box not found');
+    }
+
+    // Step 1: clone the box (without id + without items for now)
+    const { id: _, orderBoxesItems, ...boxData } = existing;
+
+    const newBox = this.OrderBoxesRepository.create({
+      ...boxData,
+    });
+
+    const savedBox = await this.OrderBoxesRepository.save(newBox);
+
+    // Step 2: clone items and attach to new box
+    const newItems = orderBoxesItems.map((item) => {
+      const { id: __, ...itemData } = item;
+
+      return this.OrderBoxesItemsRepository.create({
+        ...itemData,
+        orderBoxes: savedBox, // 🔥 important
+        // OR: orderBoxId: savedBox.id
+      });
+    });
+
+    await this.OrderBoxesItemsRepository.save(newItems);
+    return savedBox;
+  }
+
   async update(id: string, updateOrderBoxDto: UpdateOrderBoxDto) {
     const { boxId, companyId, orderBoxLines, ...rest } = updateOrderBoxDto;
     const itemsCount = updateOrderBoxDto.orderBoxLines.reduce(

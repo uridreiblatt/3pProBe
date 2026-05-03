@@ -6,7 +6,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 @Controller('priorityProducts')
 @UseGuards(AuthGuard)
 export class PriorityProductsController {
-  constructor(private readonly partsService: priorityProductsService) { }
+  constructor(private readonly partsService: priorityProductsService) {}
 
   // @Post()
   // create(@Body() createPartDto: CreatePartDto) {
@@ -23,13 +23,16 @@ export class PriorityProductsController {
   }
 
   @Get('findOne/:id')
-  findOne(@Param('id') id: string) {
-    return this.partsService.findOne(id);
+  async findOne(@Request() req, @Param('id') id: string) {
+    return await this.partsService.findOne(id, req.user.selectCompany);
   }
 
   @Get('findChildByParentPart/:id')
   async findChildByParentPart(@Request() req, @Param('id') id: string) {
-    return await this.partsService.findChildByParentPart(id, req.user.selectCompany);
+    return await this.partsService.findChildByParentPart(
+      id,
+      req.user.selectCompany,
+    );
   }
   // @Get('findChildByParent/:id')
   // async findChildByParent(@Param('id') id: string) {

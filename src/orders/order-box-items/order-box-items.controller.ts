@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { OrderBoxItemsService } from './order-box-items.service';
 import { CreateOrderBoxItemDto } from './dto/create-order-box-item.dto';
 import { UpdateOrderBoxItemDto } from './dto/update-order-box-item.dto';
@@ -26,14 +34,14 @@ export class OrderBoxItemsController {
   //
   @Get('order/findAllCompareOrderLines:orderId')
   findAllCompareOrderLines(@Param('orderId') orderId: string) {
-
-
-
     return this.orderBoxItemsService.findAllCompareOrderLines(orderId);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderBoxItemDto: UpdateOrderBoxItemDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateOrderBoxItemDto: UpdateOrderBoxItemDto,
+  ) {
     return this.orderBoxItemsService.update(id, updateOrderBoxItemDto);
   }
 
@@ -41,9 +49,9 @@ export class OrderBoxItemsController {
   remove(@Param('id') id: string) {
     return this.orderBoxItemsService.remove(id);
   }
+
   @Delete('order/:orderId')
   async removeByOrderId(orderId: string) {
-    
     await this.orderBoxItemsService.removeByOrderId(orderId);
   }
 }
