@@ -1,16 +1,12 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-} from 'typeorm';;
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
 import { TaskUser } from 'src/Tasks/task-user/entities/task-user.entity';
+import { AllInventoryCount } from 'src/Tasks/all_inventory/entities/all-inventory.entity';
 
 @Entity()
 export class TaskInventoryCount extends Tablestamp {
   @PrimaryGeneratedColumn('uuid')
-  id: string;  
+  id: string;
   @Column()
   DataInfo: string;
   @Column()
@@ -22,38 +18,37 @@ export class TaskInventoryCount extends Tablestamp {
   @Column()
   location: string;
 
-
-  
-
-  @Column({default: 0})
+  @Column({ default: 0 })
   NoOfBoxes_0: number;
-  @Column({default: 0})
+  @Column({ default: 0 })
   NoOfItems_0: number;
-  @Column({default: 0})
+  @Column({ default: 0 })
   NoOfBoxes_1: number;
-  @Column({default: 0})
+  @Column({ default: 0 })
   NoOfItems_1: number;
-  @Column({default: 0})
+  @Column({ default: 0 })
   NoOfBoxes_2: number;
-  @Column({default: 0})
+  @Column({ default: 0 })
   NoOfItems_2: number;
-  @Column({default: 0})
+  @Column({ default: 0 })
   NoOfBoxes_3: number;
-  @Column({default: 0})
+  @Column({ default: 0 })
   NoOfItems_3: number;
-  @Column({default: 0})
+  @Column({ default: 0 })
   NoOfBoxes_4: number;
-  @Column({default: 0})
+  @Column({ default: 0 })
   NoOfItems_4: number;
-  @Column({default: 0})
+  @Column({ default: 0 })
   NoOfBoxes_5: number;
-  @Column({default: 0})
+  @Column({ default: 0 })
   NoOfItems_5: number;
-  @Column({default: 0})
+  @Column({ default: 0 })
   bulkQauntity: number;
-  @Column({default: 0})
+  @Column({ default: 0 })
   Total: number;
-  @ManyToOne(() => TaskUser, (taskUser) => taskUser.id)
-  taskUser: TaskUser;
- 
+  @ManyToOne(
+    () => AllInventoryCount,
+    (allInventoryCount) => allInventoryCount.id,
+  )
+  allInventoryCount: AllInventoryCount;
 }

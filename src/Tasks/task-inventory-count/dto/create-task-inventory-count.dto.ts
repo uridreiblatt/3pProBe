@@ -1,21 +1,21 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsInt, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsInt, IsString } from 'class-validator';
 
 export class CreateTaskInventoryCountDto {
-  @ApiProperty({ default: "DataInfo" })
+  @ApiProperty({ default: 'DataInfo' })
   @IsString()
   DataInfo: string;
-  @ApiProperty({ default: "" })
+  @ApiProperty({ default: '' })
   @IsString()
   PartNumber: string;
-  @ApiProperty({ default: "" })
+  @ApiProperty({ default: '' })
   @IsString()
   productName: string;
-  @ApiProperty({ default: "" })
+  @ApiProperty({ default: '' })
   @IsString()
   productDescription: string;
-  @ApiProperty({ default: "" })
+  @ApiProperty({ default: '' })
   @IsString()
   location: string;
   @ApiProperty({ default: 0 })
@@ -60,10 +60,10 @@ export class CreateTaskInventoryCountDto {
   @ApiProperty({ default: 0 })
   @IsInt()
   Total: number;
-  @ApiProperty({ default: "" })
+  @ApiProperty({ default: '' })
   @IsString()
-  taskUserId: string;
-  @ApiProperty({ default: "" })
+  allInventoryCountId: string;
+  @ApiProperty({ default: '' })
   @IsString()
   companyId: string;
 }

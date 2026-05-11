@@ -1,21 +1,22 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { UpdateTaskInventoryCountDto } from "./dto/update-task-inventory-count.dto";
-import { TaskInventoryCount } from "./entities/task-inventory-count.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Equal, Not, Repository } from "typeorm";
-import { TaskUser } from "../task-user/entities/task-user.entity";
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { UpdateTaskInventoryCountDto } from './dto/update-task-inventory-count.dto';
+import { TaskInventoryCount } from './entities/task-inventory-count.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Equal, Not, Repository } from 'typeorm';
+import { TaskUser } from '../task-user/entities/task-user.entity';
+import { AllInventoryCount } from '../all_inventory/entities/all-inventory.entity';
 
 @Injectable()
 export class TaskInventoryCountService {
   constructor(
     @InjectRepository(TaskInventoryCount)
-    private taskInventoryCountServiceRepository: Repository<TaskInventoryCount>
+    private taskInventoryCountServiceRepository: Repository<TaskInventoryCount>,
   ) {}
 
   async findAll(taskUserId: string, id: string) {
     return await this.taskInventoryCountServiceRepository.find({
       where: {
-        taskUser: { id: id },
+        allInventoryCount: { id: id },
       },
       // relations: {
       //   taskUser:  true,
@@ -29,35 +30,37 @@ export class TaskInventoryCountService {
         id: id,
       },
       relations: {
-        taskUser: true,
+        allInventoryCount: true,
       },
     });
 
-    const { taskUser, ...rest } = res;
+    const { allInventoryCount, ...rest } = res;
 
     return {
       ...rest,
-      taskUserId: taskUser.id,
+      allInventoryCountId: allInventoryCount.id,
     };
   }
 
   async create(createTaskInventoryCountDto: any) {
     let taskInventoryCount = new TaskInventoryCount();
     taskInventoryCount = createTaskInventoryCountDto;
-    taskInventoryCount.taskUser = new TaskUser();
-    taskInventoryCount.taskUser.id = createTaskInventoryCountDto.taskUserId;
+    taskInventoryCount.allInventoryCount = new AllInventoryCount();
+    taskInventoryCount.allInventoryCount.id =
+      createTaskInventoryCountDto.allInventoryCountId;
     taskInventoryCount.productName = createTaskInventoryCountDto.productName;
-    taskInventoryCount.productDescription = createTaskInventoryCountDto.productDescription;
+    taskInventoryCount.productDescription =
+      createTaskInventoryCountDto.productDescription;
     taskInventoryCount.location = createTaskInventoryCountDto.location;
 
     return await this.taskInventoryCountServiceRepository.save(
-      taskInventoryCount
+      taskInventoryCount,
     );
   }
 
   async update(
     id: string,
-    updateTaskInventoryCountDto: UpdateTaskInventoryCountDto
+    updateTaskInventoryCountDto: UpdateTaskInventoryCountDto,
   ) {
     const ins = new TaskInventoryCount();
     ins.DataInfo = updateTaskInventoryCountDto.DataInfo;
@@ -78,8 +81,9 @@ export class TaskInventoryCountService {
     ins.productDescription = updateTaskInventoryCountDto.productDescription;
     ins.location = updateTaskInventoryCountDto.location;
     ins.Total = updateTaskInventoryCountDto.Total;
-    ins.taskUser = new TaskUser();
-    ins.taskUser.id = updateTaskInventoryCountDto.taskUserId;
+    ins.allInventoryCount = new AllInventoryCount();
+    ins.allInventoryCount.id =
+      updateTaskInventoryCountDto.allInventoryCountId || 'sdsadas';
     const res = await this.taskInventoryCountServiceRepository.update(id, ins);
     return res;
   }
