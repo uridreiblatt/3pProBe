@@ -39,6 +39,12 @@ export class TaskInventoryCountService {
     return {
       ...rest,
       allInventoryCountId: allInventoryCount.id,
+      allInventoryCount: {
+        location: allInventoryCount.Location,
+        productName: allInventoryCount.productName,
+        productDescription: allInventoryCount.productDescription,
+        partNumber: allInventoryCount.PartNumber,
+      },
     };
   }
 
