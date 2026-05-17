@@ -254,14 +254,16 @@ export class priorityProductsService {
       // select: {
       //   PARTNAME: true,
       // },
-      where: {
-        BARCODE: barcode,
-        company: { id: companyId },
-      },
-      relations: {
-        PriorityProductsHierarchy: true,
-        PriorityProductsLocation: { zone: true },
-      },
+      where: [
+        {
+          BARCODE: barcode,
+          company: { id: companyId },
+        },
+        {
+          PARTNAME: barcode,
+          company: { id: companyId },
+        },
+      ],
     });
   }
 
