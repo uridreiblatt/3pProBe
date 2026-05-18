@@ -38,9 +38,18 @@ export class PriorityProductsController {
   // async findChildByParent(@Param('id') id: string) {
   //   return await this.partsService.findChildByParent(id);
   // }
-  @Get('findBarcode/:barcode') //productName
+  @Get('findBarcode/:barcode')
   async findBarcode(@Request() req, @Param('barcode') id: string) {
     const res = await this.partsService.findBarcode(id, req.user.selectCompany);
+    return res;
+  }
+
+  @Get('findProductName/:productName') //
+  async findProductName(@Request() req, @Param('productName') id: string) {
+    const res = await this.partsService.findProductName(
+      id,
+      req.user.selectCompany,
+    );
     return res;
   }
 

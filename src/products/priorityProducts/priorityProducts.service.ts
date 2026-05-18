@@ -259,8 +259,17 @@ export class priorityProductsService {
           BARCODE: barcode,
           company: { id: companyId },
         },
+      ],
+    });
+  }
+  async findProductName(productName: string, companyId: string) {
+    return await this.PartRepository.findOne({
+      // select: {
+      //   PARTNAME: true,
+      // },
+      where: [
         {
-          PARTNAME: barcode,
+          PARTNAME: productName,
           company: { id: companyId },
         },
       ],
