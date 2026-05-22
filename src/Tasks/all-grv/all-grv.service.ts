@@ -137,14 +137,7 @@ export class AllGrvService {
           ),
       );
       const GrvInfo: RootPoPriority = data;
-      this._DbLogService.create({
-        subject: 'priority Po',
-        message: 'start import Po: ' + GrvInfo.value.length.toString(),
-        level: '',
-        context: '',
-        metadata: '',
-        companyId: companyId,
-      });
+
       let LinesInserted = 0;
 
       GrvInfo.value.forEach(async (element) => {
@@ -192,14 +185,7 @@ export class AllGrvService {
           }
         }
       });
-      this._DbLogService.create({
-        subject: 'priority Po',
-        message: 'end import Po inserted lines: ' + LinesInserted.toString(),
-        level: 'Info',
-        context: '',
-        metadata: '',
-        companyId: companyId,
-      });
+
       this.isLocked = false;
     } catch (error: any) {
       this.isLocked = false;

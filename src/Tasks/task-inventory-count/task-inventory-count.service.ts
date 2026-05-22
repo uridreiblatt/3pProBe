@@ -44,6 +44,7 @@ export class TaskInventoryCountService {
         productName: allInventoryCount.productName,
         productDescription: allInventoryCount.productDescription,
         partNumber: allInventoryCount.PartNumber,
+        remarks: allInventoryCount.remarks,
       },
     };
   }

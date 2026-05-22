@@ -269,6 +269,10 @@ export class priorityProductsService {
       // },
       where: [
         {
+          BARCODE: productName,
+          company: { id: companyId },
+        },
+        {
           PARTNAME: productName,
           company: { id: companyId },
         },

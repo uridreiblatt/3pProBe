@@ -135,14 +135,7 @@ export class GetOrderInfoService {
         ),
     );
     const orderInfo: RootPriority = data;
-    this._DbLogService.create({
-      subject: 'priority orders',
-      message: 'start import orders ' + orderInfo.value.length.toString(),
-      level: '',
-      context: '',
-      metadata: '',
-      companyId: companyId,
-    });
+
     let LinesInserted = 0;
 
     orderInfo.value.forEach(async (element) => {
@@ -425,14 +418,6 @@ export class GetOrderInfoService {
       }
     });
 
-    await this._DbLogService.create({
-      subject: 'priority orders',
-      message: 'end import orders orders: ' + LinesInserted.toString(),
-      level: '',
-      context: '',
-      metadata: '',
-      companyId: companyId,
-    });
     this.isLocked = false;
     return true;
   }

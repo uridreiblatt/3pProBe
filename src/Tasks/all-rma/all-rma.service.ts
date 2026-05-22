@@ -117,14 +117,6 @@ export class AllRmaService {
 
       const RmaInfo: RootRmaPriority = data;
 
-      this._DbLogService.create({
-        subject: 'priority rmas',
-        message: 'start import rmas ' + RmaInfo.value.length.toString(),
-        level: '',
-        context: '',
-        metadata: '',
-        companyId: resCompantSettings.id,
-      });
       let LinesInserted = 0;
 
       RmaInfo.value.forEach(async (element) => {
@@ -176,14 +168,7 @@ export class AllRmaService {
           }
         }
       });
-      this._DbLogService.create({
-        subject: 'priority rmas',
-        message: 'end import rma inserted lines: ' + LinesInserted.toString(),
-        level: '',
-        context: '',
-        metadata: '',
-        companyId: resCompantSettings.id,
-      });
+
       this.isLocked = false;
     } catch (error: any) {
       this.isLocked = false;
