@@ -47,7 +47,6 @@ export class AuthController {
       ...resUser.usersRoles.map((o) => o.role['id']),
     );
 
-    console.log(resUser.usersRoles, maxValueOfY);
     //const user =
     jwtDetails.userEmail = resUser.userMail;
     if (maxValueOfY > 5) jwtDetails.userRole = maxValueOfY.toString();

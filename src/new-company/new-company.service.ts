@@ -57,7 +57,6 @@ export class NewCompanyService {
       });
 
     ////////////////// CompanySetting /////////////////////////////
-    console.log('start companySettingRepository');
     const cmpSetting = new CompanySetting();
 
     cmpSetting.priorityApiCompany = createNewCompanyDto.priorityApiCompany;
@@ -76,7 +75,7 @@ export class NewCompanyService {
     cmpSetting.boxItemsCount = createNewCompanyDto.boxItemsCount;
     const resCompanySetting =
       await this.companySettingRepository.save(cmpSetting);
-    console.log('end companySettingRepository');
+
     ////////////////// Company ////////////////////////////////////
     const cmp = new Company();
     cmp.name = createNewCompanyDto.priorityApiCompany;
@@ -85,7 +84,6 @@ export class NewCompanyService {
     cmp.companySetting = new CompanySetting();
     cmp.companySetting.id = resCompanySetting.id;
     const resCompany = await this.companyRepository.save(cmp);
-    console.log('end companyRepository');
     ////////////////// User ////////////////////////////////////
     const usr = new User();
     usr.userName = createNewCompanyDto.priorityApiCompany + 'Admin';
@@ -96,7 +94,7 @@ export class NewCompanyService {
     usr.userMobile = '+001-';
     usr.selectedCompany = resCompany.id;
     const resUser = await this.userRepository.save(usr);
-    console.log('end userRepository');
+
     ////////////////// UserCompany ////////////////////////////////////
     const usrCompany = new UserCompany();
     usrCompany.users = { id: resUser.id } as User;
@@ -108,7 +106,7 @@ export class NewCompanyService {
     usrRole.users.id = resUser.id;
     usrRole.role = new Role();
     usrRole.role.id = 7;
-    console.log(usrRole);
+
     const resUserRole = await this.userRoleRepository.save(usrRole);
     ////////////////// BoxSize ////////////////////////////////////
     let boxSize = new Boxsize();
@@ -171,7 +169,6 @@ export class NewCompanyService {
     await this.boxSizeRepository.delete({
       company: { id: id },
     });
-    console.log('end boxSizeRepository');
     const users = await this.userCompanyRepository.find({
       where: { company: { id: id } },
     });
@@ -180,26 +177,24 @@ export class NewCompanyService {
         users: { id: u.id },
       });
     });
-    console.log('end userRoleRepository');
+
     await this.userCompanyRepository.delete({
       company: { id: id },
     });
-    console.log('end userCompanyRepository');
 
     const resUser = await this.userRepository.delete({
       selectedCompany: id,
     });
-    console.log('end userRepository');
+
     const resComp = await this.companyRepository.findOne({
       where: { id: id },
     });
-    console.log('find userCompanyRepository', resComp);
+
     const res = await this.companyRepository.delete(id);
-    console.log('end companyRepository');
+
     if (resComp && resComp.companySetting) {
       await this.companySettingRepository.delete(resComp.companySetting.id);
     }
-    console.log('end companySettingRepository');
 
     return res;
   }

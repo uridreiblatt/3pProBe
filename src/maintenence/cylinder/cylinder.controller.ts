@@ -50,7 +50,6 @@ export class CylinderController {
   @Delete(':id')
   async remove(@Request() req, @Param('id') id: string) {
     const res = await this.cylinderService.findOne(id);
-    console.log(id, res);
     //validateCompany(req.user.selectCompany, res.company.id);
     return this.cylinderService.remove(id);
   }
