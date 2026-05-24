@@ -112,7 +112,6 @@ export class GetOrderInfoService {
       resCompantSettings.companySetting.priorityApiCompany +
       `/ORDERS?$select=REFERENCE,CUSTNAME,CURDATE,ORDNAME,DETAILS,STCODE,STDES,ORDSTATUSDES,CDES,FBES_ACCOUNT,FBES_ZIP&$top=200&$filter=ORDSTATUSDES eq '${resCompantSettings.companySetting.priorityOrderStatus}'&$expand=ORDERITEMS_SUBFORM($select=PARTNAME,PDES,BARCODE,TBALANCE,ORDISTATUSDES,REMARK1,KLINE,ORDI),SHIPTO2_SUBFORM, ORDERSTEXT_SUBFORM`;
 
-    console.log('urlEndPointPriority', urlEndPointPriority);
     const credentials = btoa(
       resCompantSettings.companySetting.priorityApiUser +
         ':' +

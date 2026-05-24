@@ -160,7 +160,6 @@ export class UsersService {
     if (updateUserDto.userPasswordEnc === '') {
       delete payload.userPasswordEnc;
     }
-    console.log('payload', payload);
 
     return await this.userRepository.update(id, payload);
   }
