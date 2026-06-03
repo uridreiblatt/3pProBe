@@ -84,7 +84,7 @@ export class AiService {
     if (q.includes('return') || q.includes('refund') || q.includes('rma')) {
       return {
         sql: `
-        SELECT r.CUSTNAME, r.FBCM_RETREASONCODE
+        SELECT r.CUSTDES, r.FBCM_RETREASONCODE
         FROM p3pro.all_rma r
         WHERE r.companyId = ?
         LIMIT 5
@@ -96,11 +96,11 @@ export class AiService {
     if (q.includes('product') || q.includes('sku') || q.includes('stock')) {
       return {
         sql: `
-        SELECT p.BARCODE,p.TYPE  , sum(pl.quantity) as quantity
+        SELECT p.PARTNAME,p.TYPE  , sum(pl.quantity) as quantity
         FROM p3pro.priorityproducts p, p3pro.priorityproductslocation pl
         where  p.companyId =?
         and pl.priorityProductsId=p.id
-        group by p.BARCODE,p.TYPE 
+        group by p.PARTNAME,p.TYPE 
         having sum(pl.quantity) > 0
         limit 5
       `,
@@ -115,7 +115,7 @@ export class AiService {
     ) {
       return {
         sql: `
-        SELECT r.PO, r.taskInfo
+        SELECT r.PO, r.taskInfo, as quantity
         FROM p3pro.all_grv r
         WHERE r.companyId = ?
         LIMIT 5
