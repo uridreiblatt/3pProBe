@@ -50,6 +50,7 @@ import { ProductStatusModule } from './products/product-status/product-status.mo
 import { NewCompanyModule } from './new-company/new-company.module';
 import { AllGrvModule } from './Tasks/all-grv/all-grv.module';
 import { AllInventoryModule } from './Tasks/all_inventory/all-inventory.module';
+import { AiModule } from './ai/ai.module';
 
 const cookieMatchOpts: CookieMatchOptions = {
   cookieName: 'companyId',
@@ -138,6 +139,8 @@ const cookieMatchOpts: CookieMatchOptions = {
     AllInventoryModule,
 
     AllGrvModule,
+
+    AiModule,
   ],
   controllers: [],
   providers: [
