@@ -535,6 +535,14 @@ export class OrderService {
         role: true,
       },
     });
+
+    if (Currentorder.role.id > newRole) {
+      throw new BadRequestException('Order assigned to another user', {
+        cause: new Error(),
+        description: 'Order completed to another user',
+      });
+    }
+
     if (Currentorder.role.id === newRole) {
       if (
         Currentorder.user.id !== EOrderUser.unAssigned &&

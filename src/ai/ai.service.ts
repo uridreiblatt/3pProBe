@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 import { DataSource } from 'typeorm';
 import { CreateAiDto } from './dto/create-ai.dto';
 import { ConfigService } from '@nestjs/config';
+import { dbSchemaForUi } from './entities/dbSchema';
 
 @Injectable()
 export class AiService {
@@ -21,6 +22,74 @@ export class AiService {
   }
 
   async askDatabase(createAiDto: CreateAiDto) {
+    const sqlResultSCH = await this.dataSource.query(
+      `
+          SELECT
+        TABLE_NAME,
+        COLUMN_NAME
+    FROM information_schema.columns
+    WHERE table_schema = 'p3pro'
+    and TABLE_NAME not like 'v_%'
+    and TABLE_NAME not in ('log')
+    and COLUMN_NAME not in ('is_active','created_at','updated_at')
+    ORDER BY TABLE_NAME, ORDINAL_POSITION
+          `,
+    );
+
+    const schema = Object.values(
+      sqlResultSCH.reduce(
+        (acc, row) => {
+          if (!acc[row.TABLE_NAME]) {
+            acc[row.TABLE_NAME] = {
+              table: row.TABLE_NAME,
+              fields: [],
+            };
+          }
+
+          acc[row.TABLE_NAME].fields.push({
+            name: row.COLUMN_NAME,
+            type: row.COLUMN_TYPE,
+          });
+
+          return acc;
+        },
+        {} as Record<string, { table: string; fields: any[] }>,
+      ),
+    );
+
+    return schema;
+
+    const aiQuery = await this.openai.responses.create({
+      model: 'gpt-5.5',
+      input: [
+        {
+          role: 'system',
+          content: `
+    You are a MySQL query generator.
+
+  Rules:
+  - Return ONLY a SQL query.
+  - Generate ONLY SELECT statements.
+  - Never use INSERT, UPDATE, DELETE, DROP, ALTER, CREATE, TRUNCATE.
+  - Use only tables and columns from the provided schema.
+  - If the question is ambiguous, return:
+  SELECT 'AMBIGUOUS_REQUEST' AS error;
+  - Limit results to 100 rows unless the user explicitly asks otherwise.
+
+Schema:
+${JSON.stringify(dbSchemaForUi)}
+
+`,
+        },
+        {
+          role: 'user',
+          content: createAiDto.question,
+        },
+      ],
+    });
+
+    return aiQuery.output_text;
+
     const querySql = await this.detectTable(
       createAiDto.question,
       createAiDto.companyId,
@@ -126,16 +195,23 @@ export class AiService {
 
     return {
       sql: `
-      SELECT 
-        o.CUSTNAME,
-        ol.PARTNAME,
-        SUM(ol.TBALANCE) AS total_sold
+        SELECT 
+      *
       FROM p3pro.order o
       JOIN p3pro.order_line ol ON ol.orderId = o.id
-      WHERE o.comapnyId = ?
-      GROUP BY o.CUSTNAME, ol.PARTNAME
-      LIMIT 2
+      WHERE o.comapnyId = ?    
+      LIMIT 10 
+      
     `,
+      // SELECT
+      //   o.CUSTNAME,
+      //   ol.PARTNAME,
+      //   SUM(ol.TBALANCE) AS total_sold
+      // FROM p3pro.order o
+      // JOIN p3pro.order_line ol ON ol.orderId = o.id
+      // WHERE o.comapnyId = ?
+      // GROUP BY o.CUSTNAME, ol.PARTNAME
+      // LIMIT 2
       params: [companyId],
     };
   }
