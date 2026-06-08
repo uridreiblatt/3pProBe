@@ -142,8 +142,8 @@ ${JSON.stringify(dbSchemaForUiRma)}
       ),
     );
 
-    console.log('SQL Result:', sanitizedResult);
-    console.log('SQL Result:', sqlResult);
+    // console.log('SQL Result:', sanitizedResult);
+    // console.log('SQL Result:', sqlResult);
 
     // const response = await this.openai.responses.create({
     //   model: 'gpt-5.4-mini',

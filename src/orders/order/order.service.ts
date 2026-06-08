@@ -537,9 +537,9 @@ export class OrderService {
     });
 
     if (Currentorder.role.id > newRole) {
-      throw new BadRequestException('Order assigned to another user', {
+      throw new BadRequestException('Order stage completed by another user', {
         cause: new Error(),
-        description: 'Order completed to another user',
+        description: 'Order stage completed by another user',
       });
     }
 
