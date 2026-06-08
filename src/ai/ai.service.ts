@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 import { CreateAiDto } from './dto/create-ai.dto';
 import { ConfigService } from '@nestjs/config';
 import { dbSchemaForUi } from './entities/dbSchema';
+import { dbSchemaForUiRma } from './entities/dbSchemaRma';
 
 @Injectable()
 export class AiService {
@@ -22,62 +23,81 @@ export class AiService {
   }
 
   async askDatabase(createAiDto: CreateAiDto) {
-    const sqlResultSCH = await this.dataSource.query(
-      `
-          SELECT
-        TABLE_NAME,
-        COLUMN_NAME
-    FROM information_schema.columns
-    WHERE table_schema = 'p3pro'
-    and TABLE_NAME not like 'v_%'
-    and TABLE_NAME not in ('log')
-    and COLUMN_NAME not in ('is_active','created_at','updated_at')
-    ORDER BY TABLE_NAME, ORDINAL_POSITION
-          `,
-    );
+    // const sqlResultSCH = await this.dataSource.query(
+    //   //   `
+    //   //       SELECT
+    //   //     TABLE_NAME,
+    //   //     COLUMN_NAME
+    //   // FROM information_schema.columns
+    //   // WHERE table_schema = 'p3pro'
+    //   // and TABLE_NAME not like 'v_%'
+    //   // and TABLE_NAME not in ('log','deliverysetting','company','cylinder')
+    //   // and COLUMN_NAME not in ('is_active','created_at','updated_at')
+    //   // ORDER BY TABLE_NAME, ORDINAL_POSITION
+    //   //       `,
 
-    const schema = Object.values(
-      sqlResultSCH.reduce(
-        (acc, row) => {
-          if (!acc[row.TABLE_NAME]) {
-            acc[row.TABLE_NAME] = {
-              table: row.TABLE_NAME,
-              fields: [],
-            };
-          }
+    //   `
+    //     SELECT
+    //     kcu.TABLE_NAME,
+    //     kcu.COLUMN_NAME,
+    //     kcu.REFERENCED_TABLE_NAME,
+    //     kcu.REFERENCED_COLUMN_NAME
+    // FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE kcu
+    // WHERE kcu.TABLE_SCHEMA = DATABASE()
+    //   AND kcu.REFERENCED_TABLE_NAME IS NOT NULL;`,
+    // );
+    // const relations = sqlResultSCH.map((row) => ({
+    //   fromTable: row.TABLE_NAME,
+    //   fromColumn: row.COLUMN_NAME,
+    //   toTable: row.REFERENCED_TABLE_NAME,
+    //   toColumn: row.REFERENCED_COLUMN_NAME,
+    // }));
 
-          acc[row.TABLE_NAME].fields.push({
-            name: row.COLUMN_NAME,
-            type: row.COLUMN_TYPE,
-          });
+    // return relations;
 
-          return acc;
-        },
-        {} as Record<string, { table: string; fields: any[] }>,
-      ),
-    );
+    // const schema = Object.values(
+    //   sqlResultSCH.reduce(
+    //     (acc, row) => {
+    //       if (!acc[row.TABLE_NAME]) {
+    //         acc[row.TABLE_NAME] = {
+    //           table: row.TABLE_NAME,
+    //           fields: [] as string[],
+    //         };
+    //       }
 
-    return schema;
+    //       acc[row.TABLE_NAME].fields.push(row.COLUMN_NAME);
+
+    //       return acc;
+    //     },
+    //     {} as Record<string, { table: string; fields: string[] }>,
+    //   ),
+    // );
+    // return schema;
 
     const aiQuery = await this.openai.responses.create({
-      model: 'gpt-5.5',
+      model: 'gpt-5.4-mini',
       input: [
         {
           role: 'system',
           content: `
     You are a MySQL query generator.
 
-  Rules:
-  - Return ONLY a SQL query.
-  - Generate ONLY SELECT statements.
-  - Never use INSERT, UPDATE, DELETE, DROP, ALTER, CREATE, TRUNCATE.
-  - Use only tables and columns from the provided schema.
-  - If the question is ambiguous, return:
-  SELECT 'AMBIGUOUS_REQUEST' AS error;
-  - Limit results to 100 rows unless the user explicitly asks otherwise.
+ Rules:
+- Return ONLY a SQL query.
+- Generate ONLY SELECT statements.
+- Never use INSERT, UPDATE, DELETE, DROP, ALTER, CREATE, TRUNCATE.
+- Use only tables and columns from the provided schema.
+- Use JOINs only from the provided relations.
+- If the user asks about RMA, use all_rma as the main table.
+- If the user asks about RMA items/products/parts, join task_rma to all_rma using task_rma.allRmaId = all_rma.id.
+- If the user asks for status names, join all_rma.taskStatusId = task_status.id.
+- If the user asks for users, join all_rma.userId = user.id.
+- If the user asks for “insights”, generate an aggregate query using COUNT, GROUP BY, and ORDER BY.
+- Return AMBIGUOUS_REQUEST only when there is no reasonable default table or metric.
+- Limit results to 100 rows unless the user explicitly asks otherwise.
 
 Schema:
-${JSON.stringify(dbSchemaForUi)}
+${JSON.stringify(dbSchemaForUiRma)}
 
 `,
         },
@@ -88,17 +108,42 @@ ${JSON.stringify(dbSchemaForUi)}
       ],
     });
 
-    return aiQuery.output_text;
+    //return aiQuery.output_text;
 
-    const querySql = await this.detectTable(
-      createAiDto.question,
-      createAiDto.companyId,
-    );
+    // const querySql = await this.detectTable(
+    //   createAiDto.question,
+    //   createAiDto.companyId,
+    // );
 
     const sqlResult = await this.dataSource.query(
-      querySql.sql,
-      querySql.params,
+      aiQuery.output_text,
+      //querySql.params,
     );
+
+    const excludedColumns = new Set([
+      'id',
+      'userId',
+      'rma_id',
+      'companyId',
+      'roleId',
+      'taskStatusId',
+      'taskTypeId',
+      'allRmaId',
+      'orderId',
+      'zoneId',
+      'priorityProductsId',
+      'usersId',
+      'updatedBy',
+    ]);
+
+    const sanitizedResult = sqlResult.map((row) =>
+      Object.fromEntries(
+        Object.entries(row).filter(([key]) => !excludedColumns.has(key)),
+      ),
+    );
+
+    console.log('SQL Result:', sanitizedResult);
+    console.log('SQL Result:', sqlResult);
 
     // const response = await this.openai.responses.create({
     //   model: 'gpt-5.4-mini',
@@ -121,7 +166,7 @@ ${JSON.stringify(dbSchemaForUi)}
       "chart": {
         "type": "bar",
         "title": "string",
-        "xKey": "CUSTNAME",
+        "xKey": "name",
         "yKey": "total_sold",
         "data": []
       },
@@ -138,7 +183,7 @@ ${JSON.stringify(dbSchemaForUi)}
     Question: ${createAiDto.question}
 
     MySQL result:
-    ${JSON.stringify(sqlResult)}
+    ${JSON.stringify(sanitizedResult)}
               `,
         },
       ],
