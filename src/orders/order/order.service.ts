@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   forwardRef,
   Inject,
   Injectable,
@@ -537,7 +538,7 @@ export class OrderService {
     });
 
     if (Currentorder.role.id > newRole) {
-      throw new BadRequestException('Order stage completed by another user', {
+      throw new ConflictException('Order stage completed by another user', {
         cause: new Error(),
         description: 'Order stage completed by another user',
       });
@@ -548,7 +549,7 @@ export class OrderService {
         Currentorder.user.id !== EOrderUser.unAssigned &&
         Currentorder.user.id !== userInOrder
       ) {
-        throw new BadRequestException('Order assigned to another user', {
+        throw new ConflictException('Order assigned to another user', {
           cause: new Error(),
           description: 'Order assigned to another user',
         });
