@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
 import { DataSource } from 'typeorm';
 import { CreateAiDto } from './dto/create-ai.dto';
@@ -23,63 +23,64 @@ export class AiService {
   }
 
   async askDatabase(createAiDto: CreateAiDto) {
-    // const sqlResultSCH = await this.dataSource.query(
-    //   //   `
-    //   //       SELECT
-    //   //     TABLE_NAME,
-    //   //     COLUMN_NAME
-    //   // FROM information_schema.columns
-    //   // WHERE table_schema = 'p3pro'
-    //   // and TABLE_NAME not like 'v_%'
-    //   // and TABLE_NAME not in ('log','deliverysetting','company','cylinder')
-    //   // and COLUMN_NAME not in ('is_active','created_at','updated_at')
-    //   // ORDER BY TABLE_NAME, ORDINAL_POSITION
-    //   //       `,
+    try {
+      // const sqlResultSCH = await this.dataSource.query(
+      //   //   `
+      //   //       SELECT
+      //   //     TABLE_NAME,
+      //   //     COLUMN_NAME
+      //   // FROM information_schema.columns
+      //   // WHERE table_schema = 'p3pro'
+      //   // and TABLE_NAME not like 'v_%'
+      //   // and TABLE_NAME not in ('log','deliverysetting','company','cylinder')
+      //   // and COLUMN_NAME not in ('is_active','created_at','updated_at')
+      //   // ORDER BY TABLE_NAME, ORDINAL_POSITION
+      //   //       `,
 
-    //   `
-    //     SELECT
-    //     kcu.TABLE_NAME,
-    //     kcu.COLUMN_NAME,
-    //     kcu.REFERENCED_TABLE_NAME,
-    //     kcu.REFERENCED_COLUMN_NAME
-    // FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE kcu
-    // WHERE kcu.TABLE_SCHEMA = DATABASE()
-    //   AND kcu.REFERENCED_TABLE_NAME IS NOT NULL;`,
-    // );
-    // const relations = sqlResultSCH.map((row) => ({
-    //   fromTable: row.TABLE_NAME,
-    //   fromColumn: row.COLUMN_NAME,
-    //   toTable: row.REFERENCED_TABLE_NAME,
-    //   toColumn: row.REFERENCED_COLUMN_NAME,
-    // }));
+      //   `
+      //     SELECT
+      //     kcu.TABLE_NAME,
+      //     kcu.COLUMN_NAME,
+      //     kcu.REFERENCED_TABLE_NAME,
+      //     kcu.REFERENCED_COLUMN_NAME
+      // FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE kcu
+      // WHERE kcu.TABLE_SCHEMA = DATABASE()
+      //   AND kcu.REFERENCED_TABLE_NAME IS NOT NULL;`,
+      // );
+      // const relations = sqlResultSCH.map((row) => ({
+      //   fromTable: row.TABLE_NAME,
+      //   fromColumn: row.COLUMN_NAME,
+      //   toTable: row.REFERENCED_TABLE_NAME,
+      //   toColumn: row.REFERENCED_COLUMN_NAME,
+      // }));
 
-    // return relations;
+      // return relations;
 
-    // const schema = Object.values(
-    //   sqlResultSCH.reduce(
-    //     (acc, row) => {
-    //       if (!acc[row.TABLE_NAME]) {
-    //         acc[row.TABLE_NAME] = {
-    //           table: row.TABLE_NAME,
-    //           fields: [] as string[],
-    //         };
-    //       }
+      // const schema = Object.values(
+      //   sqlResultSCH.reduce(
+      //     (acc, row) => {
+      //       if (!acc[row.TABLE_NAME]) {
+      //         acc[row.TABLE_NAME] = {
+      //           table: row.TABLE_NAME,
+      //           fields: [] as string[],
+      //         };
+      //       }
 
-    //       acc[row.TABLE_NAME].fields.push(row.COLUMN_NAME);
+      //       acc[row.TABLE_NAME].fields.push(row.COLUMN_NAME);
 
-    //       return acc;
-    //     },
-    //     {} as Record<string, { table: string; fields: string[] }>,
-    //   ),
-    // );
-    // return schema;
+      //       return acc;
+      //     },
+      //     {} as Record<string, { table: string; fields: string[] }>,
+      //   ),
+      // );
+      // return schema;
 
-    const aiQuery = await this.openai.responses.create({
-      model: 'gpt-5.4-mini',
-      input: [
-        {
-          role: 'system',
-          content: `
+      const aiQuery = await this.openai.responses.create({
+        model: 'gpt-5.4-mini',
+        input: [
+          {
+            role: 'system',
+            content: `
     You are a MySQL query generator.
 
  Rules:
@@ -100,66 +101,66 @@ Schema:
 ${JSON.stringify(dbSchemaForUiRma)}
 
 `,
-        },
-        {
-          role: 'user',
-          content: createAiDto.question,
-        },
-      ],
-    });
+          },
+          {
+            role: 'user',
+            content: createAiDto.question,
+          },
+        ],
+      });
 
-    //return aiQuery.output_text;
+      //return aiQuery.output_text;
 
-    // const querySql = await this.detectTable(
-    //   createAiDto.question,
-    //   createAiDto.companyId,
-    // );
+      // const querySql = await this.detectTable(
+      //   createAiDto.question,
+      //   createAiDto.companyId,
+      // );
 
-    const sqlResult = await this.dataSource.query(
-      aiQuery.output_text,
-      //querySql.params,
-    );
+      const sqlResult = await this.dataSource.query(
+        aiQuery.output_text,
+        //querySql.params,
+      );
 
-    const excludedColumns = new Set([
-      'id',
-      'userId',
-      'rma_id',
-      'companyId',
-      'roleId',
-      'taskStatusId',
-      'taskTypeId',
-      'allRmaId',
-      'orderId',
-      'zoneId',
-      'priorityProductsId',
-      'usersId',
-      'updatedBy',
-    ]);
+      const excludedColumns = new Set([
+        'id',
+        'userId',
+        'rma_id',
+        'companyId',
+        'roleId',
+        'taskStatusId',
+        'taskTypeId',
+        'allRmaId',
+        'orderId',
+        'zoneId',
+        'priorityProductsId',
+        'usersId',
+        'updatedBy',
+      ]);
 
-    const sanitizedResult = sqlResult.map((row) =>
-      Object.fromEntries(
-        Object.entries(row).filter(([key]) => !excludedColumns.has(key)),
-      ),
-    );
+      const sanitizedResult = sqlResult.map((row) =>
+        Object.fromEntries(
+          Object.entries(row).filter(([key]) => !excludedColumns.has(key)),
+        ),
+      );
 
-    // console.log('SQL Result:', sanitizedResult);
-    // console.log('SQL Result:', sqlResult);
+      // console.log('SQL Result:', sanitizedResult);
+      // console.log('SQL Result:', sqlResult);
 
-    // const response = await this.openai.responses.create({
-    //   model: 'gpt-5.4-mini',
-    //   input: createAiDto.question,
-    // });
+      // const response = await this.openai.responses.create({
+      //   model: 'gpt-5.4-mini',
+      //   input: createAiDto.question,
+      // });
 
-    //return response.output_text;
+      //return response.output_text;
 
-    //return sqlResult;
+      //return sqlResult;
 
-    const ai = await this.openai.responses.create({
-      model: 'gpt-5.4-mini',
-      input: [
-        {
-          role: 'system',
-          content: `
+      const ai = await this.openai.responses.create({
+        model: 'gpt-5.4-mini',
+        input: [
+          {
+            role: 'system',
+            content: `
     Return ONLY valid JSON in this shape:
     {
       "answer": "string",
@@ -176,20 +177,32 @@ ${JSON.stringify(dbSchemaForUiRma)}
       }
     }
               `,
-        },
-        {
-          role: 'user',
-          content: `
+          },
+          {
+            role: 'user',
+            content: `
     Question: ${createAiDto.question}
 
     MySQL result:
     ${JSON.stringify(sanitizedResult)}
               `,
-        },
-      ],
-    });
+          },
+        ],
+      });
 
-    return JSON.parse(ai.output_text);
+      return JSON.parse(ai.output_text);
+    } catch (error: any) {
+      console.error('Error in askDatabase:', error);
+      if (error?.status === 429 || error?.response?.status === 429) {
+        throw new HttpException(
+          'Too many account requests, please check your OpenAI credits. ',
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
+      }
+      throw new Error(
+        '`The AI response was not in the expected format. Please try rephrasing your question or ask a simpler one.`',
+      );
+    }
   }
 
   async detectTable(question: string, companyId: string) {
