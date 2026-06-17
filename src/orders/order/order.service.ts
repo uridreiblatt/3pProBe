@@ -320,6 +320,11 @@ export class OrderService {
         //orderBasket: true,
         role: true,
       },
+      order: {
+        orderBoxes: {
+          createdAt: 'ASC',
+        },
+      },
     });
 
     const partCount = await this.partCqauntRepository.find({
