@@ -95,7 +95,7 @@ export class AiService {
 - If the user asks for users, join all_rma.userId = user.id.
 - If the user asks for “insights”, generate an aggregate query using COUNT, GROUP BY, and ORDER BY.
 - Return AMBIGUOUS_REQUEST only when there is no reasonable default table or metric.
-- Limit results to 100 rows unless the user explicitly asks otherwise.
+- Limit results to 20 rows unless the user explicitly asks otherwise.
 
 Schema:
 ${JSON.stringify(dbSchemaForUiRma)}

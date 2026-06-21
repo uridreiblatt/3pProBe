@@ -10,14 +10,19 @@ import {
 import { AiService } from './ai.service';
 import { CreateAiDto } from './dto/create-ai.dto';
 import { UpdateAiDto } from './dto/update-ai.dto';
+import { GeminiService } from './aiGemiuni.service';
 
 @Controller('ai')
 export class AiController {
-  constructor(private readonly aiService: AiService) {}
+  constructor(
+    private readonly aiService: AiService,
+    private readonly geminiService: GeminiService,
+  ) {}
 
   @Post()
-  create(@Body() createAiDto: CreateAiDto) {
-    return this.aiService.askDatabase(createAiDto);
+  async create(@Body() createAiDto: CreateAiDto) {
+    //return this.aiService.askDatabase(createAiDto);
+    return await this.geminiService.askDatabase(createAiDto);
   }
 
   // @Get()
