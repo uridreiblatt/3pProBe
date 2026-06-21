@@ -29,7 +29,7 @@ export class GeminiService {
     this.model = this.config.get<string>('GEMINI_MODEL') || 'gemini-2.5-flash';
   }
 
-  async generateText(createAiDto: CreateAiDto): Promise<string> {
+  async generateText(createAiDto: CreateAiDto): Promise<any> {
     try {
       const response = await this.aiGoogleGenAI.models.generateContent({
         model: this.model,
@@ -49,29 +49,31 @@ export class GeminiService {
         config: {
           temperature: 0,
           systemInstruction: `
-You are a MySQL query generator.
+                  You are a MySQL query generator.
 
-Rules:
-- Return ONLY a SQL query.
-- Generate ONLY SELECT statements.
-- Never use INSERT, UPDATE, DELETE, DROP, ALTER, CREATE, TRUNCATE.
-- Use only tables and columns from the provided schema.
-- Use JOINs only from the provided relations.
-- If the user asks about RMA, use all_rma as the main table.
-- If the user asks about RMA items/products/parts, join task_rma to all_rma using task_rma.allRmaId = all_rma.id.
-- If the user asks for status names, join all_rma.taskStatusId = task_status.id.
-- If the user asks for users, join all_rma.userId = user.id.
-- If the user asks for “insights”, generate an aggregate query using COUNT, GROUP BY, and ORDER BY.
-- Return AMBIGUOUS_REQUEST only when there is no reasonable default table or metric.
-- Limit results to 20 rows unless the user explicitly asks otherwise.
+                  Rules:
+                  - Return ONLY a SQL query.
+                  - Generate ONLY SELECT statements.
+                  - Never use INSERT, UPDATE, DELETE, DROP, ALTER, CREATE, TRUNCATE.
+                  - Use only tables and columns from the provided schema.
+                  - Use JOINs only from the provided relations.
+                  - If the user asks about RMA, use all_rma as the main table.
+                  - If the user asks about RMA items/products/parts, join task_rma to all_rma using task_rma.allRmaId = all_rma.id.
+                  - If the user asks for status names, join all_rma.taskStatusId = task_status.id.
+                  - If the user asks for users, join all_rma.userId = user.id.
+                  - Do NOT use \`\`\`sql code fences.
+                  - If the user asks for “insights”, generate an aggregate query using COUNT, GROUP BY, and ORDER BY.
+                  - Return AMBIGUOUS_REQUEST only when there is no reasonable default table or metric.
+                  - Limit results to 20 rows unless the user explicitly asks otherwise.
 
-Schema:
-${JSON.stringify(dbSchemaForUiRma)}
-        `,
+                  Schema:
+                  ${JSON.stringify(dbSchemaForUiRma)}
+                          `,
         },
       });
 
       const sql = aiQuery.text?.trim();
+      console.log(sql);
 
       if (!sql || sql === 'AMBIGUOUS_REQUEST') {
         throw new Error('AMBIGUOUS_REQUEST');
@@ -84,10 +86,11 @@ ${JSON.stringify(dbSchemaForUiRma)}
       const forbidden =
         /\b(insert|update|delete|drop|alter|create|truncate)\b/i;
       if (forbidden.test(sql)) {
-        throw new Error('Unsafe SQL generated');
+        throw new Error('Unsafe SQL generated forbidden');
       }
 
       const sqlResult = await this.dataSource.query(sql);
+      console.log('sql result', sqlResult);
 
       const excludedColumns = new Set([
         'id',
