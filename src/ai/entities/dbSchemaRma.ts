@@ -1,196 +1,131 @@
-export const dbSchemaForUiRma = {
-  relations: [
-    {
-      fromTable: 'all_rma',
-      fromColumn: 'taskStatusId',
-      toTable: 'task_status',
-      toColumn: 'id',
-    },
-    {
-      fromTable: 'all_rma',
-      fromColumn: 'companyId',
-      toTable: 'company',
-      toColumn: 'id',
-    },
-    {
-      fromTable: 'all_rma',
-      fromColumn: 'userId',
-      toTable: 'user',
-      toColumn: 'id',
-    },
-    {
-      fromTable: 'all_rma',
-      fromColumn: 'userId',
-      toTable: 'user',
-      toColumn: 'id',
-    },
+export const rmaSql = `SELECT ar.DOCNO, ar.DETAILS, ar.FBCM_RETREASONDES,ar.Title,
+tr.PartNumber,tr.productDescription,tr.partQount,tr.productName, u.userName,ts.status
+FROM p3pro.all_rma ar , p3pro.task_rma tr, p3pro.user u, p3pro.task_status ts
+where tr.allRmaId=ar.id
+and ar.userId=u.id
+and ar.taskStatusId = ts.id
+and companyId = 'aaa-aaa-aaa'`;
 
-    {
-      fromTable: 'priorityproducts',
-      fromColumn: 'companyId',
-      toTable: 'company',
-      toColumn: 'id',
-    },
-    {
-      fromTable: 'priorityproductshierarchy',
-      fromColumn: 'PART',
-      toTable: 'priorityproducts',
-      toColumn: 'PART',
-    },
-    {
-      fromTable: 'priorityproductshierarchy',
-      fromColumn: 'companyId',
-      toTable: 'priorityproducts',
-      toColumn: 'companyId',
-    },
-    {
-      fromTable: 'priorityproductshierarchy',
-      fromColumn: 'SON',
-      toTable: 'priorityproducts',
-      toColumn: 'PART',
-    },
-    {
-      fromTable: 'priorityproductshierarchy',
-      fromColumn: 'companyId',
-      toTable: 'priorityproducts',
-      toColumn: 'companyId',
-    },
-    {
-      fromTable: 'priorityproductslocation',
-      fromColumn: 'zoneId',
-      toTable: 'zone',
-      toColumn: 'id',
-    },
-    {
-      fromTable: 'priorityproductslocation',
-      fromColumn: 'priorityProductsId',
-      toTable: 'priorityproducts',
-      toColumn: 'id',
-    },
-
-    {
-      fromTable: 'task_rma',
-      fromColumn: 'allRmaId',
-      toTable: 'all_rma',
-      toColumn: 'id',
-    },
-    {
-      fromTable: 'users_roles',
-      fromColumn: 'roleId',
-      toTable: 'role',
-      toColumn: 'id',
-    },
-    {
-      fromTable: 'users_roles',
-      fromColumn: 'usersId',
-      toTable: 'user',
-      toColumn: 'id',
-    },
-  ],
-  tables: [
-    {
-      table: 'all_rma',
-      fields: [
-        'updatedBy',
-        'id',
-        'CUSTNAME',
-        'CUSTDES',
-        'CURDATE',
-        'DOCNO',
-        'DETAILS',
-        'STATDES',
-        'FBCM_RETREASONCODE',
-        'FBCM_RETREASONDES',
-        'Title',
-        'trackingNumber',
-        'taskPriority',
-        'remarks',
-        'userId',
-        'companyId',
-        'taskStatusId',
+export const dbSchemaForUi = {
+  domains: {
+    rma: {
+      main: 'all_rma',
+      tables: {
+        all_rma: [
+          'id',
+          'DOCNO',
+          'CURDATE',
+          'CUSTNAME',
+          'CUSTDES',
+          'DETAILS',
+          'STATDES',
+          'FBCM_RETREASONCODE',
+          'FBCM_RETREASONDES',
+          'Title',
+          'trackingNumber',
+          'taskPriority',
+          'remarks',
+          'userId',
+          'companyId',
+          'taskStatusId',
+        ],
+        task_rma: [
+          'id',
+          'PartNumber',
+          'partQount',
+          'productName',
+          'productDescription',
+          'productStatus',
+          'backToInventory',
+          'cylinder',
+          'remarks',
+          'allRmaId',
+        ],
+        task_status: ['id', 'status', 'color'],
+        user: ['id', 'userName', 'userSurname', 'userMail'],
+      },
+      relations: [
+        ['task_rma', 'allRmaId', 'all_rma', 'id'],
+        ['all_rma', 'taskStatusId', 'task_status', 'id'],
+        ['all_rma', 'userId', 'user', 'id'],
       ],
     },
 
-    {
-      table: 'priorityproducts',
-      fields: [
-        'id',
-        'PARTNAME',
-        'TYPE',
-        'BARCODE',
-        'PART',
-        'PARTDES',
-        'companyId',
-        'STATDES',
-      ],
-    },
-    {
-      table: 'priorityproductshierarchy',
-      fields: ['id', 'PART', 'SON', 'companyId'],
-    },
-    {
-      table: 'priorityproductslocation',
-      fields: [
-        'id',
-        'location',
-        'stockDate',
-        'quantity',
-        'priorityProductsId',
-        'zoneId',
-        'remarks',
-      ],
-    },
-
-    {
-      table: 'role',
-      fields: ['updatedBy', 'id', 'role', 'roleDisplayName', 'color'],
-    },
-
-    {
-      table: 'task_rma',
-      fields: [
-        'updatedBy',
-        'id',
-        'PartNumber',
-        'partQount',
-        'backToInventory',
-        'productStatus',
-        'cylinder',
-        'remarks',
-        'allRmaId',
-        'productName',
-        'productDescription',
-      ],
-    },
-    {
-      table: 'task_status',
-      fields: ['updatedBy', 'id', 'status', 'color'],
-    },
-    {
-      table: 'task_type',
-      fields: ['updatedBy', 'id', 'role'],
-    },
-
-    {
-      table: 'user',
-      fields: [
-        'updatedBy',
-        'id',
-        'userName',
-        'userSurname',
-        'userUuid',
-        'userMail',
-        'userMobile',
-        'color',
-        'userPasswordEnc',
-        'selectedCompany',
-        'otp',
+    products: {
+      main: 'priorityproducts',
+      tables: {
+        priorityproducts: [
+          'id',
+          'PART',
+          'PARTNAME',
+          'PARTDES',
+          'TYPE',
+          'BARCODE',
+          'STATDES',
+          'companyId',
+        ],
+        priorityproductslocation: [
+          'id',
+          'location',
+          'stockDate',
+          'quantity',
+          'priorityProductsId',
+          'zoneId',
+          'remarks',
+        ],
+        priorityproductshierarchy: ['id', 'PART', 'SON', 'companyId'],
+        zone: ['id', 'name'],
+      },
+      relations: [
+        [
+          'priorityproductslocation',
+          'priorityProductsId',
+          'priorityproducts',
+          'id',
+        ],
+        ['priorityproductslocation', 'zoneId', 'zone', 'id'],
+        ['priorityproductshierarchy', 'PART', 'priorityproducts', 'PART'],
+        ['priorityproductshierarchy', 'SON', 'priorityproducts', 'PART'],
       ],
     },
 
-    {
-      table: 'users_roles',
-      fields: ['updatedBy', 'id', 'usersId', 'roleId'],
+    orders: {
+      main: 'orders',
+      tables: {
+        orders: [
+          'id',
+          'orderNumber',
+          'customerName',
+          'status',
+          'createdAt',
+          'companyId',
+        ],
+        order_items: [
+          'id',
+          'orderId',
+          'partNumber',
+          'productName',
+          'quantity',
+          'price',
+        ],
+      },
+      relations: [['order_items', 'orderId', 'orders', 'id']],
     },
-  ],
+
+    grv: {
+      main: 'grv',
+      tables: {
+        grv: [
+          'id',
+          'grvNumber',
+          'supplierName',
+          'status',
+          'createdAt',
+          'companyId',
+        ],
+        grv_items: ['id', 'grvId', 'partNumber', 'productName', 'quantity'],
+      },
+      relations: [['grv_items', 'grvId', 'grv', 'id']],
+    },
+  },
 };

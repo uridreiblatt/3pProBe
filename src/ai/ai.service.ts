@@ -3,8 +3,7 @@ import OpenAI from 'openai';
 import { DataSource } from 'typeorm';
 import { CreateAiDto } from './dto/create-ai.dto';
 import { ConfigService } from '@nestjs/config';
-import { dbSchemaForUi } from './entities/dbSchema';
-import { dbSchemaForUiRma } from './entities/dbSchemaRma';
+import { dbSchemaForUi } from './entities/dbSchemaRma';
 
 @Injectable()
 export class AiService {
@@ -98,7 +97,7 @@ export class AiService {
 - Limit results to 20 rows unless the user explicitly asks otherwise.
 
 Schema:
-${JSON.stringify(dbSchemaForUiRma)}
+${JSON.stringify(dbSchemaForUi)}
 
 `,
           },
