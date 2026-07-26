@@ -28,6 +28,7 @@ import { CompanyService } from 'src/usersCompanies/company/company.service';
 import { OrderBoxesItems } from '../order-box-items/entities/order-box-item.entity';
 import { OrderBoxItemsService } from '../order-box-items/order-box-items.service';
 import { PartCqaunt } from 'src/settings/part-cqaunt/entities/part-cqaunt.entity';
+import { DbLogService } from 'src/db-log/db-log.service';
 
 @Injectable()
 export class OrderService {
@@ -37,13 +38,14 @@ export class OrderService {
   private readonly _orderBasketService: OrderBasketService;
   private readonly _taskUserService: TaskUserService;
   private readonly _companyService: CompanyService;
+  private readonly _DbLogService: DbLogService;
 
   constructor(
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
     @InjectRepository(PartCqaunt)
     private partCqauntRepository: Repository<PartCqaunt>,
-
+    private DbLogService: DbLogService,
     @InjectRepository(OrderBoxesItems)
     private orderBoxesItemsRepository: Repository<OrderBoxesItems>,
 
@@ -61,6 +63,7 @@ export class OrderService {
     this._taskUserService = taskUserService;
     this._companyService = companyService;
     this._orderBoxItemsService = orderBoxItemsService;
+    this._DbLogService = DbLogService;
   }
 
   async create(createOrderDto: CreateOrderDto, companyId: string) {
@@ -642,12 +645,21 @@ export class OrderService {
     // await Promise.all(promiseBox);
   }
 
-  async remove(id: string) {
+  async remove(id: string, companyId: string, userId: string) {
     await this._orderBoxItemsService.removeByOrderId(id);
     await this._orderLinesService.removeByOrderId(id);
 
     await this._orderBoxesService.removeByOrderId(id);
     await this._orderBasketService.removeByOrderId(id);
+
+    await this._DbLogService.create({
+      subject: 'priority orders - delete ',
+      message: 'ORDER DELETED  ' + id,
+      level: 'user' + userId,
+      context: 'companyId: ' + companyId,
+      metadata: '',
+      companyId: companyId,
+    });
     return await this.orderRepository.delete(id);
   }
 }

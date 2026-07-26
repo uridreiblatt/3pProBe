@@ -11,6 +11,7 @@ import { CompanyModule } from 'src/usersCompanies/company/company.module';
 import { OrderBoxesItems } from '../order-box-items/entities/order-box-item.entity';
 import { OrderBoxItemsModule } from '../order-box-items/order-box-items.module';
 import { PartCqaunt } from 'src/settings/part-cqaunt/entities/part-cqaunt.entity';
+import { DbLogModule } from 'src/db-log/db-log.module';
 
 @Module({
   imports: [
@@ -20,10 +21,11 @@ import { PartCqaunt } from 'src/settings/part-cqaunt/entities/part-cqaunt.entity
     OrderBasketModule,
     CompanyModule,
     OrderBoxItemsModule,
+    DbLogModule,
     forwardRef(() => TaskUserModule),
   ],
   controllers: [OrderController],
   providers: [OrderService],
   exports: [OrderService],
 })
-export class OrderModule { }
+export class OrderModule {}

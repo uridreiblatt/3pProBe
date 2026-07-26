@@ -48,10 +48,12 @@ export class AllGrvService {
 
   private isRunning = false;
 
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
     if (this.isRunning) {
-      this.logger.warn('Cron skipped - previous run still in progress');
+      this.logger.warn(
+        'Cron skipped - SyncAllNewPoFromPriority -previous run still in progress',
+      );
       return;
     }
 
@@ -66,11 +68,9 @@ export class AllGrvService {
         if (!company.isActive) continue;
 
         try {
-          this.logger.log(`Processing company ${company.name}`);
-
           await this.SyncAllNewPoFromPriority(company.id);
 
-          this.logger.log(`Finished company ${company.name}`);
+          // this.logger.log(`Finished company ${company.name}`);
         } catch (err) {
           this.logger.error(`Error processing company ${company.name}`, err);
           // continues to next company
@@ -109,7 +109,7 @@ export class AllGrvService {
       //   this.comapny +
       //   this.urlEndPoint;
       //const credentials = btoa(this.username + ":" + this.pwd);
-      //console.log(url);
+
       const credentials = btoa(
         resCompantSettings.companySetting.priorityApiUser +
           ':' +
@@ -257,6 +257,7 @@ export class AllGrvService {
   }
 
   async update(id: string, updateAllGrvDto: UpdateAllGrvDto) {
+    console.log('fffffffffffffffffffff', updateAllGrvDto);
     const { companyId, userId, taskStatusId, taskGrv, ...rest } =
       updateAllGrvDto;
     const data = {
@@ -264,11 +265,15 @@ export class AllGrvService {
       ...(taskStatusId && { taskStatus: { id: taskStatusId } }),
       ...(userId && { user: { id: userId } }),
     };
-    taskGrv.forEach(async (tskGrv) => {
-      const resTask = await this.taskGrvRepository.update(tskGrv.id, {
-        Total: tskGrv.Total,
-      });
-    });
+    if (Array.isArray(taskGrv)) {
+      await Promise.all(
+        taskGrv.map((tskGrv) =>
+          this.taskGrvRepository.update(tskGrv.id, {
+            Total: tskGrv.Total,
+          }),
+        ),
+      );
+    }
 
     const res = await this.AllGrvRepository.update(id, data);
     return res;

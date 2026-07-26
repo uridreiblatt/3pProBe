@@ -74,7 +74,11 @@ export class OrderController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.orderService.remove(id);
+  async remove(@Param('id') id: string, @Request() req) {
+    return await this.orderService.remove(
+      id,
+      req.user.selectCompany,
+      req.user.id,
+    );
   }
 }

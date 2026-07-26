@@ -121,7 +121,7 @@ export class GeminiService {
 
       //this.validateSql(sql);
 
-      const finalSql = this.ensureLimit(rmaSql, 5);
+      const finalSql = this.ensureLimit(rmaSql, 100);
       const rows = await this.dataSource.query(finalSql);
       const sanitizedRows = this.sanitizeRows(rows);
       const answer = await this.generateAnswer(question, sanitizedRows);

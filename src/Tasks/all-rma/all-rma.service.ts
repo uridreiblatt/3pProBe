@@ -59,7 +59,7 @@ export class AllRmaService {
 
           await this.syncAllNewRmaFromPriority(company); // ⬅️ waits before moving on
 
-          this.logger.log(`Finished company ${company.name}`);
+          // this.logger.log(`Finished company ${company.name}`);
         } catch (err) {
           this.logger.error(`Error processing company ${company.name}`, err);
           // continues to next company

@@ -16,20 +16,33 @@ export class ReportViewService {
   }
 
   async DashBoard(companyId: string, roleId: number, userId: string) {
-    const queryTasks =
-      'select ' +
-      // " (select u.userName from user u where u.id = userId) as userName " +
-      // " ,(select u.status from task_status u where u.id = taskStatusId) as status " +
-      ' (select u.role from task_type u where u.id = taskTypeId) as task_type ' +
-      ' , taskTypeId ' +
-      // " ,userId " +
-      ' , count(*)  as count ' +
-      ' from `task_user` tu ' +
-      " where tu.companyId = '" +
+    // const queryTasks =
+    //   'select ' +
+    //   // " (select u.userName from user u where u.id = userId) as userName " +
+    //   // " ,(select u.status from task_status u where u.id = taskStatusId) as status " +
+    //   ' (select u.role from task_type u where u.id = taskTypeId) as task_type ' +
+    //   ' , taskTypeId ' +
+    //   // " ,userId " +
+    //   ' , count(*)  as count ' +
+    //   ' from `task_user` tu ' +
+    //   " where tu.companyId = '" +
+    //   companyId +
+    //   "' " +
+    //   ' group by   taskTypeId; '; //taskStatusId, userId
+    const queryGrv =
+      ' select ' +
+      ' (select u.userName from user u where u.id = userId) as userName' +
+      ' ,(select u.status from task_status u where u.id = taskStatusId) as status' +
+      " ,'rma' as task_type" +
+      ' ,userId' +
+      ' , count(*) as count' +
+      ' ,userId ' +
+      ' from `all_grv` ar' +
+      " where ar.companyId = '" +
       companyId +
       "' " +
-      ' group by   taskTypeId; '; //taskStatusId, userId
-    const dataTasks = await this.reportViewRepository.query(queryTasks);
+      ' group by taskStatusId, userId; ';
+    const dataTasksGrv = await this.reportViewRepository.query(queryGrv);
     const queryOrders =
       'SELECT  ' +
       ' (select u.userName from user u where u.id = userId) as userName ' +
@@ -60,6 +73,7 @@ export class ReportViewService {
       companyId +
       "' " +
       ' group by taskStatusId, userId; ';
+    console.log(queryRma);
     const dataRma = await this.reportViewRepository.query(queryRma);
 
     const queryOrderalert =
@@ -72,7 +86,7 @@ export class ReportViewService {
       'SELECT count(*) as count FROM `task_user` p WHERE  taskStatusId = 4   OR (    p.created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )';
     const taskAlert = await this.reportViewRepository.query(queryTaskalert);
     const allData = {
-      tasks: dataTasks,
+      tasks: dataTasksGrv,
       orders: dataOrders,
       rma: dataRma,
       orderalert: orderalert?.[0].count || 0,

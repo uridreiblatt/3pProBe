@@ -61,8 +61,6 @@ export class priorityProductsService {
 
           await this.SyncPriorityParts(company.id, false); // ⬅️ waits before moving on
           await this._ProductStatusService.create(company.id);
-
-          this.logger.log(`Finished company ${company.name}`);
         } catch (err) {
           this.logger.error(`Error processing company ${company.name}`, err);
           // continues to next company
