@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {
   CreateAuthDto,
   CreateAuthSwitchCompanyDto,
@@ -22,15 +22,21 @@ export class AuthService {
   async signIn(
     signInDto: CreateAuthDto,
   ): Promise<{ user: User; users: User[]; uomWeight: string }> {
-    const user = await this.usersService.signIn(signInDto);
-    let cmp = user.selectedCompany;
-    if (cmp === '0') cmp = user.userCompany[0].company.id;
+    try {
+      const user = await this.usersService.signIn(signInDto);
 
-    const users = await this.usersService.findAll(cmp);
-    const deliverySetting =
-      await this.deliverySettingService.findOneBySite(cmp);
+      let cmp = user.selectedCompany;
+      if (cmp === '0') cmp = user.userCompany[0].company.id;
 
-    return { user, users, uomWeight: deliverySetting?.uomweight || 'pttt' };
+      const users = await this.usersService.findAll(cmp);
+      const deliverySetting =
+        await this.deliverySettingService.findOneBySite(cmp);
+
+      return { user, users, uomWeight: deliverySetting?.uomweight || 'pttt' };
+    } catch (error) {
+      console.log('signIn', error);
+      throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);
+    }
   }
   // async SwitchCompany(
   //   switchCompanyDto: CreateAuthSwitchCompanyDto

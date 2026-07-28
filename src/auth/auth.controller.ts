@@ -34,6 +34,7 @@ export class AuthController {
   ) {
     const resUserAll = await this.authService.signIn(signInDto);
     const resUser = resUserAll.user;
+    console.log('resUserAll', resUserAll);
     if (resUser === undefined || resUser === null) {
       throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);
     }

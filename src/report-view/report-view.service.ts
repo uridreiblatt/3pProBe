@@ -72,7 +72,7 @@ export class ReportViewService {
       " where ar.companyId = '" +
       companyId +
       "' " +
-      ' group by taskStatusId, userId; ';
+      ' and ar.taskStatusId != 3  group by taskStatusId, userId; ';
     console.log(queryRma);
     const dataRma = await this.reportViewRepository.query(queryRma);
 
