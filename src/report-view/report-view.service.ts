@@ -41,7 +41,9 @@ export class ReportViewService {
       " where ar.companyId = '" +
       companyId +
       "' " +
-      ' group by taskStatusId, userId; ';
+      ' and ar.taskStatusId !=3 ' +
+      'group by taskStatusId, userId; ';
+    //console.log('queryGrv', queryGrv);
     const dataTasksGrv = await this.reportViewRepository.query(queryGrv);
     const queryOrders =
       'SELECT  ' +
@@ -58,7 +60,9 @@ export class ReportViewService {
       "' " +
       //" and roleId = 1 " +
       //and userId in ('aaa-bbb-ccc','94cb0799-a7d0-4c84-9ab9-ca36ed161d32')
+      ' and !(o.roleId = 4 and o.taskStatusId = 3) ' +
       ' group by taskStatusId, roleId, userId; ';
+    console.log('queryOrders', queryOrders);
     const dataOrders = await this.reportViewRepository.query(queryOrders);
     const queryRma =
       ' select ' +
