@@ -1,5 +1,5 @@
-import { Tablestamp } from "src/maintenence/boxes/entities/tablestamp.embed";
-import { Company } from "src/usersCompanies/company/entities/company.entity";
+import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
+import { Company } from 'src/usersCompanies/company/entities/company.entity';
 import {
   Entity,
   Column,
@@ -7,26 +7,26 @@ import {
   JoinColumn,
   OneToMany,
   OneToOne,
-} from "typeorm";
+} from 'typeorm';
 
 @Entity()
 export class CompanySetting extends Tablestamp {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string; // The primary key will be a UUID string
 
-  @Column({ default: "" })
+  @Column({ default: '' })
   priorityApiUrl: string;
-  @Column({ default: "" })
+  @Column({ default: '' })
   priorityApiCompany: string;
 
-  @Column({ default: "" })
+  @Column({ default: '' })
   priorityApiUser: string;
 
-  @Column({ default: "" })
+  @Column({ default: '', select: false })
   priorityApiPassword: string;
-  @Column({ default: "" })
+  @Column({ default: '' })
   priorityOrderStatus: string;
-  @Column({ default: "", nullable: true })
+  @Column({ default: '', nullable: true })
   priorityOrderLineStatus: string;
   @Column({ default: false, nullable: true })
   addtionalPickingInfo: boolean;
@@ -42,11 +42,11 @@ export class CompanySetting extends Tablestamp {
   @Column({ default: '', nullable: true })
   shipmentCallBack: string;
 
-  @Column({ default: "" })
+  @Column({ default: '' })
   priorityPoStatus: string;
-  @Column({ default: "" })
+  @Column({ default: '' })
   priorityRmaStatus: string;
-  @Column({ default: "" })
+  @Column({ default: '' })
   priorityProductStatus: string;
 
   @OneToOne(() => Company, (company) => company.companySetting)
@@ -54,5 +54,5 @@ export class CompanySetting extends Tablestamp {
   @JoinColumn()
   CompanyId: string;
   @Column({ default: 0 })
-  boxItemsCount:boolean;
+  boxItemsCount: boolean;
 }

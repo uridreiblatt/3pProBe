@@ -1,40 +1,37 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete,Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { UserCompanyService } from './user-company.service';
 import { CreateUserCompanyDto } from './dto/create-user-company.dto';
 import { UpdateUserCompanyDto } from './dto/update-user-company.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { rolesEnum } from 'src/auth/entities/role.enum';
+import { Roles } from 'src/auth/entities/roles.decorator';
 
+@ApiTags('user-company')
+@UseGuards(AuthGuard)
+@Roles(rolesEnum.SysAdmin, rolesEnum.Administrator)
 @Controller('user-company')
 export class UserCompanyController {
   constructor(private readonly userCompanyService: UserCompanyService) {}
 
-  @Post()
-  create(@Body() createUserCompanyDto: CreateUserCompanyDto) {
-    return this.userCompanyService.create(createUserCompanyDto);
-  }
-
   @Get()
-  findAll(@Request() req ) {
+  findAll(@Request() req) {
     return this.userCompanyService.findAll(req.user.selectCompany);
   }
-@Get('findAllUsersByCompany')
-  findAllUsersByCompany(@Request() req ) {
-    return this.userCompanyService.findAllUsersByCompany(req.user.selectCompany);
-  }
-
-  
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userCompanyService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserCompanyDto: UpdateUserCompanyDto) {
-    return this.userCompanyService.update(+id, updateUserCompanyDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userCompanyService.remove(+id);
+  @Get('findAllUsersByCompany')
+  findAllUsersByCompany(@Request() req) {
+    return this.userCompanyService.findAllUsersByCompany(
+      req.user.selectCompany,
+    );
   }
 }

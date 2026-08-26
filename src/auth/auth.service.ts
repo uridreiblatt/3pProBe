@@ -46,23 +46,23 @@ export class AuthService {
 
   async signAsyncCookie(data: JwtDetails): Promise<{ access_token: string }> {
     const payload = {
-      userName: data.userName,
-      userEmail: data.userEmail,
+      //userName: data.userName,
+      //userEmail: data.userEmail,
       userUuid: data.uuid,
       role: data.userRole,
       selectCompany: data.userComapny,
-      roles: data.roles,
-      companies: data.companies,
-      addtionalPickingInfo: data.addtionalPickingInfo,
-      qcRequired: data.qcRequired,
-      boxItemsCount: data.boxItemsCount,
-      users: data.users,
-      uomWeight: data.uomWeight,
+      //roles: data.roles,
+      //companies: data.companies,
+      //addtionalPickingInfo: data.addtionalPickingInfo,
+      //qcRequired: data.qcRequired,
+      //boxItemsCount: data.boxItemsCount,
+      //users: data.users,
+      //uomWeight: data.uomWeight,
       //exp: Math.floor(Date.now() / 1000) + 60 * 60 * 9 // 24h
     };
     return {
       access_token: await this.jwtService.signAsync(payload, {
-        expiresIn: '12h',
+        expiresIn: '8h',
       }),
     };
   }

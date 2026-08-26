@@ -11,10 +11,10 @@ export class CreateUserDto {
   @IsOptional()
   userSurname: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  userUuid: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsOptional()
+  // userUuid: string;
   @IsEmail()
   userMail: string;
   @ApiProperty()
@@ -23,34 +23,34 @@ export class CreateUserDto {
   @ApiProperty()
   @IsString()
   userPasswordEnc: string;
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  otp: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsOptional()
+  // otp: string;
   @ApiProperty()
   @IsBoolean()
   isActive: boolean;
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  id: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsOptional()
+  // id: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  role: string;
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  companyId: string;
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  status: string;
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  avatarUrl: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsOptional()
+  // role: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsOptional()
+  // companyId: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsOptional()
+  // status: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsOptional()
+  // avatarUrl: string;
 
   @ApiProperty()
   @IsString()

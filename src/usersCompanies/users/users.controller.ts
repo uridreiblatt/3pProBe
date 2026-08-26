@@ -23,7 +23,7 @@ import { SkipCookieMatch } from 'src/auth/entities/skip-cookie-match.decorator';
 //@SkipCookieMatch()
 @UseGuards(AuthGuard)
 @Roles(rolesEnum.SysAdmin, rolesEnum.Administrator)
-@ApiTags('users-ok')
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   companyService: any;
@@ -35,8 +35,8 @@ export class UsersController {
   //   }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  create(@Request() req, @Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto, req.user.selectCompany);
   }
   //@SkipCookieMatch()
   @Get()
@@ -45,19 +45,23 @@ export class UsersController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  async findOne(@Request() req, @Param('id') id: string) {
+    return this.usersService.findOne(id, req.user.selectCompany);
   }
   @SkipCookieMatch()
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  async update(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.update(id, updateUserDto, req.user.selectCompany);
   }
 
   @Delete(':id')
   async remove(@Request() req, @Param('id') id: string) {
-    const res = await this.usersService.findOne(id);
+    const res = await this.usersService.findOne(id, req.user.selectCompany);
     //validateCompany (req.user.selectCompany , res.userCompany.id);
-    return this.usersService.remove(+id);
+    return this.usersService.remove(id, req.user.selectCompany);
   }
 }

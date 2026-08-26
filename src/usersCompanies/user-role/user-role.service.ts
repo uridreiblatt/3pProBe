@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,8 +13,23 @@ export class UserRoleService {
   constructor(
     @InjectRepository(UsersRoles)
     private userRoleRepository: Repository<UsersRoles>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
-  async create(createUserRoleDto: CreateUserRoleDto) {
+  async create(createUserRoleDto: CreateUserRoleDto, companyId: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: createUserRoleDto.userId,
+        userCompany: {
+          company: { id: companyId },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found in this company');
+    }
+
     const ins = new UsersRoles();
     const rl = new Role();
     rl.id = createUserRoleDto.roleId;
@@ -60,6 +75,9 @@ export class UserRoleService {
       },
       //select: ['id', 'userName', 'usermail', 'usersRoles', 'color'],
     });
+    if (!res) {
+      throw new NotFoundException('User role not found in this company');
+    }
     const resAll = {
       id: res.id,
       //role: res.role.role,
@@ -73,7 +91,23 @@ export class UserRoleService {
     return resAll;
   }
 
-  async update(id: string, updateUserRoleDto: UpdateUserRoleDto) {
+  async update(
+    id: string,
+    updateUserRoleDto: UpdateUserRoleDto,
+    companyId: string,
+  ) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: updateUserRoleDto.userId,
+        userCompany: {
+          company: { id: companyId },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found in this company');
+    }
     const ins = new UsersRoles();
     const rl = new Role();
     rl.id = updateUserRoleDto.roleId;

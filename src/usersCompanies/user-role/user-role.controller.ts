@@ -1,26 +1,41 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { UserRoleService } from './user-role.service';
 import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { validateCompanies } from 'src/util/validateCompany.util';
-
+import { Roles } from 'src/auth/entities/roles.decorator';
+import { rolesEnum } from 'src/auth/entities/role.enum';
 
 @ApiTags('user-role')
 @UseGuards(AuthGuard)
+@Roles(rolesEnum.SysAdmin, rolesEnum.Administrator)
 @Controller('user-role')
 export class UserRoleController {
-  constructor(private readonly userRoleService: UserRoleService) { }
+  constructor(private readonly userRoleService: UserRoleService) {}
 
   //
   @Post()
   create(@Request() req, @Body() createUserRoleDto: CreateUserRoleDto) {
-    return this.userRoleService.create(createUserRoleDto);
+    return this.userRoleService.create(
+      createUserRoleDto,
+      req.user.selectCompany,
+    );
   }
 
   @Get()
-  findAll(@Request() req,) {
+  findAll(@Request() req) {
     return this.userRoleService.findAll(req.user.selectCompany);
   }
 
@@ -32,8 +47,16 @@ export class UserRoleController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserRoleDto: UpdateUserRoleDto) {
-    return this.userRoleService.update(id, updateUserRoleDto);
+  update(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() updateUserRoleDto: UpdateUserRoleDto,
+  ) {
+    return this.userRoleService.update(
+      id,
+      updateUserRoleDto,
+      req.user.selectCompany,
+    );
   }
 
   @Delete(':id')
