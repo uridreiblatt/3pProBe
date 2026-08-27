@@ -39,10 +39,10 @@ export class CreateUserDto {
   // @IsString()
   // @IsOptional()
   // role: string;
-  // @ApiProperty()
-  // @IsString()
-  // @IsOptional()
-  // companyId: string;
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  companyId: string;
   // @ApiProperty()
   // @IsString()
   // @IsOptional()
