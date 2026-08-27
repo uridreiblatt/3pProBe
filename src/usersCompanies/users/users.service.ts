@@ -119,7 +119,7 @@ export class UsersService {
       where: {
         id: id,
         userCompany: {
-          companyId: companyId,
+          company: { id: companyId },
         },
       },
       relations: {
