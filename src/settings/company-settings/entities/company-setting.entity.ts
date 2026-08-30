@@ -35,9 +35,9 @@ export class CompanySetting extends Tablestamp {
   qcRequired: boolean;
   @Column({ default: '', nullable: true })
   shipmentUrl: string;
-  @Column({ default: '', nullable: true, select: false })
-  shipmentUser: string;
   @Column({ default: '', nullable: true })
+  shipmentUser: string;
+  @Column({ default: '', nullable: true, select: false })
   shipmentPassword: string;
   @Column({ default: '', nullable: true })
   shipmentCallBack: string;

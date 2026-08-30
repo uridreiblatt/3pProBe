@@ -1,9 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, Unique } from 'typeorm';
 import { Role } from '../../role/entities/role.entity';
 import { User } from 'src/usersCompanies/users/entities/user.entity';
 import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
 
 @Entity()
+@Unique(['users', 'role'])
 export class UsersRoles extends Tablestamp {
   @PrimaryGeneratedColumn('uuid')
   id: string;
