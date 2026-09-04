@@ -74,7 +74,6 @@ export class CookieMatchGuard implements CanActivate {
     const bodyMethods = this.opts.bodyMethods ?? ['POST', 'PUT', 'PATCH'];
     if (this.opts.bodyFieldPath && bodyMethods.includes(method as any)) {
       const bodyVal = getByPath(req.body, this.opts.bodyFieldPath);
-      console.log('CookieMatchGuard', bodyVal);
       if (bodyVal == null)
         throw new ForbiddenException(
           `Missing body field "${this.opts.bodyFieldPath}".`,
