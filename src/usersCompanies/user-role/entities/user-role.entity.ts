@@ -1,32 +1,31 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Unique } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  Unique,
+} from 'typeorm';
 import { Role } from '../../role/entities/role.entity';
 import { User } from 'src/usersCompanies/users/entities/user.entity';
 import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
 
 @Entity()
-@Unique(['users', 'role'])
+@Unique('UQ_user_role_assignment', ['users', 'role'])
 export class UsersRoles extends Tablestamp {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  // @ManyToMany(() => User)
-  // @JoinTable()
-  // users: User[];
-  @ManyToOne(() => User, (user) => user.id)
+
+  @ManyToOne(() => User, (user) => user.usersRoles, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'usersId' })
   users: User;
-  // @JoinColumn()
-  // CompanyId: number;
-  @ManyToOne(() => Role, (role) => role.id)
+
+  @ManyToOne(() => Role, {
+    nullable: false,
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({ name: 'roleId' })
   role: Role;
-
-  // @ManyToOne(() => Company, (company) => company.id)
-  // company: Company;
-  // @JoinColumn()
-  // CompanyId: number;
-
-  // @OneToMany(() => Company, (company) => company.id)
-  // company: Company[];
-  // @JoinColumn()
-  // CompanyId: number;
-  // // @JoinColumn()
-  // userRole: UserRole;
 }

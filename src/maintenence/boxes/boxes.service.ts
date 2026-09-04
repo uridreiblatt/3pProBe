@@ -14,42 +14,38 @@ export class BoxesService {
     @InjectRepository(Boxsize)
     private boxRepository: Repository<Boxsize>,
   ) {}
-  async create(createBoxDto: CreateBoxDto, userId: string) {
-    const ins = new  Boxsize();
+  async create(createBoxDto: CreateBoxDto, userId: string, companyId: string) {
+    const ins = new Boxsize();
     ins.sizeDesc = createBoxDto.sizeDesc;
-    ins.updatedBy= userId;
-    ins.createdAt= new Date();
-    ins.company = { id:  createBoxDto.companyId} as any;
+    ins.updatedBy = userId;
+    ins.createdAt = new Date();
+    ins.company = { id: companyId } as any;
     return await this.boxRepository.save(ins);
   }
 
   async findAll(companyId: string): Promise<any> {
-    const resBox =  await this.boxRepository.find({
+    const resBox = await this.boxRepository.find({
       where: {
-        company:{ id: companyId} ,
-      },     
+        company: { id: companyId },
+      },
       order: {
         sizeDesc: 'ASC',
       },
     });
-     const res  =  resBox.map((box) => {
-    
-
-    return {
-      id: box.id,
-      sizeDesc: box.sizeDesc,
-      isActive: box.isActive ? 'Active': 'InActive',
-    };
-  });
-  return res;
- 
-
+    const res = resBox.map((box) => {
+      return {
+        id: box.id,
+        sizeDesc: box.sizeDesc,
+        isActive: box.isActive ? 'Active' : 'InActive',
+      };
+    });
+    return res;
   }
   async findOne(id: string, companyId: string): Promise<Boxsize> {
     return await this.boxRepository.findOne({
       where: {
-         id: id ,
-         company: {id: companyId}
+        id: id,
+        company: { id: companyId },
       },
       // relations:{
       //   company: true,
@@ -69,22 +65,21 @@ export class BoxesService {
     return res[0];
   }
 
-  async update(id: string, updateBoxDto: UpdateBoxDto) {
-    const ins = new  Boxsize();
+  async update(id: string, updateBoxDto: UpdateBoxDto, companyId: string) {
+    const ins = new Boxsize();
     ins.sizeDesc = updateBoxDto.sizeDesc;
-    ins.company = new Company() ;
-    ins.company.id =updateBoxDto.companyId;
+    ins.company = new Company();
+    ins.company.id = companyId;
     return await this.boxRepository.update(id, ins);
   }
 
   async remove(id: string, companyId: string) {
     const res = await this.boxRepository.findOne({
       where: {
-         id: id ,
-         company: {id: companyId}
-      },      
+        id: id,
+        company: { id: companyId },
+      },
     });
-    if (res)
-      return await this.boxRepository.delete(id);
+    if (res) return await this.boxRepository.delete(id);
   }
 }

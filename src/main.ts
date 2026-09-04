@@ -15,13 +15,17 @@ async function bootstrap() {
   //app.use('/xml-endpoint', rawBodyMiddleware);
 
   // Enable XML parsing
- 
 
   app.use(cookieParser());
 
   app.enableCors({
     allowedHeaders: ['Content-Type', 'Authorization'],
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://127.0.0.1:8080','http://localhost:8080'],
+    origin: [
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:8080',
+      'http://localhost:8080',
+    ],
     credentials: true,
   });
   const errorLogService = app.get(ErrorLogService);
@@ -31,12 +35,14 @@ async function bootstrap() {
   const filter = new AllExceptionsFilter(httpAdapterHost, errorLogService);
   app.useGlobalFilters(filter);
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-    transformOptions: { enableImplicitConversion: true },
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('P3 ')
@@ -48,10 +54,12 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
       docExpansion: 'none',
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
     },
   });
 
   await app.listen(process.env.PORT);
-  console.log('runnig on http://localhost:' + process.env.PORT + '/api');  
+  console.log('runnig on http://localhost:' + process.env.PORT + '/api');
 }
 bootstrap();

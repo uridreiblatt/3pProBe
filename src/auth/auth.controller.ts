@@ -33,8 +33,8 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const resUserAll = await this.authService.signIn(signInDto);
+    console.log(resUserAll);
     const resUser = resUserAll.user;
-    console.log('resUserAll', resUserAll);
     if (resUser === undefined || resUser === null) {
       throw new HttpException('Forbidden', HttpStatus.UNAUTHORIZED);
     }

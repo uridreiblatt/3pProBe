@@ -16,6 +16,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CurrentCompanyId } from 'src/auth/entities/current-user.decorator';
 //import { AuthGuard } from 'src/auth/auth.guard';
 @ApiTags('order')
 @Controller('order')
@@ -25,18 +26,21 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
-  async create(@Request() req, @Body() createOrderDto: CreateOrderDto) {
-    return await this.orderService.create(createOrderDto, req.c);
+  async create(
+    @CurrentCompanyId() companyId: string,
+    @Body() createOrderDto: CreateOrderDto,
+  ) {
+    return await this.orderService.create(createOrderDto, companyId);
   }
 
   @Get('findAll')
-  async findAll(@Request() req) {
-    return await this.orderService.findAll(req.user.selectCompany);
+  async findAll(@CurrentCompanyId() companyId: string) {
+    return await this.orderService.findAll(companyId);
   }
   @Get('findAllComplete')
-  //findAll(@Request() req) {
-  async findAllComplete(@Request() req) {
-    return await this.orderService.findAllComplete(req.user.selectCompany);
+  //findAll(  @CurrentCompanyId() companyId: string,) {
+  async findAllComplete(@CurrentCompanyId() companyId: string) {
+    return await this.orderService.findAllComplete(companyId);
   }
 
   @Get(':id')
@@ -59,22 +63,24 @@ export class OrderController {
 
   @Patch('/updateData/:id')
   async updateData(
+    @CurrentCompanyId() companyId: string,
     @Param('id') id: string,
     @Body() updateOrderDto: UpdateOrderDto,
   ) {
-    return await this.orderService.updateData(id, updateOrderDto);
+    return await this.orderService.updateData(id, updateOrderDto, companyId);
   }
 
   @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updateOrderDto: UpdateOrderDto,
+    @CurrentCompanyId() companyId: string,
   ) {
-    return await this.orderService.update(id, updateOrderDto);
+    return await this.orderService.update(id, updateOrderDto, companyId);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string, @Request() req) {
+  async remove(@Request() req, @Param('id') id: string) {
     return await this.orderService.remove(
       id,
       req.user.selectCompany,

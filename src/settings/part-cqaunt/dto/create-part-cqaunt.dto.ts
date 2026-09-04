@@ -1,12 +1,9 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsInt, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsInt, IsString } from 'class-validator';
 
 export class CreatePartCqauntDto {
   @ApiProperty()
   @IsString()
   partName: string;
-  @ApiProperty() 
-  @IsString()
-  companyId: string;
 }

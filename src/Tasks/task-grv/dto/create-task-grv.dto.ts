@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsInt, IsOptional, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateTaskGrvDto {
   @ApiProperty()
@@ -17,10 +17,10 @@ export class CreateTaskGrvDto {
   @ApiProperty()
   @IsString()
   PartNumber: string;
-  @ApiProperty({ default: "" })
+  @ApiProperty({ default: '' })
   @IsString()
   productName: string;
-  @ApiProperty({ default: "" })
+  @ApiProperty({ default: '' })
   @IsString()
   productDescription: string;
   @ApiProperty()
@@ -69,10 +69,7 @@ export class CreateTaskGrvDto {
   @IsInt()
   @IsOptional()
   quantityRequired: number;
-  @ApiProperty()
-  @IsString()
+  @ApiProperty({ required: true, format: 'uuid' })
+  @IsUUID()
   allGrvId: string;
-  @ApiProperty()
-  @IsString()
-  companyId: string;
 }

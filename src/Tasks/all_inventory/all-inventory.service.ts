@@ -76,10 +76,11 @@ export class AllInventoryService {
     return result;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, companyId: string) {
     const res = await this.allInventoryCountRepository.findOne({
       where: {
         id: id,
+        company: { id: companyId },
       },
       relations: {
         taskStatus: true,
@@ -125,7 +126,10 @@ export class AllInventoryService {
     });
   }
 
-  async create(createAllInventoryDto: CreateAllInventoryDto) {
+  async create(
+    createAllInventoryDto: CreateAllInventoryDto,
+    companyId: string,
+  ) {
     let allInventoryCount = new AllInventoryCount();
     allInventoryCount.Location = createAllInventoryDto.Location;
     allInventoryCount.user = new User();
@@ -135,7 +139,7 @@ export class AllInventoryService {
     allInventoryCount.taskStatus = new TaskStatus();
     allInventoryCount.taskStatus.id = createAllInventoryDto.taskStatusId;
     allInventoryCount.company = new Company();
-    allInventoryCount.company.id = createAllInventoryDto.companyId;
+    allInventoryCount.company.id = companyId;
     allInventoryCount.productName = createAllInventoryDto.productName;
     allInventoryCount.DataInfo = createAllInventoryDto.DataInfo;
     allInventoryCount.remarks = createAllInventoryDto.remarks;
@@ -164,8 +168,12 @@ export class AllInventoryService {
     return resAllInventoryCount;
   }
 
-  async update(id: string, updateallInventoryDto: UpdateAllInventoryDto) {
-    const { companyId, userId, taskStatusId, ...rest } = updateallInventoryDto;
+  async update(
+    id: string,
+    updateallInventoryDto: UpdateAllInventoryDto,
+    companyId: string,
+  ) {
+    const { userId, taskStatusId, ...rest } = updateallInventoryDto;
     const data = {
       ...rest,
       ...(taskStatusId && { taskStatus: { id: taskStatusId } }),
@@ -175,10 +183,13 @@ export class AllInventoryService {
     return res;
   }
 
-  async remove(id: string) {
+  async remove(id: string, companyId: string) {
     await this.taskInventoryCountRepository.delete({
-      allInventoryCount: { id: id },
+      allInventoryCount: { id: id, company: { id: companyId } },
     });
-    return await this.allInventoryCountRepository.delete(id);
+    return await this.allInventoryCountRepository.delete({
+      id,
+      company: { id: companyId },
+    });
   }
 }

@@ -1,16 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDefined, IsInt, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEnum, IsUUID } from 'class-validator';
+import { rolesEnum } from 'src/auth/entities/role.enum';
 
 export class CreateUserRoleDto {
-  @ApiProperty({ required: true })
-  @IsString()
-  @IsDefined()
+  @ApiProperty({ format: 'uuid' })
+  @IsUUID()
   userId: string;
-  @ApiProperty({ required: true })
-  @IsInt()
-  @IsDefined()
-  roleId: number;
-  @ApiProperty()
-  @IsString()
-  companyId: string;
+
+  @ApiProperty({ enum: rolesEnum, enumName: 'rolesEnum' })
+  @Type(() => Number)
+  @IsEnum(rolesEnum)
+  roleId: rolesEnum;
 }

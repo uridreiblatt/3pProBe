@@ -263,7 +263,11 @@ export class GetOrderInfoService {
                 ADDRESS2: updateOrderAddress.ADDRESS2,
                 ADDRESS3: updateOrderAddress.ADDRESS3,
               };
-              await this._orderService.updateData(orders[0].id, updAddress);
+              await this._orderService.updateData(
+                orders[0].id,
+                updAddress,
+                companyId,
+              );
             }
 
             const NewOrder = orders.find((or) => {
@@ -394,6 +398,7 @@ export class GetOrderInfoService {
                     await this._orderLinesService.update(
                       orderLineExixts.id,
                       c_Tbalance,
+                      companyId,
                     );
                   } catch (error) {
                     this._DbLogService.create({
@@ -486,7 +491,7 @@ export class GetOrderInfoService {
       const updrunning = {
         shipRushStatus: 'Running',
       };
-      await this._orderService.updateData(Id, updrunning);
+      await this._orderService.updateData(Id, updrunning, companyId);
 
       const resPriorityCreateDoc = await this.createPriorityShippingDoc(
         order.ORDNAME,
@@ -500,7 +505,7 @@ export class GetOrderInfoService {
         DOCUMENT_DOCNO: resPriorityCreateDoc['DOCNO'].toString(),
       };
       //console.log(updDOC);
-      await this._orderService.updateData(Id, updDOC);
+      await this._orderService.updateData(Id, updDOC, companyId);
       //return updDOC;
       const ShipRushXml = await this.BuilddataToShipRush(order, shp, companyId);
       //console.log('ShipRushXml', ShipRushXml);
@@ -537,12 +542,12 @@ export class GetOrderInfoService {
           ShData: 'Pending Complete from ShipRush',
           //trackingNumber: shipRushRes.AddOrderResponse.OrderId,
         };
-        await this._orderService.updateData(Id, updShipRushRes);
+        await this._orderService.updateData(Id, updShipRushRes, companyId);
       } else {
         const upd = {
           shipRushStatus: 'error',
         };
-        await this._orderService.updateData(Id, upd);
+        await this._orderService.updateData(Id, upd, companyId);
 
         const errLog: CreateDbLogDto = {
           subject: 'shipRush Create Error - ' + order.ORDNAME,
@@ -664,7 +669,7 @@ export class GetOrderInfoService {
       const updrunning = {
         shipRushStatus: 'Running',
       };
-      await this._orderService.updateData(Id, updrunning);
+      await this._orderService.updateData(Id, updrunning, companyId);
 
       const resPriorityCreateDoc = await this.createPriorityShippingDoc(
         order.ORDNAME,
@@ -678,14 +683,14 @@ export class GetOrderInfoService {
         ShData: resPriorityCreateDoc['DOCNO'].toString(),
       };
       //console.log(updDOC);
-      await this._orderService.updateData(Id, updDOC);
+      await this._orderService.updateData(Id, updDOC, companyId);
       //return updDOC;
       const updShipRushRes = {
         shipRushStatus: 'Pending',
         shipRushShipmentId: '0',
         //trackingNumber: shipRushRes.AddOrderResponse.OrderId,
       };
-      await this._orderService.updateData(Id, updShipRushRes);
+      await this._orderService.updateData(Id, updShipRushRes, companyId);
 
       const resPriorityGetDoc = await this.GetPriorityShippingDoc(
         resPriorityCreateDoc['DOC'].toString(),

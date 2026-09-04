@@ -19,6 +19,7 @@ import { CreatePartCqauntDto } from 'src/settings/part-cqaunt/dto/create-part-cq
 import { UpdateRoleDto } from 'src/usersCompanies/role/dto/update-role.dto';
 import { DeliverySettingDto } from './dto/create-delivery-setting.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CurrentCompanyId } from 'src/auth/entities/current-user.decorator';
 @ApiTags('delivery-setting')
 @Controller('delivery-setting')
 @UseGuards(AuthGuard)
@@ -29,15 +30,18 @@ export class DeliverySettingController {
   ) {}
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return await this.deliverySettingService.findOne(id);
+  async findOne(
+    @CurrentCompanyId() companyId: string,
+    @Param('id') id: string,
+  ) {
+    return await this.deliverySettingService.findOne(id, companyId);
   }
   @Get('/findOneBySite/:id')
-  async findOneBySite(@Request() req, @Param('id') id: string) {
-    console.log(req.user);
-    return await this.deliverySettingService.findOneBySite(
-      req.user.selectCompany,
-    );
+  async findOneBySite(
+    @CurrentCompanyId() companyId: string,
+    @Param('id') id: string,
+  ) {
+    return await this.deliverySettingService.findOneBySite(companyId);
   }
 
   // @Post()
@@ -73,13 +77,16 @@ export class DeliverySettingController {
   // }
 
   @Get()
-  findAll(@Request() req) {
-    return this.deliverySettingService.findAll(req.user.selectCompany);
+  findAll(@CurrentCompanyId() companyId: string) {
+    return this.deliverySettingService.findAll(companyId);
   }
 
   @Post()
-  create(@Body() deliverySettingDto: DeliverySettingDto) {
-    return this.deliverySettingService.create(deliverySettingDto);
+  create(
+    @CurrentCompanyId() companyId: string,
+    @Body() deliverySettingDto: DeliverySettingDto,
+  ) {
+    return this.deliverySettingService.create(deliverySettingDto, companyId);
   }
 
   // @Get(':id')
@@ -89,14 +96,19 @@ export class DeliverySettingController {
 
   @Patch(':id')
   update(
+    @CurrentCompanyId() companyId: string,
     @Param('id') id: string,
     @Body() deliverySettingDto: DeliverySettingDto,
   ) {
-    return this.deliverySettingService.update(id, deliverySettingDto);
+    return this.deliverySettingService.update(
+      id,
+      deliverySettingDto,
+      companyId,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.deliverySettingService.remove(id);
+  remove(@CurrentCompanyId() companyId: string, @Param('id') id: string) {
+    return this.deliverySettingService.remove(id, companyId);
   }
 }

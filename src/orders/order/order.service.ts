@@ -21,7 +21,7 @@ import { OrderBasketService } from 'src/orders/order-basket/order-basket.service
 import { TaskUserService } from 'src/Tasks/task-user/task-user.service';
 import { CreateDeliverySettingDto } from 'src/shipments/delivery-setting/dto/create-delivery-setting.dto';
 import { Company } from 'src/usersCompanies/company/entities/company.entity';
-import { role } from 'src/auth/dto/create-auth.dto';
+import { comapny, role } from 'src/auth/dto/create-auth.dto';
 import { EOrderUser, OrderStatusEnum } from './enums/enum';
 import { rolesEnum } from 'src/auth/entities/role.enum';
 import { CompanyService } from 'src/usersCompanies/company/company.service';
@@ -456,18 +456,23 @@ export class OrderService {
     });
   }
 
-  async updateData(id: string, upd: any): Promise<any> {
-    const { companyId, ...rest } = upd;
-    return await this.orderRepository.update(id, rest);
+  async updateData(id: string, upd: any, companyId: string): Promise<any> {
+    const { companyId: _companyId, ...rest } = upd;
+    return await this.orderRepository.update(
+      { id, comapny: { id: companyId } },
+      rest,
+    );
   }
 
-  async update(orderId: string, updateOrderDto: UpdateOrderDto): Promise<any> {
+  async update(
+    orderId: string,
+    updateOrderDto: UpdateOrderDto,
+    companyId: string,
+  ): Promise<any> {
     let newRole = updateOrderDto.roleId;
     let orderStatus = updateOrderDto.taskStatus.id; // new  3-complete 2 - inproress
     let userInOrder = updateOrderDto.user.id;
-    const resCompantSettings = await this._companyService.findOne(
-      updateOrderDto.companyId,
-    );
+    const resCompantSettings = await this._companyService.findOne(companyId);
     if (resCompantSettings.companySetting.boxItemsCount) {
       if (
         orderStatus === OrderStatusEnum.Complete &&
@@ -524,7 +529,10 @@ export class OrderService {
       newRole === rolesEnum.Picker
     ) {
       //findTasksOpenByOrder
-      const ts = await this._taskUserService.findTasksOpenByOrder(orderId);
+      const ts = await this._taskUserService.findTasksOpenByOrder(
+        orderId,
+        companyId,
+      );
       if (ts !== null) {
         throw new BadRequestException('Please Close All taks for this order ', {
           cause: new Error(),
@@ -620,7 +628,11 @@ export class OrderService {
         approved: ol.approved,
         picked: ol.picked,
       };
-      return await this._orderLinesService.update(ol.id, updateOrderLine);
+      return await this._orderLinesService.update(
+        ol.id,
+        updateOrderLine,
+        companyId,
+      );
     });
     await Promise.all(promisesLines);
     // const promiseBox = updateOrderDto.orderBoxes.map(async (ob) => {
@@ -646,8 +658,8 @@ export class OrderService {
   }
 
   async remove(id: string, companyId: string, userId: string) {
-    await this._orderBoxItemsService.removeByOrderId(id);
-    await this._orderLinesService.removeByOrderId(id);
+    await this._orderBoxItemsService.removeByOrderId(id, companyId);
+    await this._orderLinesService.removeByOrderId(id, companyId);
 
     await this._orderBoxesService.removeByOrderId(id);
     await this._orderBasketService.removeByOrderId(id);

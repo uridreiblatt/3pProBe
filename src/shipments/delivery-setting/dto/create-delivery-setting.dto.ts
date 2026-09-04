@@ -1,14 +1,14 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
 export class CreateDeliverySettingDto {
-  @ApiProperty({ default: "" })
+  @ApiProperty({ default: '' })
   shipmentId: string;
-  @ApiProperty({ default: "" })
+  @ApiProperty({ default: '' })
   trackingNumber: string;
-  @ApiProperty({ default: "" })
+  @ApiProperty({ default: '' })
   status: string;
-  @ApiProperty({ default: "" })
+  @ApiProperty({ default: '' })
   carrier: string;
 }
 
@@ -46,14 +46,14 @@ export class DeliverySettingDto {
   @ApiProperty()
   @IsString()
   Address2: string;
-  @ApiProperty({ name: "City" })
-    @IsString()
+  @ApiProperty({ name: 'City' })
+  @IsString()
   City: string;
-  @ApiProperty({ name: "State" })
-    @IsString()
+  @ApiProperty({ name: 'State' })
+  @IsString()
   State: string;
-  @ApiProperty({ name: "Country" })
-    @IsString()
+  @ApiProperty({ name: 'Country' })
+  @IsString()
   Country: string;
   @ApiProperty()
   @IsString()
@@ -61,7 +61,4 @@ export class DeliverySettingDto {
   @ApiProperty()
   @IsString()
   Phone: string;
-  @ApiProperty()
-  @IsString()
-  companyId: string;
 }

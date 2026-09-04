@@ -37,7 +37,7 @@ export class OrderBoxesService {
 
     await Promise.all(
       (createOrderBoxDto.orderBoxLines ?? []).map((obl) => {
-        const { orderBoxesId, orderId, companyId, id, ...rest } = obl;
+        const { orderBoxesId, orderId, id, ...rest } = obl;
 
         const ins = new OrderBoxesItems();
         ins.orderBoxes = new OrderBoxes();
@@ -66,7 +66,7 @@ export class OrderBoxesService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, companyId: string) {
     const res = await this.OrderBoxesRepository.findOne({
       where: {
         id: id,
@@ -80,11 +80,12 @@ export class OrderBoxesService {
     return { ...rest, orderId: order.id };
   }
 
-  async getOrderBoxes(id: string) {
+  async getOrderBoxes(id: string, companyId: string) {
     const res = await this.OrderBoxesRepository.find({
       where: {
         order: {
           id: id,
+          comapny: { id: companyId },
         },
       },
       relations: {
@@ -108,9 +109,9 @@ export class OrderBoxesService {
     return resAll;
   }
 
-  async cloneBoxItems(id: string) {
+  async cloneBoxItems(id: string, companyId: string) {
     const existing = await this.OrderBoxesRepository.findOne({
-      where: { id },
+      where: { id, order: { comapny: { id: companyId } } },
       relations: {
         orderBoxesItems: true,
         order: true,
@@ -146,8 +147,12 @@ export class OrderBoxesService {
     return savedBox;
   }
 
-  async update(id: string, updateOrderBoxDto: UpdateOrderBoxDto) {
-    const { boxId, companyId, orderBoxLines, ...rest } = updateOrderBoxDto;
+  async update(
+    id: string,
+    updateOrderBoxDto: UpdateOrderBoxDto,
+    companyId: string,
+  ) {
+    const { boxId, orderBoxLines, ...rest } = updateOrderBoxDto;
     const itemsCount = updateOrderBoxDto.orderBoxLines.reduce(
       (sum, obl) => sum + (obl.itemsCount ?? 0),
       0,
@@ -158,11 +163,14 @@ export class OrderBoxesService {
       ...(boxId && { boxSize: { id: boxId } }),
       itemsCount: itemsCount,
     };
-    const res = await this.OrderBoxesRepository.update(id, data);
+    const res = await this.OrderBoxesRepository.update(
+      { id, order: { comapny: { id: companyId } } },
+      data,
+    );
 
     await Promise.all(
       (updateOrderBoxDto.orderBoxLines ?? []).map((obl) => {
-        const { id: lineId, orderBoxesId, companyId, ...rest } = obl;
+        const { id: lineId, orderBoxesId, ...rest } = obl;
 
         const data = {
           ...rest,
@@ -182,10 +190,10 @@ export class OrderBoxesService {
     //throw BadRequestException
   }
 
-  async remove(id: string) {
+  async remove(id: string, companyId: string) {
     const olbx = await this.OrderBoxesItemsRepository.find({
       where: {
-        orderBoxes: { id: id },
+        orderBoxes: { id: id, order: { comapny: { id: companyId } } },
       },
     });
     await Promise.all(

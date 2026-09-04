@@ -20,7 +20,7 @@ import { Roles } from 'src/auth/entities/roles.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { SkipCookieMatch } from 'src/auth/entities/skip-cookie-match.decorator';
-//@SkipCookieMatch()
+import { CurrentCompanyId } from 'src/auth/entities/current-user.decorator';
 @UseGuards(AuthGuard)
 @Roles(rolesEnum.SysAdmin, rolesEnum.Administrator)
 @ApiTags('users')
@@ -35,33 +35,37 @@ export class UsersController {
   //   }
 
   @Post()
-  create(@Request() req, @Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto, req.user.selectCompany);
+  create(
+    @CurrentCompanyId() companyId: string,
+    @Body() createUserDto: CreateUserDto,
+  ) {
+    return this.usersService.create(createUserDto, companyId);
   }
-  //@SkipCookieMatch()
   @Get()
-  async findAll(@Request() req) {
-    return await this.usersService.findAll(req.user.selectCompany);
+  async findAll(@CurrentCompanyId() companyId: string) {
+    return await this.usersService.findAll(companyId);
   }
 
   @Get(':id')
-  async findOne(@Request() req, @Param('id') id: string) {
-    return this.usersService.findOne(id, req.user.selectCompany);
+  async findOne(
+    @CurrentCompanyId() companyId: string,
+    @Param('id') id: string,
+  ) {
+    return this.usersService.findOne(id, companyId);
   }
-  @SkipCookieMatch()
   @Patch(':id')
   async update(
-    @Request() req,
+    @CurrentCompanyId() companyId: string,
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.usersService.update(id, updateUserDto, req.user.selectCompany);
+    return this.usersService.update(id, updateUserDto, companyId);
   }
 
   @Delete(':id')
-  async remove(@Request() req, @Param('id') id: string) {
-    const res = await this.usersService.findOne(id, req.user.selectCompany);
-    //validateCompany (req.user.selectCompany , res.userCompany.id);
-    return this.usersService.remove(id, req.user.selectCompany);
+  async remove(@CurrentCompanyId() companyId: string, @Param('id') id: string) {
+    const res = await this.usersService.findOne(id, companyId);
+    //validateCompany (companyId , res.userCompany.id);
+    return this.usersService.remove(id, companyId);
   }
 }

@@ -9,6 +9,7 @@ import {
 import { ReportViewService } from './report-view.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CurrentCompanyId } from 'src/auth/entities/current-user.decorator';
 @ApiTags('report-view')
 @UseGuards(AuthGuard)
 @Controller('report-view')
@@ -17,7 +18,6 @@ export class ReportViewController {
 
   //@UseGuards(AuthGuard)
   @Get('DashBoard')
-  @Header('Cache-Control', 'max-age=0')
   async DashBoard(@Request() req) {
     console.log(req.user);
     return await this.reportViewService.DashBoard(
@@ -43,7 +43,10 @@ export class ReportViewController {
   }
 
   @Get(':id')
-  async findOne(@Request() req, @Param('id') id: number) {
-    return await this.reportViewService.findOne(req.user.selectCompany, id);
+  async findOne(
+    @CurrentCompanyId() companyId: string,
+    @Param('id') id: number,
+  ) {
+    return await this.reportViewService.findOne(companyId, id);
   }
 }

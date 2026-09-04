@@ -16,6 +16,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { rolesEnum } from 'src/auth/entities/role.enum';
 import { Roles } from 'src/auth/entities/roles.decorator';
+import { CurrentCompanyId } from 'src/auth/entities/current-user.decorator';
 
 @ApiTags('user-company')
 @UseGuards(AuthGuard)
@@ -25,13 +26,11 @@ export class UserCompanyController {
   constructor(private readonly userCompanyService: UserCompanyService) {}
 
   @Get()
-  findAll(@Request() req) {
-    return this.userCompanyService.findAll(req.user.selectCompany);
+  findAll(@CurrentCompanyId() companyId: string) {
+    return this.userCompanyService.findAll(companyId);
   }
   @Get('findAllUsersByCompany')
-  findAllUsersByCompany(@Request() req) {
-    return this.userCompanyService.findAllUsersByCompany(
-      req.user.selectCompany,
-    );
+  findAllUsersByCompany(@CurrentCompanyId() companyId: string) {
+    return this.userCompanyService.findAllUsersByCompany(companyId);
   }
 }

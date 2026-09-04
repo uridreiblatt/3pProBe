@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,7 +20,13 @@ export class UserRoleService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
-  async create(createUserRoleDto: CreateUserRoleDto, companyId: string) {
+  async create(
+    createUserRoleDto: CreateUserRoleDto,
+    companyId: string,
+    actorRole: number,
+  ) {
+    this.assertCanAssignRole(createUserRoleDto.roleId, actorRole);
+
     const user = await this.userRepository.findOne({
       where: {
         id: createUserRoleDto.userId,
@@ -44,7 +54,9 @@ export class UserRoleService {
   async findAll(companyId: string): Promise<any> {
     //console.log(companyId)
     const res = await this.userRoleRepository.find({
-      where: { users: { userCompany: { company: { id: companyId } } } },
+      where: {
+        users: { isActive: true, userCompany: { company: { id: companyId } } },
+      },
       relations: {
         users: true,
         role: true,
@@ -95,7 +107,10 @@ export class UserRoleService {
     id: string,
     updateUserRoleDto: UpdateUserRoleDto,
     companyId: string,
+    actorRole: number,
   ) {
+    this.assertCanAssignRole(updateUserRoleDto.roleId, actorRole);
+
     const user = await this.userRepository.findOne({
       where: {
         id: updateUserRoleDto.userId,
@@ -123,5 +138,13 @@ export class UserRoleService {
 
   async remove(id: string) {
     return await this.userRoleRepository.delete(id);
+  }
+
+  private assertCanAssignRole(roleId: number, actorRole: number) {
+    if (!Number.isInteger(actorRole) || roleId > actorRole) {
+      throw new ForbiddenException(
+        'You cannot assign a role higher than your own role',
+      );
+    }
   }
 }

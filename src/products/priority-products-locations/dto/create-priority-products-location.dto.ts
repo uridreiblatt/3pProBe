@@ -21,8 +21,5 @@ export class CreatePriorityProductsLocationDto {
   quantity: number;
   @ApiProperty()
   @IsString()
-  companyId: string;
-  @ApiProperty()
-  @IsString()
   remarks: string;
 }

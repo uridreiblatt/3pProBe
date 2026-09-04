@@ -63,7 +63,4 @@ export class CreateTaskInventoryCountDto {
   @ApiProperty({ default: '' })
   @IsString()
   allInventoryCountId: string;
-  @ApiProperty({ default: '' })
-  @IsString()
-  companyId: string;
 }

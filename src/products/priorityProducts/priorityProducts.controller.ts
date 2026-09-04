@@ -2,6 +2,7 @@ import { Controller, Get, Param, Request, UseGuards } from '@nestjs/common';
 import { priorityProductsService } from './priorityProducts.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CurrentCompanyId } from 'src/auth/entities/current-user.decorator';
 @ApiTags('priorityProducts')
 @Controller('priorityProducts')
 @UseGuards(AuthGuard)
@@ -13,43 +14,49 @@ export class PriorityProductsController {
   //   return this.partsService.create(createPartDto);
   // }
   @Get('getPriorityParts')
-  async getPriorityParts(@Request() req) {
-    await this.partsService.getPriorityParts(req.user.selectCompany);
+  async getPriorityParts(@CurrentCompanyId() companyId: string) {
+    await this.partsService.getPriorityParts(companyId);
   }
 
   @Get()
-  async findAll(@Request() req) {
-    return await this.partsService.findAll(req.user.selectCompany);
+  async findAll(@CurrentCompanyId() companyId: string) {
+    return await this.partsService.findAll(companyId);
   }
 
   @Get('findOne/:id')
-  async findOne(@Request() req, @Param('id') id: string) {
-    return await this.partsService.findOne(id, req.user.selectCompany);
+  async findOne(
+    @CurrentCompanyId() companyId: string,
+    @Param('id') id: string,
+  ) {
+    return await this.partsService.findOne(id, companyId);
   }
 
   @Get('findChildByParentPart/:id')
-  async findChildByParentPart(@Request() req, @Param('id') id: string) {
-    return await this.partsService.findChildByParentPart(
-      id,
-      req.user.selectCompany,
-    );
+  async findChildByParentPart(
+    @CurrentCompanyId() companyId: string,
+    @Param('id') id: string,
+  ) {
+    return await this.partsService.findChildByParentPart(id, companyId);
   }
   // @Get('findChildByParent/:id')
   // async findChildByParent(@Param('id') id: string) {
   //   return await this.partsService.findChildByParent(id);
   // }
   @Get('findBarcode/:barcode')
-  async findBarcode(@Request() req, @Param('barcode') id: string) {
-    const res = await this.partsService.findBarcode(id, req.user.selectCompany);
+  async findBarcode(
+    @CurrentCompanyId() companyId: string,
+    @Param('barcode') id: string,
+  ) {
+    const res = await this.partsService.findBarcode(id, companyId);
     return res;
   }
 
   @Get('findProductName/:productName') //
-  async findProductName(@Request() req, @Param('productName') id: string) {
-    const res = await this.partsService.findProductName(
-      id,
-      req.user.selectCompany,
-    );
+  async findProductName(
+    @CurrentCompanyId() companyId: string,
+    @Param('productName') id: string,
+  ) {
+    const res = await this.partsService.findProductName(id, companyId);
     return res;
   }
 

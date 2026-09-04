@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsString } from "class-validator";
-import { Order } from "src/orders/order/entities/order.entity";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
+import { Order } from 'src/orders/order/entities/order.entity';
 
 export class CreateOrderBasketDto {
   @ApiProperty({})
@@ -9,10 +9,7 @@ export class CreateOrderBasketDto {
   @ApiProperty({})
   @IsString()
   basketRemarks: string;
-  @ApiProperty({ default: "" })
+  @ApiProperty({ default: '' })
   @IsString()
   orderId: string;
-  @ApiProperty()
-  @IsString()
-  companyId: string;
 }

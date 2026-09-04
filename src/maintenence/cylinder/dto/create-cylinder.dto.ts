@@ -9,7 +9,4 @@ export class CreateCylinderDto {
   @ApiProperty()
   @IsString()
   description: string;
-  @ApiProperty({ default: '0' })
-  @IsString()
-  companyId: string;
 }

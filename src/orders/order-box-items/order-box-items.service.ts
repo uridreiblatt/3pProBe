@@ -1,18 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderBoxItemDto } from './dto/create-order-box-item.dto';
 import { UpdateOrderBoxItemDto } from './dto/update-order-box-item.dto';
 import { OrderBoxesItems } from './entities/order-box-item.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderBoxes } from '../order-boxes/entities/order-box.entity';
+import { Order } from '../order/entities/order.entity';
 
 @Injectable()
 export class OrderBoxItemsService {
   constructor(
     @InjectRepository(OrderBoxesItems)
     private OrderBoxesItemsRepository: Repository<OrderBoxesItems>,
+    @InjectRepository(Order)
+    private orderRepository: Repository<Order>,
   ) {}
-  async create(createOrderBoxItemDto: CreateOrderBoxItemDto) {
+  async create(
+    createOrderBoxItemDto: CreateOrderBoxItemDto,
+    companyId: string,
+  ) {
+    const ord = this.orderRepository.findOne({
+      where: {
+        id: createOrderBoxItemDto.orderId,
+        comapny: { id: companyId },
+      },
+    });
+    if (!ord) {
+      throw new NotFoundException('orderbox not found in this company');
+    }
     const ins = new OrderBoxesItems();
     ins.orderBoxes = new OrderBoxes();
     ins.orderBoxes.id = createOrderBoxItemDto.orderBoxesId;
@@ -25,9 +40,11 @@ export class OrderBoxItemsService {
     return await this.OrderBoxesItemsRepository.save(ins);
   }
 
-  async findAll(orderBoxId: string) {
+  async findAll(orderBoxId: string, companyId: string) {
     const res = await this.OrderBoxesItemsRepository.find({
-      where: { orderBoxes: { id: orderBoxId } },
+      where: {
+        orderBoxes: { id: orderBoxId, order: { comapny: { id: companyId } } },
+      },
     });
     const data = await Promise.all(
       res.map(async (e) => {
@@ -50,7 +67,16 @@ export class OrderBoxItemsService {
     return data;
   }
 
-  async findAllCompareOrderLines(orderId: string) {
+  async findAllCompareOrderLines(orderId: string, companyId: string) {
+    const ord = this.orderRepository.findOne({
+      where: {
+        id: orderId,
+        comapny: { id: companyId },
+      },
+    });
+    if (!ord) {
+      throw new NotFoundException('orderbox not found in this company');
+    }
     const sql =
       `  SELECT orderId,BARCODE, ` +
       ` sum(ol.TBALANCE) orderQty, ` +
@@ -72,23 +98,39 @@ export class OrderBoxItemsService {
       }));
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, companyId: string) {
     return await this.OrderBoxesItemsRepository.findOne({
-      where: { id: id },
+      where: { id: id, orderBoxes: { order: { comapny: { id: companyId } } } },
     });
   }
 
-  async update(id: string, updateOrderBoxItemDto: UpdateOrderBoxItemDto) {
+  async update(
+    id: string,
+    updateOrderBoxItemDto: UpdateOrderBoxItemDto,
+    companyId: string,
+  ) {
     return await this.OrderBoxesItemsRepository.update(
-      id,
+      { id, orderBoxes: { order: { comapny: { id: companyId } } } },
       updateOrderBoxItemDto,
     );
   }
 
-  async remove(id: string) {
-    return await this.OrderBoxesItemsRepository.delete(id);
+  async remove(id: string, companyId: string) {
+    return await this.OrderBoxesItemsRepository.delete({
+      id,
+      orderBoxes: { order: { comapny: { id: companyId } } },
+    });
   }
-  async removeByOrderId(orderId: string) {
+  async removeByOrderId(orderId: string, companyId: string) {
+    const ord = this.orderRepository.findOne({
+      where: {
+        id: orderId,
+        comapny: { id: companyId },
+      },
+    });
+    if (!ord) {
+      throw new NotFoundException('orderbox not found in this company');
+    }
     await this.OrderBoxesItemsRepository.delete({ orderId: orderId });
   }
 }

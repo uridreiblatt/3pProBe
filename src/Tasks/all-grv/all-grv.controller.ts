@@ -1,15 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Request,
+} from '@nestjs/common';
 import { AllGrvService } from './all-grv.service';
 import { CreateAllGrvDto } from './dto/create-all-grv.dto';
 import { UpdateAllGrvDto } from './dto/update-all-grv.dto';
+import { CurrentCompanyId } from 'src/auth/entities/current-user.decorator';
 
 @Controller('all-grv')
 export class AllGrvController {
-  constructor(private readonly allGrvService: AllGrvService) { }
+  constructor(private readonly allGrvService: AllGrvService) {}
 
   @Get('getAllNewPoFromPriority')
-  async getAllNewPoFromPriority(@Request() req) {
-    return await this.allGrvService.getAllNewPoFromPriority(req.user.selectCompany);
+  async getAllNewPoFromPriority(@CurrentCompanyId() companyId: string) {
+    return await this.allGrvService.getAllNewPoFromPriority(companyId);
   }
 
   // @Post()
@@ -18,8 +28,8 @@ export class AllGrvController {
   // }
 
   @Get()
-  findAll(@Request() req) {
-    return this.allGrvService.findAll(req.user.selectCompany);
+  findAll(@CurrentCompanyId() companyId: string) {
+    return this.allGrvService.findAll(companyId);
   }
 
   @Get(':id')
@@ -28,8 +38,12 @@ export class AllGrvController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAllGrvDto: UpdateAllGrvDto) {
-    return this.allGrvService.update(id, updateAllGrvDto);
+  update(
+    @CurrentCompanyId() companyId: string,
+    @Param('id') id: string,
+    @Body() updateAllGrvDto: UpdateAllGrvDto,
+  ) {
+    return this.allGrvService.update(id, updateAllGrvDto, companyId);
   }
 
   @Delete(':id')

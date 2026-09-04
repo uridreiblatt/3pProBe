@@ -54,11 +54,4 @@ export class CreateAllInventoryDto {
   @ApiProperty()
   @IsString()
   cylinder: string;
-
-  @ApiProperty({ default: 'aaa-aaa-aaa' })
-  @IsString()
-  companyId: string; // required if you expect it in the body
-  // @ApiProperty({ type: [CreateTaskInventoryCountDto] })
-  // @IsArray()
-  // taskInventoryCountDtos: CreateTaskInventoryCountDto[];
 }

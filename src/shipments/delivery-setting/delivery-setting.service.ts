@@ -40,10 +40,11 @@ export class DeliverySettingService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, companyId: string) {
     return await this.DeliverySettingRepository.find({
       where: {
         id: id,
+        company: { id: companyId },
       },
     });
   }
@@ -114,7 +115,7 @@ export class DeliverySettingService {
     });
   }
 
-  async create(deliverySettingDto: DeliverySettingDto) {
+  async create(deliverySettingDto: DeliverySettingDto, companyId: string) {
     const ins = new DeliverySetting();
     ins.Address1 = deliverySettingDto.Address1;
     ins.Address2 = deliverySettingDto.Address2;
@@ -133,11 +134,15 @@ export class DeliverySettingService {
     ins.uomweight = deliverySettingDto.uomweight;
     ins.upsAcountNumber = deliverySettingDto.upsAcountNumber;
     ins.company = new Company();
-    ins.company.id = deliverySettingDto.companyId;
+    ins.company.id = companyId;
 
     return await this.DeliverySettingRepository.save(ins);
   }
-  async update(id: string, deliverySettingDto: DeliverySettingDto) {
+  async update(
+    id: string,
+    deliverySettingDto: DeliverySettingDto,
+    companyId: string,
+  ) {
     const ins = new DeliverySetting();
     ins.Address1 = deliverySettingDto.Address1;
     ins.Address2 = deliverySettingDto.Address2;
@@ -156,10 +161,13 @@ export class DeliverySettingService {
     ins.uomweight = deliverySettingDto.uomweight;
     ins.upsAcountNumber = deliverySettingDto.upsAcountNumber;
     ins.company = new Company();
-    ins.company.id = deliverySettingDto.companyId;
+    ins.company.id = companyId;
     return await this.DeliverySettingRepository.update(id, ins);
   }
-  async remove(id: string) {
-    return await this.DeliverySettingRepository.delete(id);
+  async remove(id: string, companyId: string) {
+    return await this.DeliverySettingRepository.delete({
+      id,
+      company: { id: companyId },
+    });
   }
 }

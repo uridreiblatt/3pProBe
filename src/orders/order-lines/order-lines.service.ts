@@ -1,15 +1,24 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateOrderLineDto } from './dto/create-order-line.dto';
-import { UpdateOrderLineAssemblyAidDto, UpdateOrderLineDto } from './dto/update-order-line.dto';
+import {
+  UpdateOrderLineAssemblyAidDto,
+  UpdateOrderLineDto,
+} from './dto/update-order-line.dto';
 import { OrderLine } from './entities/order-line.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from 'src/orders/order/entities/order.entity';
-import { TaskStatus, TaskStatusEnum } from 'src/settings/task-status/entities/task-status.entity';
+import {
+  TaskStatus,
+  TaskStatusEnum,
+} from 'src/settings/task-status/entities/task-status.entity';
 import { TaskUserService } from 'src/Tasks/task-user/task-user.service';
 import { TaskUser } from 'src/Tasks/task-user/entities/task-user.entity';
 import { User } from 'src/usersCompanies/users/entities/user.entity';
-import { TaskType, TaskTypesEnum } from 'src/settings/task-type/entities/task-type.entity';
+import {
+  TaskType,
+  TaskTypesEnum,
+} from 'src/settings/task-type/entities/task-type.entity';
 import { EOrderUser } from '../order/enums/enum';
 import { Company } from 'src/usersCompanies/company/entities/company.entity';
 
@@ -22,7 +31,7 @@ export class OrderLinesService {
     @Inject(forwardRef(() => TaskUserService))
     private taskUserService: TaskUserService,
     @InjectRepository(TaskUser)
-        private taskUsersRepository: Repository<TaskUser>,
+    private taskUsersRepository: Repository<TaskUser>,
   ) {
     this._taskUserService = taskUserService;
   }
@@ -43,10 +52,10 @@ export class OrderLinesService {
     orderLineFromDto.Fullfilled = 0;
     orderLineFromDto.FullfilledSuperViser = 0;
     orderLineFromDto.approved = false;
-     orderLineFromDto.picked = false;
-     orderLineFromDto.pickingError = false;
-     orderLineFromDto.pickingAid = false;
-     orderLineFromDto.assemblyAid = false;
+    orderLineFromDto.picked = false;
+    orderLineFromDto.pickingError = false;
+    orderLineFromDto.pickingAid = false;
+    orderLineFromDto.assemblyAid = false;
 
     const order = new Order();
     order.id = createOrderLineDto.orderId;
@@ -56,8 +65,11 @@ export class OrderLinesService {
     orderLineFromDto.order = order;
     return orderLineFromDto;
   }
-  async findAll() {
+  async findAll(companyId: string) {
     return await this.orderLinesRepository.find({
+      where: {
+        order: { comapny: { id: companyId } },
+      },
       relations: {
         taskStatus: true,
         order: true,
@@ -65,10 +77,11 @@ export class OrderLinesService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, companyId: string) {
     return await this.orderLinesRepository.findOne({
       where: {
         id: id,
+        order: { comapny: { id: companyId } },
       },
       relations: {
         taskStatus: true,
@@ -90,15 +103,29 @@ export class OrderLinesService {
     });
   }
 
-  async update(id: string, updateOrderLineDto: UpdateOrderLineDto) {
-    return await this.orderLinesRepository.update(id, updateOrderLineDto);
+  async update(
+    id: string,
+    updateOrderLineDto: UpdateOrderLineDto,
+    companyId: string,
+  ) {
+    return await this.orderLinesRepository.update(
+      { id, order: { comapny: { id: companyId } } },
+      updateOrderLineDto,
+    );
   }
-  async updatePickingAid(id: string, updateOrderLineDto: UpdateOrderLineDto) {
-    const { companyId, ...rest } = updateOrderLineDto;
+  async updatePickingAid(
+    id: string,
+    updateOrderLineDto: UpdateOrderLineDto,
+    companyId: string,
+  ) {
+    const { ...rest } = updateOrderLineDto;
     const upd = {
       pickingAid: true, // updateOrderLineDto.pickingAid,
     };
-    await this.orderLinesRepository.update(id, upd);
+    await this.orderLinesRepository.update(
+      { id, order: { comapny: { id: companyId } } },
+      upd,
+    );
     const orderLine = await this.orderLinesRepository.findOne({
       where: {
         id: id,
@@ -124,21 +151,28 @@ export class OrderLinesService {
       //createAssemblyTask.taskType.role = 'Picking'; //Picking
       createAssemblyTask.taskStatus = new TaskStatus();
       createAssemblyTask.taskStatus.id = TaskStatusEnum.New; //new
-      createAssemblyTask.company =  new Company()
-      createAssemblyTask.company.id =  companyId;
+      createAssemblyTask.company = new Company();
+      createAssemblyTask.company.id = companyId;
 
-        // taskUser.user.id = EOrderUser.unAssigned;
-        //       taskUser.taskType = new TaskType();
-        //       taskUser.taskType.id = TaskTypesEnum.Good_received;
-        //       taskUser.taskStatus = new TaskStatus();
-        //       taskUser.taskStatus.id = TaskStatusEnum.New;
+      // taskUser.user.id = EOrderUser.unAssigned;
+      //       taskUser.taskType = new TaskType();
+      //       taskUser.taskType.id = TaskTypesEnum.Good_received;
+      //       taskUser.taskStatus = new TaskStatus();
+      //       taskUser.taskStatus.id = TaskStatusEnum.New;
 
       await this.taskUsersRepository.save(createAssemblyTask);
-      await this._taskUserService.updateTaskAssignedOrder(orderLine.order.id);
+      await this._taskUserService.updateTaskAssignedOrder(
+        orderLine.order.id,
+        companyId,
+      );
     }
   }
 
-  async updateAssemblyAid(id: string, updateOrderLineAssemblyAidDto: UpdateOrderLineAssemblyAidDto) {
+  async updateAssemblyAid(
+    id: string,
+    updateOrderLineAssemblyAidDto: UpdateOrderLineAssemblyAidDto,
+    compamyId: string,
+  ) {
     const upd = {
       assemblyAid: updateOrderLineAssemblyAidDto.assemblyAid,
     };
@@ -146,6 +180,7 @@ export class OrderLinesService {
     const orderLine = await this.orderLinesRepository.findOne({
       where: {
         id: id,
+        order: { comapny: { id: compamyId } },
       },
       relations: {
         order: true,
@@ -159,7 +194,8 @@ export class OrderLinesService {
       createAssemblyTask.productName = orderLine.PARTNAME;
       createAssemblyTask.PartNumber = orderLine.BARCODE;
       createAssemblyTask.productDescription = orderLine.PARTDES;
-      createAssemblyTask.QTYtoassemble = updateOrderLineAssemblyAidDto.assemblyQty;
+      createAssemblyTask.QTYtoassemble =
+        updateOrderLineAssemblyAidDto.assemblyQty;
       createAssemblyTask.user = new User();
       createAssemblyTask.user.id = EOrderUser.unAssigned;
       createAssemblyTask.taskType = new TaskType();
@@ -169,16 +205,20 @@ export class OrderLinesService {
       createAssemblyTask.taskStatus.id = TaskStatusEnum.New; //new
       createAssemblyTask.taskInfo = updateOrderLineAssemblyAidDto.taskInfo;
       createAssemblyTask.cylinder = updateOrderLineAssemblyAidDto.cylinder;
-      createAssemblyTask.company =  new Company()
-      createAssemblyTask.company.id =  updateOrderLineAssemblyAidDto.companyId;
+      createAssemblyTask.company = new Company();
+      createAssemblyTask.company.id = updateOrderLineAssemblyAidDto.companyId;
       await this.taskUsersRepository.save(createAssemblyTask);
-      await this._taskUserService.updateTaskAssignedOrder(orderLine.order.id);
+      await this._taskUserService.updateTaskAssignedOrder(
+        orderLine.order.id,
+        compamyId,
+      );
     }
   }
 
   async removeAssemblyPickingAid(
     id: string,
     updateOrderLineDto: UpdateOrderLineDto,
+    companyId: string,
   ) {
     await this.orderLinesRepository.update(id, updateOrderLineDto);
     const orderLine = await this.orderLinesRepository.findOne({
@@ -204,22 +244,22 @@ export class OrderLinesService {
       createAssemblyTask.taskStatus = new TaskStatus();
       createAssemblyTask.taskStatus.id = TaskStatusEnum.New; //new
       await this.taskUsersRepository.save(createAssemblyTask);
-      await this._taskUserService.updateTaskAssignedOrder(orderLine.order.id);
+      await this._taskUserService.updateTaskAssignedOrder(
+        orderLine.order.id,
+        companyId,
+      );
     }
   }
 
-  async remove(id: number) {
-    return await this.orderLinesRepository.delete(id);
+  async remove(id: string, companyId: string) {
+    return await this.orderLinesRepository.delete({
+      id,
+      order: { comapny: { id: companyId } },
+    });
   }
-  async removeByOrderId(id: string) {
-    // const olOrd = await this.orderLinesRepository.find({
-    //   where: {
-    //     order: { id: id },
-    //   },
-    // });
-    // olOrd.forEach(async (ol) => {
-    //   await this.orderLinesRepository.delete(ol.id);
-    // });
-    await this.orderLinesRepository.delete({ order: { id: id } });
+  async removeByOrderId(id: string, companyId: string) {
+    await this.orderLinesRepository.delete({
+      order: { id: id, comapny: { id: companyId } },
+    });
   }
 }

@@ -11,51 +11,49 @@ import { Zone } from './entities/zone.entity';
 
 @Injectable()
 export class ZoneService {
-
   constructor(
-      @InjectRepository(Zone)
-      private zoneRepository: Repository<Zone>,
-    ) {}
-    
-  async create(createZoneDto: CreateZoneDto) {
-      const ins = new  Zone();
-      ins.zoneName = createZoneDto.zoneName;
-      ins.color = createZoneDto.color;
-      ins.priority = createZoneDto.priority;
-      //ins.zoneId = createZoneDto.zoneId;
-      ins.company = new Company() ;
-      ins.company.id =createZoneDto.companyId;
-      return await this.zoneRepository.save(ins);
+    @InjectRepository(Zone)
+    private zoneRepository: Repository<Zone>,
+  ) {}
+
+  async create(createZoneDto: CreateZoneDto, companyId: string) {
+    const ins = new Zone();
+    ins.zoneName = createZoneDto.zoneName;
+    ins.color = createZoneDto.color;
+    ins.priority = createZoneDto.priority;
+    //ins.zoneId = createZoneDto.zoneId;
+    ins.company = new Company();
+    ins.company.id = companyId;
+    return await this.zoneRepository.save(ins);
   }
 
   async findAll(selectCompany: string) {
     return await this.zoneRepository.find({
-      where: {company: {id: selectCompany}}
+      where: { company: { id: selectCompany } },
     });
   }
 
   async findOne(id: string, selectCompany: string) {
     return await this.zoneRepository.findOne({
-      where: {id: id , company: {id: selectCompany}},      
+      where: { id: id, company: { id: selectCompany } },
     });
   }
 
-  async update(id: string, updateZoneDto: UpdateZoneDto) {
-    const ins = new  Zone();
-      ins.zoneName = updateZoneDto.zoneName;
-      ins.color = updateZoneDto.color;
-      ins.priority = updateZoneDto.priority;
-      //ins.zoneId = updateZoneDto.zoneId;
-      ins.company = new Company() ;
-      ins.company.id =updateZoneDto.companyId;
-      return await this.zoneRepository.update(id, ins);
+  async update(id: string, updateZoneDto: UpdateZoneDto, companyId: string) {
+    const ins = new Zone();
+    ins.zoneName = updateZoneDto.zoneName;
+    ins.color = updateZoneDto.color;
+    ins.priority = updateZoneDto.priority;
+    //ins.zoneId = updateZoneDto.zoneId;
+    ins.company = new Company();
+    ins.company.id = companyId;
+    return await this.zoneRepository.update(id, ins);
   }
 
   async remove(id: string, selectCompany: string) {
     const res = await this.zoneRepository.findOne({
-      where: {id: id , company: {id: selectCompany}},      
+      where: { id: id, company: { id: selectCompany } },
     });
-    if (res)
-      return await this.zoneRepository.delete(id);
+    if (res) return await this.zoneRepository.delete(id);
   }
 }

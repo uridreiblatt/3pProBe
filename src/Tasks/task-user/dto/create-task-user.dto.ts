@@ -1,12 +1,12 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsInt, IsOptional, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CreateTaskUserDto {
   @ApiProperty({ default: 1 })
   @IsInt()
   taskTypeId: number;
-  @ApiProperty({ default: "DataInfo" })
+  @ApiProperty({ default: 'DataInfo' })
   @IsString()
   DataInfo: string;
   @ApiProperty()
@@ -16,10 +16,9 @@ export class CreateTaskUserDto {
   @IsString()
   productName: string;
 
-
   @ApiProperty()
   @IsString()
-  productDescription:string;
+  productDescription: string;
 
   @ApiProperty({ default: 0 })
   @IsInt()
@@ -78,7 +77,7 @@ export class CreateTaskUserDto {
   // @ApiProperty()
   // @IsString()
   // orderName: string;
-  @ApiProperty({ default: "aaa-bbb-ccc" })
+  @ApiProperty({ default: 'aaa-bbb-ccc' })
   @IsString()
   userId: string;
   @ApiProperty({ default: 1 })
@@ -94,35 +93,14 @@ export class CreateTaskUserDto {
   @IsOptional()
   @IsInt()
   taskPriority: number;
-  // @ApiProperty()
-  // @IsString()
-  // rmaNumber: string;
-  // @ApiProperty()
-  // @IsString()
-  // trackingNumber: string;
-  // @ApiProperty()
-  // @IsString()
-  // pictureOne: string;
-  // @ApiProperty()
-  // @IsString()
-  // pictureTwo: string;
-  // @ApiProperty()
-  // @IsInt()
-  // statusRma: number;
-  // @ApiProperty()
-  // @IsString()
-  // customerName: string;
+
   @ApiProperty()
   @IsString()
   cylinder: string;
-
-  @ApiProperty({ default: "aaa-aaa-aaa" })
-  @IsString()
-  companyId: string; // required if you expect it in the body
 }
 
 export interface RootPoPriority {
-  "@odata.context": string;
+  '@odata.context': string;
   value: Value[];
 }
 export interface Value {

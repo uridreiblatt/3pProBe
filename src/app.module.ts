@@ -54,7 +54,7 @@ import { AiModule } from './ai/ai.module';
 
 const cookieMatchOpts: CookieMatchOptions = {
   cookieName: 'companyId',
-  bodyFieldPath: 'companyId',
+  //bodyFieldPath: 'companyId',
   bodyMethods: ['POST', 'PUT', 'PATCH'],
   paramName: 'companyId',
   paramMethods: ['GET', 'DELETE'],

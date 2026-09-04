@@ -19,6 +19,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { AllInventoryService } from './all-inventory.service';
 import { CreateAllInventoryDto } from './dto/create-all-inventory.dto';
 import { UpdateAllInventoryDto } from './dto/update-all-inventory.dto';
+import { CurrentCompanyId } from 'src/auth/entities/current-user.decorator';
 
 @ApiTags('all-inventory')
 @UseGuards(AuthGuard)
@@ -28,34 +29,43 @@ export class AllInventoryController {
   constructor(private readonly allInventoryService: AllInventoryService) {}
 
   @Post()
-  async create(@Body() createTaskUserDto: CreateAllInventoryDto) {
-    return await this.allInventoryService.create(createTaskUserDto);
+  async create(
+    @CurrentCompanyId() companyId: string,
+    @Body() createTaskUserDto: CreateAllInventoryDto,
+  ) {
+    return await this.allInventoryService.create(createTaskUserDto, companyId);
   }
 
   @Get()
-  async findAll(@Request() req) {
-    return await this.allInventoryService.findAll(req.user.selectCompany);
+  async findAll(@CurrentCompanyId() companyId: string) {
+    return await this.allInventoryService.findAll(companyId);
   }
 
   @Get(':id')
-  async findOne(@Request() req, @Param('id') id: string) {
-    const res = await this.allInventoryService.findOne(id);
-    //validateCompanies (req.user.selectCompany , res.user.userCompany);
+  async findOne(
+    @CurrentCompanyId() companyId: string,
+    @Param('id') id: string,
+  ) {
+    const res = await this.allInventoryService.findOne(id, companyId);
     return res;
   }
 
   @Patch(':id')
   async update(
+    @CurrentCompanyId() companyId: string,
     @Param('id') id: string,
     @Body() updateTaskUserDto: UpdateAllInventoryDto,
   ) {
-    return await this.allInventoryService.update(id, updateTaskUserDto);
+    return await this.allInventoryService.update(
+      id,
+      updateTaskUserDto,
+      companyId,
+    );
   }
 
   @Delete(':id')
-  async remove(@Request() req, @Param('id') id: string) {
-    const res = await this.allInventoryService.findOne(id);
-    //validateCompanies (req.user.selectCompany , res.us.userCompany);
-    return await this.allInventoryService.remove(id);
+  async remove(@CurrentCompanyId() companyId: string, @Param('id') id: string) {
+    const res = await this.allInventoryService.findOne(id, companyId);
+    return await this.allInventoryService.remove(id, companyId);
   }
 }

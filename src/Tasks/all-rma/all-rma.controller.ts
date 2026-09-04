@@ -1,44 +1,55 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AllRmaService } from './all-rma.service';
 import { CreateAllRmaDto } from './dto/create-all-rma.dto';
 import { UpdateAllRmaDto } from './dto/update-all-rma.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
-@ApiTags('all-rma-ok')
-@UseGuards(AuthGuard)
+import { CurrentCompanyId } from 'src/auth/entities/current-user.decorator';
+@ApiTags('all-rma')
 @Controller('all-rma')
+@UseGuards(AuthGuard)
 export class AllRmaController {
   constructor(private readonly allRmaService: AllRmaService) {}
 
-  // @Post()
-  // async create(@Body() createAllRmaDto: CreateAllRmaDto) {
-  //   return await this.allRmaService.create(createAllRmaDto);
-  // }
-
-@Get('getAllNewRmaFromPriority')
-  async getAllNewRmaFromPriority(@Request() req) {
-    return await this.allRmaService.getAllNewRmaFromPriority(req.user.selectCompany);
+  @Get('getAllNewRmaFromPriority')
+  async getAllNewRmaFromPriority(@CurrentCompanyId() companyId: string) {
+    return await this.allRmaService.getAllNewRmaFromPriority(companyId);
   }
 
-
-
   @Get('findAll')
-  async findAll(@Request() req) {
-    return await this.allRmaService.findAll(req.user.selectCompany);
+  async findAll(@CurrentCompanyId() companyId: string) {
+    return await this.allRmaService.findAll(companyId);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return await this.allRmaService.findOne(id);
+  async findOne(
+    @CurrentCompanyId() companyId: string,
+    @Param('id') id: string,
+  ) {
+    return await this.allRmaService.findOne(id, companyId);
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateAllRmaDto: UpdateAllRmaDto) {
-    return await this.allRmaService.update(id, updateAllRmaDto);
+  async update(
+    @CurrentCompanyId() companyId: string,
+    @Param('id') id: string,
+    @Body() updateAllRmaDto: UpdateAllRmaDto,
+  ) {
+    return await this.allRmaService.update(id, updateAllRmaDto, companyId);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.allRmaService.remove(id);
+  async remove(@CurrentCompanyId() companyId: string, @Param('id') id: string) {
+    return await this.allRmaService.remove(id, companyId);
   }
 }

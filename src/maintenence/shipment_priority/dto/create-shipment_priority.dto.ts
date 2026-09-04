@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsBoolean, IsInt, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsInt, IsString } from 'class-validator';
 
 export class CreateShipmentPriorityDto {
   @ApiProperty()
@@ -10,7 +10,6 @@ export class CreateShipmentPriorityDto {
   @IsString()
   ShippingMethod: string;
   @ApiProperty()
- 
   @IsBoolean()
   priority: boolean;
   @ApiProperty()
@@ -19,7 +18,4 @@ export class CreateShipmentPriorityDto {
   @ApiProperty()
   @IsString()
   shipRushAcountNumber: string;
-  @ApiProperty()
-   @IsString()
-  companyId: string;
 }

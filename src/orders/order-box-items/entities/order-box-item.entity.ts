@@ -7,14 +7,14 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  ManyToOne,  
+  ManyToOne,
   JoinColumn,
   //OneToMany,
   //JoinColumn,
 } from 'typeorm';
-@Entity({ name: "order_boxes_items" }) // <-- set your real table name
+@Entity({ name: 'order_boxes_items' }) // <-- set your real table name
 export class OrderBoxesItems extends Tablestamp {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string;
   @Column({ nullable: true })
   partNumber: string;
@@ -25,10 +25,10 @@ export class OrderBoxesItems extends Tablestamp {
   @Column({ nullable: true, default: 0 })
   itemsCount: number;
   @ManyToOne(() => OrderBoxes, (orderBoxes) => orderBoxes.id)
-  @JoinColumn({ name: "orderBoxesId" })
+  @JoinColumn({ name: 'orderBoxesId' })
   orderBoxes: OrderBoxes;
   @Column({ nullable: true })
-  orderId: string; 
-@Column({ default: 0 })
-  orderLineItemsCount:number;
+  orderId: string;
+  @Column({ default: 0 })
+  orderLineItemsCount: number;
 }

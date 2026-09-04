@@ -14,49 +14,65 @@ import { CreatePriorityProductsLocationDto } from './dto/create-priority-product
 import { UpdatePriorityProductsLocationDto } from './dto/update-priority-products-location.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CurrentCompanyId } from 'src/auth/entities/current-user.decorator';
 @UseGuards(AuthGuard)
 @ApiTags('priority-products-locations')
 @Controller('priority-products-locations')
 export class PriorityProductsLocationsController {
   constructor(
     private readonly priorityProductsLocationsService: PriorityProductsLocationsService,
-  ) { }
+  ) {}
 
   @Post()
   create(
+    @CurrentCompanyId() companyId: string,
     @Body()
     createPriorityProductsLocationDto: CreatePriorityProductsLocationDto,
   ) {
     return this.priorityProductsLocationsService.create(
       createPriorityProductsLocationDto,
+      companyId,
     );
   }
 
   @Get('findAll')
-  findAll(@Request() req) {
-    return this.priorityProductsLocationsService.findAll(req.user.selectCompany);
+  findAll(@CurrentCompanyId() companyId: string) {
+    return this.priorityProductsLocationsService.findAll(companyId);
   }
   @Get('findZones')
-  findZones() {
-    return this.priorityProductsLocationsService.findZones();
+  findZones(@CurrentCompanyId() companyId: string) {
+    return this.priorityProductsLocationsService.findZones(companyId);
   }
 
   @Get('findOne/:id')
-  findOne(@Param('id') id: string) {
-    return this.priorityProductsLocationsService.findOne(id);
+  findOne(@CurrentCompanyId() companyId: string, @Param('id') id: string) {
+    return this.priorityProductsLocationsService.findOne(id, companyId);
   }
 
   @Get('findAllByProduct/:id')
-  findAllByProduct(@Request() req, @Param('id') id: string) {
-    return this.priorityProductsLocationsService.findAllByProduct(id, req.user.selectCompany);
+  findAllByProduct(
+    @CurrentCompanyId() companyId: string,
+    @Param('id') id: string,
+  ) {
+    return this.priorityProductsLocationsService.findAllByProduct(
+      id,
+      companyId,
+    );
   }
   @Get('findAllByProductName/:partName')
-  findAllByProductName(@Request() req, @Param('partName') partName: string) {
-    return this.priorityProductsLocationsService.findAllByProductName(partName, req.user.selectCompany);
+  findAllByProductName(
+    @CurrentCompanyId() companyId: string,
+    @Param('partName') partName: string,
+  ) {
+    return this.priorityProductsLocationsService.findAllByProductName(
+      partName,
+      companyId,
+    );
   }
 
   @Patch(':id')
   update(
+    @CurrentCompanyId() companyId: string,
     @Param('id') id: string,
     @Body()
     updatePriorityProductsLocationDto: UpdatePriorityProductsLocationDto,
@@ -64,11 +80,12 @@ export class PriorityProductsLocationsController {
     return this.priorityProductsLocationsService.update(
       id,
       updatePriorityProductsLocationDto,
+      companyId,
     );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.priorityProductsLocationsService.remove(id);
+  remove(@CurrentCompanyId() companyId: string, @Param('id') id: string) {
+    return this.priorityProductsLocationsService.remove(id, companyId);
   }
 }

@@ -17,6 +17,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { validateCompanies } from 'src/util/validateCompany.util';
 import { Roles } from 'src/auth/entities/roles.decorator';
 import { rolesEnum } from 'src/auth/entities/role.enum';
+import {
+  CurrentCompanyId,
+  CurrentRoleId,
+} from 'src/auth/entities/current-user.decorator';
 
 @ApiTags('user-role')
 @UseGuards(AuthGuard)
@@ -27,42 +31,48 @@ export class UserRoleController {
 
   //
   @Post()
-  create(@Request() req, @Body() createUserRoleDto: CreateUserRoleDto) {
-    return this.userRoleService.create(
-      createUserRoleDto,
-      req.user.selectCompany,
-    );
+  create(
+    @CurrentCompanyId() companyId: string,
+    @CurrentRoleId() roleId: number,
+    @Body() createUserRoleDto: CreateUserRoleDto,
+  ) {
+    return this.userRoleService.create(createUserRoleDto, companyId, roleId);
   }
 
   @Get()
-  findAll(@Request() req) {
-    return this.userRoleService.findAll(req.user.selectCompany);
+  findAll(@CurrentCompanyId() companyId: string) {
+    return this.userRoleService.findAll(companyId);
   }
 
   @Get(':id')
-  async findOne(@Request() req, @Param('id') id: string) {
-    const res = await this.userRoleService.findOne(id, req.user.selectCompany);
-    //validateCompanies (req.user.selectCompany , res.users.userCompany); // add find in loop
+  async findOne(
+    @CurrentCompanyId() companyId: string,
+    @Param('id') id: string,
+  ) {
+    const res = await this.userRoleService.findOne(id, companyId);
+    //validateCompanies (companyId , res.users.userCompany); // add find in loop
     return res;
   }
 
   @Patch(':id')
   update(
-    @Request() req,
+    @CurrentCompanyId() companyId: string,
+    @CurrentRoleId() roleId: number,
     @Param('id') id: string,
     @Body() updateUserRoleDto: UpdateUserRoleDto,
   ) {
     return this.userRoleService.update(
       id,
       updateUserRoleDto,
-      req.user.selectCompany,
+      companyId,
+      roleId,
     );
   }
 
   @Delete(':id')
-  async remove(@Request() req, @Param('id') id: string) {
-    const res = await this.userRoleService.findOne(id, req.user.selectCompany);
-    //validateCompanies (req.user.selectCompany , res.users.userCompany);
+  async remove(@CurrentCompanyId() companyId: string, @Param('id') id: string) {
+    const res = await this.userRoleService.findOne(id, companyId);
+    //validateCompanies (companyId , res.users.userCompany);
     return this.userRoleService.remove(id);
   }
 }

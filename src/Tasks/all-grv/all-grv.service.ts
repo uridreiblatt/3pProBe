@@ -256,10 +256,12 @@ export class AllGrvService {
     };
   }
 
-  async update(id: string, updateAllGrvDto: UpdateAllGrvDto) {
-    console.log('fffffffffffffffffffff', updateAllGrvDto);
-    const { companyId, userId, taskStatusId, taskGrv, ...rest } =
-      updateAllGrvDto;
+  async update(
+    id: string,
+    updateAllGrvDto: UpdateAllGrvDto,
+    companyId: string,
+  ) {
+    const { userId, taskStatusId, taskGrv, ...rest } = updateAllGrvDto;
     const data = {
       ...rest,
       ...(taskStatusId && { taskStatus: { id: taskStatusId } }),

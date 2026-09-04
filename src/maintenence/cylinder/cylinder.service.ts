@@ -30,33 +30,41 @@ export class CylinderService {
     return resAll;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, companyId: string) {
     return await this.cylinderRepository.findOne({
       where: {
         id: id,
+        company: { id: companyId },
       },
       //relations: {company:true},
     });
   }
 
-  async update(id: string, updateCylinderDto: UpdateCylinderDto) {
+  async update(
+    id: string,
+    updateCylinderDto: UpdateCylinderDto,
+    companyId: string,
+  ) {
     const ins = new Cylinder();
     ins.description = updateCylinderDto.description;
     ins.partName = updateCylinderDto.partName;
     ins.company = new Company();
-    ins.company.id = updateCylinderDto.companyId;
+    ins.company.id = companyId;
     return this.cylinderRepository.update(id, ins);
   }
-  async create(createCylinderDto: CreateCylinderDto) {
+  async create(createCylinderDto: CreateCylinderDto, companyId: string) {
     const ins = new Cylinder();
     ins.description = createCylinderDto.description;
     ins.partName = createCylinderDto.partName;
     ins.company = new Company();
-    ins.company.id = createCylinderDto.companyId;
+    ins.company.id = companyId;
     return this.cylinderRepository.save(ins);
   }
 
-  async remove(id: string) {
-    return await this.cylinderRepository.delete(id);
+  async remove(id: string, companyId: string) {
+    return await this.cylinderRepository.delete({
+      id,
+      company: { id: companyId },
+    });
   }
 }

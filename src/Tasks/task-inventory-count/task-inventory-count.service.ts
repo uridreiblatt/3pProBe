@@ -1,10 +1,16 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UpdateTaskInventoryCountDto } from './dto/update-task-inventory-count.dto';
 import { TaskInventoryCount } from './entities/task-inventory-count.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Equal, Not, Repository } from 'typeorm';
 import { TaskUser } from '../task-user/entities/task-user.entity';
 import { AllInventoryCount } from '../all_inventory/entities/all-inventory.entity';
+import { CreateTaskInventoryCountDto } from './dto/create-task-inventory-count.dto';
 
 @Injectable()
 export class TaskInventoryCountService {
@@ -13,10 +19,10 @@ export class TaskInventoryCountService {
     private taskInventoryCountServiceRepository: Repository<TaskInventoryCount>,
   ) {}
 
-  async findAll(taskUserId: string, id: string) {
+  async findAll(id: string, companyId: string) {
     return await this.taskInventoryCountServiceRepository.find({
       where: {
-        allInventoryCount: { id: id },
+        allInventoryCount: { id: id, company: { id: companyId } },
       },
       // relations: {
       //   taskUser:  true,
@@ -24,10 +30,11 @@ export class TaskInventoryCountService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, companyId: string) {
     const res = await this.taskInventoryCountServiceRepository.findOne({
       where: {
         id: id,
+        allInventoryCount: { company: { id: companyId } },
       },
       relations: {
         allInventoryCount: true,
@@ -49,23 +56,47 @@ export class TaskInventoryCountService {
     };
   }
 
-  async create(createTaskInventoryCountDto: any) {
-    let taskInventoryCount = new TaskInventoryCount();
-    taskInventoryCount = createTaskInventoryCountDto;
-    taskInventoryCount.allInventoryCount = new AllInventoryCount();
-    taskInventoryCount.allInventoryCount.id =
-      createTaskInventoryCountDto.allInventoryCountId;
-    taskInventoryCount.productName = createTaskInventoryCountDto.productName;
-    taskInventoryCount.productDescription =
-      createTaskInventoryCountDto.productDescription;
-    taskInventoryCount.location = createTaskInventoryCountDto.location;
+  async create(dto: CreateTaskInventoryCountDto, companyId: string) {
+    return this.taskInventoryCountServiceRepository.manager.transaction(
+      async (manager) => {
+        const taskRepository = manager.getRepository(TaskInventoryCount);
+        const parentRepository = manager.getRepository(AllInventoryCount);
 
-    return await this.taskInventoryCountServiceRepository.save(
-      taskInventoryCount,
+        const parent = await parentRepository.findOne({
+          where: {
+            id: dto.allInventoryCountId,
+            company: {
+              id: companyId,
+            },
+          },
+          select: {
+            id: true,
+          },
+          lock: {
+            mode: 'pessimistic_read',
+          },
+        });
+
+        if (!parent) {
+          throw new NotFoundException(
+            'Inventory-count parent not found for this company',
+          );
+        }
+
+        const { allInventoryCountId, ...taskData } = dto;
+
+        const task = taskRepository.create({
+          ...taskData,
+          allInventoryCount: parent,
+        });
+
+        return taskRepository.save(task);
+      },
     );
   }
 
   async update(
+    companyId: string,
     id: string,
     updateTaskInventoryCountDto: UpdateTaskInventoryCountDto,
   ) {
@@ -88,14 +119,43 @@ export class TaskInventoryCountService {
     ins.productDescription = updateTaskInventoryCountDto.productDescription;
     ins.location = updateTaskInventoryCountDto.location;
     ins.Total = updateTaskInventoryCountDto.Total;
-    ins.allInventoryCount = new AllInventoryCount();
-    ins.allInventoryCount.id =
-      updateTaskInventoryCountDto.allInventoryCountId || 'sdsadas';
-    const res = await this.taskInventoryCountServiceRepository.update(id, ins);
+    //ins.allInventoryCount = new AllInventoryCount();
+    //ins.allInventoryCount.id = updateTaskInventoryCountDto.allInventoryCountId;
+    const res = await this.taskInventoryCountServiceRepository.update(
+      { id, allInventoryCount: { company: { id: companyId } } },
+      ins,
+    );
     return res;
   }
 
-  async remove(id: string) {
-    return await this.taskInventoryCountServiceRepository.delete(id);
+  async remove(companyId: string, id: string) {
+    return this.taskInventoryCountServiceRepository.manager.transaction(
+      async (manager) => {
+        const repository = manager.getRepository(TaskInventoryCount);
+
+        const task = await repository.findOne({
+          where: {
+            id,
+            allInventoryCount: {
+              company: { id: companyId },
+            },
+          },
+          select: {
+            id: true,
+          },
+          lock: {
+            mode: 'pessimistic_write',
+          },
+        });
+
+        if (!task) {
+          throw new NotFoundException(
+            'Inventory-count task not found for this company',
+          );
+        }
+
+        return repository.delete(task.id);
+      },
+    );
   }
 }

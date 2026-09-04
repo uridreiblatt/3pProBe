@@ -7,17 +7,17 @@ import {
   UnauthorizedException,
   BadGatewayException,
   BadRequestException,
-} from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
-import { SKIP_COOKIE_MATCH_KEY } from "src/auth/entities/skip-cookie-match.decorator";
-import { JwtService } from "@nestjs/jwt";
-import { jwtConstants } from "./constants";
-import { Request } from "express";
-import { ApiUnauthorizedResponse } from "@nestjs/swagger";
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { SKIP_COOKIE_MATCH_KEY } from 'src/auth/entities/skip-cookie-match.decorator';
+import { JwtService } from '@nestjs/jwt';
+import { jwtConstants } from './constants';
+import { Request } from 'express';
+import { ApiUnauthorizedResponse } from '@nestjs/swagger';
 
-export const COOKIE_MATCH_OPTS = "COOKIE_MATCH_OPTS";
+export const COOKIE_MATCH_OPTS = 'COOKIE_MATCH_OPTS';
 type Methods = Array<
-  "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS"
+  'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS'
 >;
 
 export interface CookieMatchOptions {
@@ -33,60 +33,58 @@ export class CookieMatchGuard implements CanActivate {
   constructor(
     @Inject(COOKIE_MATCH_OPTS) private readonly opts: CookieMatchOptions,
     private readonly reflector: Reflector,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
   ) {}
 
   async canActivate(ctx: ExecutionContext): Promise<boolean> {
     // ✅ Honor @SkipCookieMatch() on controller OR route
-   
 
     const skip = this.reflector.getAllAndOverride<boolean>(
       SKIP_COOKIE_MATCH_KEY,
-      [ctx.getHandler(), ctx.getClass()]
+      [ctx.getHandler(), ctx.getClass()],
     );
     if (skip) return true;
-    
-    
-    
+
     const req = ctx
       .switchToHttp()
       .getRequest<Request & { cookies?: Record<string, any>; body?: any }>();
-    const method = (req.method || "").toUpperCase();
+    const method = (req.method || '').toUpperCase();
 
     const ck = this.extractJWTFromCookie(req);
-    let token = ck;    
+    let token = ck;
     //console.log('CookieMatchGuard','token',token)
     if (!token) {
-      const tokenHeader = this.extractTokenFromHeader(req);   
-      token = tokenHeader;    //ck
+      const tokenHeader = this.extractTokenFromHeader(req);
+      token = tokenHeader; //ck
       //console.log('CookieMatchGuard','tokenHeader',tokenHeader)
-    }        
+    }
     if (!token) {
       throw new UnauthorizedException();
     }
-   
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: jwtConstants.secret,
-      });
-      
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
-      req["user"] = payload;
-      //console.log('CookieMatchGuard','payload', payload)
-      // Body match (typically POST)
-      const bodyMethods = this.opts.bodyMethods ?? ["POST", "PUT", "PATCH"];
-      if (this.opts.bodyFieldPath && bodyMethods.includes(method as any)) {
-        const bodyVal = getByPath(req.body, this.opts.bodyFieldPath); 
-        if (bodyVal == null)
-          throw new ForbiddenException(
-            `Missing body field "${this.opts.bodyFieldPath}".`
-          );
-        if (String(payload.selectCompany) !== String(bodyVal)) {
-          throw new BadRequestException(
-            `Cookie "${this.opts.cookieName}" must match body "${this.opts.bodyFieldPath}". comapny: "${payload.selectCompany}" destination company: "${String(bodyVal)}"`
-          );
-        }
+
+    const payload = await this.jwtService.verifyAsync(token, {
+      secret: jwtConstants.secret,
+    });
+
+    // 💡 We're assigning the payload to the request object here
+    // so that we can access it in our route handlers
+    req['user'] = payload;
+
+    // Body match (typically POST)
+    const bodyMethods = this.opts.bodyMethods ?? ['POST', 'PUT', 'PATCH'];
+    if (this.opts.bodyFieldPath && bodyMethods.includes(method as any)) {
+      const bodyVal = getByPath(req.body, this.opts.bodyFieldPath);
+      console.log('CookieMatchGuard', bodyVal);
+      if (bodyVal == null)
+        throw new ForbiddenException(
+          `Missing body field "${this.opts.bodyFieldPath}".`,
+        );
+      if (String(payload.selectCompany) !== String(bodyVal)) {
+        throw new BadRequestException(
+          `Cookie "${this.opts.cookieName}" must match body "${this.opts.bodyFieldPath}". destination company: "${String(bodyVal)}"`,
+        );
       }
+    }
     return true;
   }
 
@@ -97,14 +95,10 @@ export class CookieMatchGuard implements CanActivate {
     return null;
   }
   private extractTokenFromHeader(req: Request): string | null {
-     if (req.headers && req.headers.authorization) {
-     
-
-      const obj = JSON.parse(req.headers.authorization?.split(" ")[1] );
+    if (req.headers && req.headers.authorization) {
+      const obj = JSON.parse(req.headers.authorization?.split(' ')[1]);
       const token = obj.access_token;
       return token;
-      
-
     }
     return null;
   }
@@ -113,6 +107,6 @@ export class CookieMatchGuard implements CanActivate {
 // tiny helper: dot-path read (no external deps)
 function getByPath(obj: any, path: string) {
   return path
-    .split(".")
+    .split('.')
     .reduce((acc, key) => (acc == null ? acc : acc[key]), obj);
 }

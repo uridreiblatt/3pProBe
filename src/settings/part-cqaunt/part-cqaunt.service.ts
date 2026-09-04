@@ -14,37 +14,42 @@ export class PartCqauntService {
   ) {}
   async findAll(companyId: string) {
     return await this.PartCQuantRepository.find({
-      where: {company: {id:companyId}},     
-  });
+      where: { company: { id: companyId } },
+    });
   }
-  async findOne(id: string) {
-    return await this.PartCQuantRepository.findOne(
-      {
-        where: {
-          id: id
-        },
-        relations:{ company: true,        
+  async findOne(id: string, companyId: string) {
+    return await this.PartCQuantRepository.findOne({
+      where: {
+        id: id,
+        company: { id: companyId },
       },
-      }
-    );
+      relations: { company: true },
+    });
   }
 
-  async update(id: string, updatePartCqauntDto: UpdatePartCqauntDto) {
-    const ins =  new PartCqaunt();
+  async update(
+    id: string,
+    updatePartCqauntDto: UpdatePartCqauntDto,
+    companyId: string,
+  ) {
+    const ins = new PartCqaunt();
     ins.partName = updatePartCqauntDto.partName;
-    ins.company =  new Company();
-    ins.company.id = updatePartCqauntDto.companyId;
-    return await this.PartCQuantRepository.update(id,ins);
+    ins.company = new Company();
+    ins.company.id = companyId;
+    return await this.PartCQuantRepository.update(id, ins);
   }
 
-  async create (createPartCqauntDto: CreatePartCqauntDto) {
-    const ins =  new PartCqaunt();
+  async create(createPartCqauntDto: CreatePartCqauntDto, companyId: string) {
+    const ins = new PartCqaunt();
     ins.partName = createPartCqauntDto.partName;
-    ins.company =  new Company();
-    ins.company.id = createPartCqauntDto.companyId;
+    ins.company = new Company();
+    ins.company.id = companyId;
     return await this.PartCQuantRepository.save(ins);
   }
-  async remove(id: string) {
-    return await this.PartCQuantRepository.delete(id);
+  async remove(id: string, companyId: string) {
+    return await this.PartCQuantRepository.delete({
+      id,
+      company: { id: companyId },
+    });
   }
 }

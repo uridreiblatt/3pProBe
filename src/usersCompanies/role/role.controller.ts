@@ -28,19 +28,19 @@ export class RoleController {
   //   return this.roleService.create(createRoleDto);
   // }
 
-  @Get()
-  findAll() {
-    return this.roleService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.roleService.findAll();
+  // }
 
-  @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: string) {
-    const role = await this.roleService.findOne(+id);
+  // @Get(':id')
+  // async findOne(@Param('id', ParseIntPipe) id: string) {
+  //   const role = await this.roleService.findOne(+id);
 
-    if (!role) {
-      throw new NotFoundException('Role not found');
-    }
+  //   if (!role) {
+  //     throw new NotFoundException('Role not found');
+  //   }
 
-    return role;
-  }
+  //   return role;
+  // }
 }

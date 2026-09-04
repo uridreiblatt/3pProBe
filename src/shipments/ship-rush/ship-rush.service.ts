@@ -47,7 +47,7 @@ export class ShipRushService {
   //   });
   // }
 
-  async create(createShipRushDto: CreateShipRushDto) {
+  async create(createShipRushDto: CreateShipRushDto, companyId) {
     const order = await this._orderService.getOrderByShipmentIdFromShipRush(
       createShipRushDto.shipmentId,
     );
@@ -74,7 +74,7 @@ export class ShipRushService {
       shipRushStatus: 'Final',
     };
     //console.log(updOrderPriority);
-    await this._orderService.updateData(order.id, updOrderPriority);
+    await this._orderService.updateData(order.id, updOrderPriority, companyId);
   }
 
   async UpdatePriorityShippingDoc(

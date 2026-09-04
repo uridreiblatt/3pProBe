@@ -197,7 +197,6 @@ export class AllRmaService {
   }
 
   async findAll(companyId: string) {
-    //console.log('findAll Rma', companyId)
     const res = await this.allRmaRepository.find({
       where: {
         company: { id: companyId },
@@ -227,9 +226,9 @@ export class AllRmaService {
     return resAll;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, companyId: string) {
     const res = await this.allRmaRepository.findOne({
-      where: { id: id },
+      where: { id: id, company: { id: companyId } },
       relations: {
         user: true,
         taskStatus: true,
@@ -266,7 +265,7 @@ export class AllRmaService {
     return resAll;
   }
 
-  async update(id: string, updateAllRmaDto: any) {
+  async update(id: string, updateAllRmaDto: any, companyId: string) {
     // let allRma = new AllRma();
     // allRma = updateAllRmaDto;
     // allRma.user = new User();
@@ -276,19 +275,25 @@ export class AllRmaService {
     // allRma.company = new Company();
     // allRma.company.id = updateAllRmaDto.companyId;
 
-    const { companyId, userId, taskStatusId, ...rest } = updateAllRmaDto;
+    const { userId, taskStatusId, ...rest } = updateAllRmaDto;
     const data = {
       ...rest,
       ...(taskStatusId && { taskStatus: { id: taskStatusId } }),
       ...(userId && { user: { id: userId } }),
     };
-    return await this.allRmaRepository.update(id, data);
+    return await this.allRmaRepository.update(
+      { id, company: { id: companyId } },
+      data,
+    );
   }
 
-  async remove(id: string) {
+  async remove(id: string, companyId: string) {
     await this.TaskRmaRepository.delete({
-      allRma: { id: id },
+      allRma: { id: id, company: { id: companyId } },
     });
-    return await this.allRmaRepository.delete(id);
+    return await this.allRmaRepository.delete({
+      id,
+      company: { id: companyId },
+    });
   }
 }

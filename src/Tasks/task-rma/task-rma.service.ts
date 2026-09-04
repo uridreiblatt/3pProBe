@@ -1,19 +1,19 @@
-import { Injectable } from "@nestjs/common";
-import { CreateTaskRmaDto } from "./dto/create-task-rma.dto";
-import { UpdateTaskRmaDto } from "./dto/update-task-rma.dto";
-import { TaskRma } from "./entities/task-rma.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { TaskUser } from "../task-user/entities/task-user.entity";
-import { AllRma } from "../all-rma/entities/all-rma.entity";
-import { rm } from "fs";
+import { Injectable } from '@nestjs/common';
+import { CreateTaskRmaDto } from './dto/create-task-rma.dto';
+import { UpdateTaskRmaDto } from './dto/update-task-rma.dto';
+import { TaskRma } from './entities/task-rma.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { TaskUser } from '../task-user/entities/task-user.entity';
+import { AllRma } from '../all-rma/entities/all-rma.entity';
+import { rm } from 'fs';
 
 @Injectable()
 export class TaskRmaService {
   constructor(
     @InjectRepository(TaskRma)
-    private taskRmaRepository: Repository<TaskRma>
-  ) { }
+    private taskRmaRepository: Repository<TaskRma>,
+  ) {}
 
   async create(createTaskRmaDto: CreateTaskRmaDto) {
     const ins = new TaskRma();
@@ -38,23 +38,22 @@ export class TaskRmaService {
       },
     });
   }
-  async findAllByRma(id: string) {
+  async findAllByRma(id: string, companyId: string) {
     return await this.taskRmaRepository.find({
-      where: { allRma: { id: id } },
+      where: { allRma: { id: id, company: { id: companyId } } },
       relations: {
         allRma: true,
       },
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, companyId: string) {
     const res = await this.taskRmaRepository.findOne({
-      where: { id: id },
+      where: { id: id, allRma: { company: { id: companyId } } },
       relations: {
         allRma: true,
       },
     });
-
 
     return {
       ...res,
@@ -62,7 +61,11 @@ export class TaskRmaService {
     };
   }
 
-  async update(id: string, updateTaskRmaDto: UpdateTaskRmaDto) {
+  async update(
+    id: string,
+    updateTaskRmaDto: UpdateTaskRmaDto,
+    companyId: string,
+  ) {
     const ins = new TaskRma();
     ins.PartNumber = updateTaskRmaDto.PartNumber;
     ins.partQount = updateTaskRmaDto.partQount;
@@ -72,10 +75,16 @@ export class TaskRmaService {
     ins.remarks = updateTaskRmaDto.remarks;
     ins.productDescription = updateTaskRmaDto.productDescription;
     ins.productName = updateTaskRmaDto.productName;
-    return await this.taskRmaRepository.update(id, ins);
+    return await this.taskRmaRepository.update(
+      { id, allRma: { company: { id: companyId } } },
+      ins,
+    );
   }
 
-  async remove(id: string) {
-    return await this.taskRmaRepository.delete(id);
+  async remove(id: string, companyId: string) {
+    return await this.taskRmaRepository.delete({
+      id,
+      allRma: { company: { id: companyId } },
+    });
   }
 }

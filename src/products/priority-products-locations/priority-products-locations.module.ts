@@ -4,9 +4,16 @@ import { PriorityProductsLocationsController } from './priority-products-locatio
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PriorityProductsLocation } from './entities/priority-products-location.entity';
 import { Zone } from '../../maintenence/zone/entities/zone.entity';
+import { PriorityProducts } from '../priorityProducts/entities/priorityProducts.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PriorityProductsLocation, Zone])],
+  imports: [
+    TypeOrmModule.forFeature([
+      PriorityProductsLocation,
+      Zone,
+      PriorityProducts,
+    ]),
+  ],
   controllers: [PriorityProductsLocationsController],
   providers: [PriorityProductsLocationsService],
 })

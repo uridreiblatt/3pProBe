@@ -44,6 +44,6 @@ export class User extends Tablestamp {
   // userRole: UserRole[];
   // @JoinColumn()
   // userRole: UserRole;
-  @Column({ default: '0' })
+  @Column({ default: '0', select: false })
   otp: string;
 }

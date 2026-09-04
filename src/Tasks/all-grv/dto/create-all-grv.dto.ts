@@ -1,13 +1,12 @@
-
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsInt, IsOptional, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CreateAllGrvDto {
   @ApiProperty({ default: 1 })
   @IsInt()
   taskTypeId: number;
-  @ApiProperty({ default: "DataInfo" })
+  @ApiProperty({ default: 'DataInfo' })
   @IsString()
   DataInfo: string;
   @ApiProperty()
@@ -16,7 +15,6 @@ export class CreateAllGrvDto {
   @ApiProperty()
   @IsString()
   productName: string;
-
 
   @ApiProperty()
   @IsString()
@@ -39,7 +37,7 @@ export class CreateAllGrvDto {
   @IsString()
   remarks: string;
 
-  @ApiProperty({ default: "aaa-bbb-ccc" })
+  @ApiProperty({ default: 'aaa-bbb-ccc' })
   @IsString()
   userId: string;
   @ApiProperty({ default: 1 })
@@ -54,14 +52,10 @@ export class CreateAllGrvDto {
   @ApiProperty()
   @IsString()
   cylinder: string;
-
-  @ApiProperty()
-  @IsString()
-  companyId: string; // required if you expect it in the body
 }
 
 export interface RootPoPriority {
-  "@odata.context": string;
+  '@odata.context': string;
   value: Value[];
 }
 export interface Value {
@@ -80,4 +74,3 @@ export interface PORDERITEMSLines {
   TQUANT: string;
   BARCODE: string;
 }
-

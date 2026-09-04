@@ -17,6 +17,7 @@ import { rolesEnum } from 'src/auth/entities/role.enum';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { SkipCookieMatch } from 'src/auth/entities/skip-cookie-match.decorator';
+import { CurrentCompanyId } from 'src/auth/entities/current-user.decorator';
 @SkipCookieMatch()
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(rolesEnum.SysAdmin, rolesEnum.Administrator)
@@ -25,18 +26,18 @@ import { SkipCookieMatch } from 'src/auth/entities/skip-cookie-match.decorator';
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
-  @Get()
-  findAll() {
-    return this.companyService.findAll();
-  }
+  // @Get()
+  // findAll(@CurrentCompanyId() companyId: string) {
+  //   return this.companyService.findAll();
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.companyService.findOne(id);
-  }
+  // @Get(':id')
+  // findOne(@CurrentCompanyId() companyId: string, @Param('id') id: string) {
+  //   return this.companyService.findOne(id,companyId);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.companyService.remove(id);
-  }
+  // @Delete(':id')
+  // remove(@CurrentCompanyId() companyId: string, @Param('id') id: string) {
+  //   return this.companyService.remove(id,companyId);
+  // }
 }

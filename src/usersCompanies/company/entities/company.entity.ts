@@ -1,9 +1,9 @@
-import { Boxsize } from "src/maintenence/boxes/entities/box.entity";
-import { Cylinder } from "src/maintenence/cylinder/entities/cylinder.entity";
-import { PartCqaunt } from "src/settings/part-cqaunt/entities/part-cqaunt.entity";
-import { DeliverySetting } from "src/shipments/delivery-setting/entities/delivery-setting.entity";
-import { ShipmentPriority } from "src/maintenence/shipment_priority/entities/shipment_priority.entity";
-import { UserCompany } from "src/usersCompanies/user-company/entities/user-company.entity";
+import { Boxsize } from 'src/maintenence/boxes/entities/box.entity';
+import { Cylinder } from 'src/maintenence/cylinder/entities/cylinder.entity';
+import { PartCqaunt } from 'src/settings/part-cqaunt/entities/part-cqaunt.entity';
+import { DeliverySetting } from 'src/shipments/delivery-setting/entities/delivery-setting.entity';
+import { ShipmentPriority } from 'src/maintenence/shipment_priority/entities/shipment_priority.entity';
+import { UserCompany } from 'src/usersCompanies/user-company/entities/user-company.entity';
 import {
   Entity,
   Column,
@@ -11,35 +11,35 @@ import {
   JoinColumn,
   OneToMany,
   OneToOne,
-} from "typeorm";
-import { Zone } from "src/maintenence/zone/entities/zone.entity";
-import { TaskUser } from "src/Tasks/task-user/entities/task-user.entity";
-import { Tablestamp } from "src/maintenence/boxes/entities/tablestamp.embed";
-import { AllRma } from "src/Tasks/all-rma/entities/all-rma.entity";
-import { CompanySetting } from "src/settings/company-settings/entities/company-setting.entity";
-import { PriorityProducts } from "src/products/priorityProducts/entities/priorityProducts.entity";
-import { Order } from "src/orders/order/entities/order.entity";
-import { ProductStatus } from "src/products/product-status/entities/product-status.entity";
+} from 'typeorm';
+import { Zone } from 'src/maintenence/zone/entities/zone.entity';
+import { TaskUser } from 'src/Tasks/task-user/entities/task-user.entity';
+import { Tablestamp } from 'src/maintenence/boxes/entities/tablestamp.embed';
+import { AllRma } from 'src/Tasks/all-rma/entities/all-rma.entity';
+import { CompanySetting } from 'src/settings/company-settings/entities/company-setting.entity';
+import { PriorityProducts } from 'src/products/priorityProducts/entities/priorityProducts.entity';
+import { Order } from 'src/orders/order/entities/order.entity';
+import { ProductStatus } from 'src/products/product-status/entities/product-status.entity';
 
 @Entity()
 export class Company extends Tablestamp {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string; // The primary key will be a UUID string
 
   @Column()
   name: string;
 
-  @Column("text")
+  @Column('text')
   description: string;
 
   @Column()
   Ssn: string;
 
   @OneToOne(() => CompanySetting, (companySetting) => companySetting.company, {
-    cascade: true,   // optional: auto-save profile when saving user
-    eager: true,     // optional: always load profile with user
+    cascade: true, // optional: auto-save profile when saving user
+    //eager: true,     // optional: always load profile with user
   })
-  @JoinColumn()      // FK column lives on User table
+  @JoinColumn() // FK column lives on User table
   companySetting: CompanySetting;
 
   @OneToMany(() => UserCompany, (userCompany) => userCompany.company)
@@ -65,11 +65,9 @@ export class Company extends Tablestamp {
   allRma: AllRma[];
   @OneToMany(() => PriorityProducts, (priorityProducts) => priorityProducts)
   priorityProducts: PriorityProducts[];
-   @OneToMany(() => Order, (Order) => Order)
+  @OneToMany(() => Order, (Order) => Order)
   orders: Order[];
 
-
-
-@OneToMany(() => ProductStatus, (productStatus) => productStatus.company)
+  @OneToMany(() => ProductStatus, (productStatus) => productStatus.company)
   productStatuses: ProductStatus[];
 }

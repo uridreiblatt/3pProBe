@@ -49,7 +49,6 @@ export class UsersService {
     const resUser = await this.userRepository.find({
       where: [
         {
-          isActive: true,
           userCompany: { company: { id: companyId } },
         },
       ],
@@ -82,9 +81,6 @@ export class UsersService {
     return res;
   }
 
-  findAllWithDbProc() {
-    return this.userRepository.query('ggg @param1=1 ');
-  }
   async signIn(createAuthDto: CreateAuthDto): Promise<User> {
     return await this.userRepository.findOne({
       where: {
@@ -96,7 +92,7 @@ export class UsersService {
         usersRoles: {
           role: true,
         },
-        userCompany: { company: true },
+        userCompany: { company: { companySetting: true } },
       },
     });
   }
@@ -135,7 +131,7 @@ export class UsersService {
       userName: resUser.userName,
       userLastName: resUser.userSurname,
       userMail: resUser.userMail,
-      userPasswordEnc: resUser.userPasswordEnc,
+      //userPasswordEnc: resUser.userPasswordEnc,
       selectedCompany: resUser.selectedCompany,
       isActive: resUser.isActive,
       userRoles: resUser.usersRoles.map((o) => {
@@ -149,7 +145,11 @@ export class UsersService {
   }
   async update(id: string, updateUserDto: UpdateUserDto, companyId: string) {
     const payload = {
-      ...updateUserDto,
+      userName: updateUserDto.userName,
+      userSurname: updateUserDto.userSurname,
+      userMail: updateUserDto.userMail,
+      userMobile: updateUserDto.userMobile,
+      isActive: updateUserDto.isActive,
       ...(updateUserDto.userPasswordEnc
         ? { userPasswordEnc: updateUserDto.userPasswordEnc }
         : {}),

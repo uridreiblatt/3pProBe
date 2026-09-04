@@ -13,26 +13,27 @@ export class ShipmentPriorityService {
     private shipmentPriorityRepository: Repository<ShipmentPriority>,
   ) {}
 
+  async create(
+    createShipmentPriorityDto: CreateShipmentPriorityDto,
+    companyId: string,
+  ) {
+    const ins = new ShipmentPriority();
+    ins.ShipmentCode = createShipmentPriorityDto.ShipmentCode;
+    ins.ShippingMethod = createShipmentPriorityDto.ShippingMethod;
+    ins.priority = createShipmentPriorityDto.priority;
+    ins.shipRushAcountNumber = createShipmentPriorityDto.shipRushAcountNumber;
+    ins.shipRushCode = createShipmentPriorityDto.shipRushCode;
+    //ins.ShippingMethod = createShipmentPriorityDto.usermail;
+    const cmp = new Company();
+    cmp.id = companyId;
+    ins.company = cmp;
 
-  async create(createShipmentPriorityDto: CreateShipmentPriorityDto) {
-      const ins = new ShipmentPriority();
-      ins.ShipmentCode = createShipmentPriorityDto.ShipmentCode;
-      ins.ShippingMethod = createShipmentPriorityDto.ShippingMethod;
-      ins.priority = createShipmentPriorityDto.priority;
-      ins.shipRushAcountNumber = createShipmentPriorityDto.shipRushAcountNumber;
-      ins.shipRushCode = createShipmentPriorityDto.shipRushCode;
-      //ins.ShippingMethod = createShipmentPriorityDto.usermail;
-      const cmp = new Company();
-      cmp.id = createShipmentPriorityDto.companyId;
-      ins.company = cmp;
-
-
-      return await this.shipmentPriorityRepository.save(ins);
-    }
+    return await this.shipmentPriorityRepository.save(ins);
+  }
   async findAll(idComapny: string) {
     return await this.shipmentPriorityRepository.find({
-      where:{
-        company :{id: idComapny}
+      where: {
+        company: { id: idComapny },
       },
       // relations: {
       //   company: true,
@@ -40,12 +41,13 @@ export class ShipmentPriorityService {
     });
   }
 
-  async findOne(id: string) {    
+  async findOne(id: string, companyId: string) {
     return await this.shipmentPriorityRepository.findOne({
       where: {
         id: id,
+        company: { id: companyId },
       },
-       relations: {
+      relations: {
         company: true,
       },
     });
@@ -59,19 +61,28 @@ export class ShipmentPriorityService {
     });
   }
 
-  
+  async update(
+    id: string,
+    updateShipmentPriorityDto: UpdateShipmentPriorityDto,
 
-  async update(id: string, updateShipmentPriorityDto: UpdateShipmentPriorityDto) {
-      const ins = new ShipmentPriority();
-      ins.ShipmentCode = updateShipmentPriorityDto.ShipmentCode;
-      ins.ShippingMethod = updateShipmentPriorityDto.ShippingMethod;
-      ins.priority = updateShipmentPriorityDto.priority;
-      ins.shipRushAcountNumber = updateShipmentPriorityDto.shipRushAcountNumber;
-      ins.shipRushCode = updateShipmentPriorityDto.shipRushCode;
-      return await this.shipmentPriorityRepository.update(id, ins);
-    }
-  
-    async remove(id: string) {
-      return await this.shipmentPriorityRepository.delete(id);
-    }
+    companyId: string,
+  ) {
+    const ins = new ShipmentPriority();
+    ins.ShipmentCode = updateShipmentPriorityDto.ShipmentCode;
+    ins.ShippingMethod = updateShipmentPriorityDto.ShippingMethod;
+    ins.priority = updateShipmentPriorityDto.priority;
+    ins.shipRushAcountNumber = updateShipmentPriorityDto.shipRushAcountNumber;
+    ins.shipRushCode = updateShipmentPriorityDto.shipRushCode;
+    return await this.shipmentPriorityRepository.update(
+      { id, company: { id: companyId } },
+      ins,
+    );
+  }
+
+  async remove(id: string, companyId: string) {
+    return await this.shipmentPriorityRepository.delete({
+      id,
+      company: { id: companyId },
+    });
+  }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskGrvDto } from './dto/create-task-grv.dto';
 import { UpdateTaskGrvDto } from './dto/update-task-grv.dto';
 import { TaskGrv } from './entities/task-grv.entity';
@@ -12,11 +12,25 @@ export class TaskGrvService {
   constructor(
     @InjectRepository(TaskGrv)
     private taskGrvRepository: Repository<TaskGrv>,
-  ) {
-  }
+    @InjectRepository(AllGrv)
+    private allGrvRepository: Repository<AllGrv>,
+  ) {}
 
+  async create(createTaskGrvDto: CreateTaskGrvDto, companyId: string) {
+    const allGrv = await this.allGrvRepository.findOne({
+      where: {
+        id: createTaskGrvDto.allGrvId,
+        company: {
+          id: companyId,
+        },
+      },
+    });
 
-  async create(createTaskGrvDto: CreateTaskGrvDto) {
+    if (!allGrv) {
+      throw new NotFoundException(
+        'GRV was not found or does not belong to this company',
+      );
+    }
     const ins = new TaskGrv();
     ins.DataInfo = createTaskGrvDto.DataInfo;
     ins.productName = createTaskGrvDto.productName;
@@ -40,23 +54,21 @@ export class TaskGrvService {
     ins.allGrv = new AllGrv();
     ins.allGrv.id = createTaskGrvDto.allGrvId;
     return await this.taskGrvRepository.save(ins);
-
   }
 
-  async findAll(taskTypeId: string) {
+  async findAll(allGrvId: string, companyId: string) {
     return await this.taskGrvRepository.find({
       where: {
-        allGrv: { id: taskTypeId }
+        allGrv: { id: allGrvId, company: { id: companyId } },
       },
-    })
+    });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, companyId: string) {
     const res = await this.taskGrvRepository.findOne({
-      where: { id: id },
+      where: { id: id, allGrv: { company: { id: companyId } } },
       relations: { allGrv: true },
-
-    })
+    });
     const { allGrv, ...rest } = res;
 
     return {
@@ -65,7 +77,25 @@ export class TaskGrvService {
     };
   }
 
-  async update(id: string, updateTaskGrvDto: UpdateTaskGrvDto) {
+  async update(
+    id: string,
+    updateTaskGrvDto: UpdateTaskGrvDto,
+    companyId: string,
+  ) {
+    const allGrv = await this.allGrvRepository.findOne({
+      where: {
+        id: updateTaskGrvDto.allGrvId,
+        company: {
+          id: companyId,
+        },
+      },
+    });
+
+    if (!allGrv) {
+      throw new NotFoundException(
+        'GRV was not found or does not belong to this company',
+      );
+    }
     const ins = new TaskGrv();
     ins.DataInfo = updateTaskGrvDto.DataInfo;
 
@@ -92,8 +122,10 @@ export class TaskGrvService {
     return await this.taskGrvRepository.update(id, ins);
   }
 
-  async remove(id: string) {
-    return await this.taskGrvRepository.delete(id);
-
+  async remove(id: string, companyId: string) {
+    return await this.taskGrvRepository.delete({
+      id,
+      allGrv: { company: { id: companyId } },
+    });
   }
 }

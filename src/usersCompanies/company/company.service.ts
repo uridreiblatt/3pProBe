@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
@@ -16,10 +16,10 @@ export class CompanyService {
     return this.companyRepository.find({});
   }
 
-  async findOne(id: string) {
+  async findOne(companyId: string) {
     const res = await this.companyRepository.findOne({
       where: {
-        id: id,
+        id: companyId,
       },
       relations: {
         companySetting: true,
@@ -31,7 +31,20 @@ export class CompanyService {
     return res;
   }
 
-  async remove(id: string) {
-    return this.companyRepository.delete(id);
+  async remove(id: string, companyId: string) {
+    const result = await this.companyRepository.update(
+      { id: companyId },
+      {
+        isActive: false,
+      },
+    );
+
+    if (!result.affected) {
+      throw new NotFoundException(`Company not found`);
+    }
+
+    return {
+      message: 'Company deactivated successfully',
+    };
   }
 }

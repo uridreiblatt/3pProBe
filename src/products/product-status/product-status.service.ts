@@ -8,42 +8,51 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class ProductStatusService {
   constructor(
-        @InjectRepository(ProductStatus)
-        private productStatusRepository: Repository<ProductStatus>,
-      ) {}
+    @InjectRepository(ProductStatus)
+    private productStatusRepository: Repository<ProductStatus>,
+  ) {}
 
   async create(companyId: string) {
     const sql = `SELECT distinct STATDES  FROM priorityproducts where companyId  ='${companyId}'`;
-    console.log(sql);
     const newProductStatus = await this.productStatusRepository.query(sql);
-    newProductStatus.forEach((element) => {      const productStatus = new ProductStatus();
+    newProductStatus.forEach((element) => {
+      const productStatus = new ProductStatus();
       productStatus.productStatus = element.STATDES;
-      productStatus.company = {id: companyId} as any;
+      productStatus.company = { id: companyId } as any;
 
       this.productStatusRepository.save(productStatus).catch((err) => {
         //Duplicate entry 'WSL-aaa-aaa-aaa' for key 'product-status.productStatus_UNIQUE'",
-      });      
+      });
     });
-
   }
 
   findAll(selectCompany: string) {
-    return this.productStatusRepository.find({where: {company: {id: selectCompany}}} );
-  }
-
-  async findOne(id: string) {
-    return await this.productStatusRepository.findOne({
-      where: {id: id},
+    return this.productStatusRepository.find({
+      where: { company: { id: selectCompany } },
     });
   }
 
-  async update(id: string, updateProductStatusDto: UpdateProductStatusDto) {
-    console.log(updateProductStatusDto);
-     const { companyId, ...rest } = updateProductStatusDto;
-    return await this.productStatusRepository.update(id, rest);
+  async findOne(id: string, companyId: string) {
+    return await this.productStatusRepository.findOne({
+      where: { id: id, company: { id: companyId } },
+    });
   }
 
-  async remove(id: string) {
-    return await this.productStatusRepository.delete(id);
+  async update(
+    id: string,
+    updateProductStatusDto: UpdateProductStatusDto,
+    companyId: string,
+  ) {
+    return await this.productStatusRepository.update(
+      { id, company: { id: companyId } },
+      updateProductStatusDto,
+    );
+  }
+
+  async remove(id: string, companyId: string) {
+    return await this.productStatusRepository.delete({
+      id,
+      company: { id: companyId },
+    });
   }
 }

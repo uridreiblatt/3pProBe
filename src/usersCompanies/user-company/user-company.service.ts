@@ -13,19 +13,6 @@ export class UserCompanyService {
   ) {}
 
   async findAll(companyId: string) {
-    return await this.userComapnyRepository.find({
-      where: {
-        company: { id: companyId },
-      },
-
-      relations: {
-        users: true,
-        company: true,
-      },
-      //select: ['id', 'userName', 'usermail', 'usersRoles', 'color'],
-    });
-  }
-  async findAllUsersByCompany(companyId: string) {
     const res = await this.userComapnyRepository.find({
       where: {
         company: { id: companyId },
@@ -35,14 +22,56 @@ export class UserCompanyService {
         users: true,
         company: true,
       },
-      //select: ['id', 'userName', 'usermail', 'usersRoles', 'color'],
+
+      select: {
+        users: {
+          //id: true,
+          isActive: true,
+          userName: true,
+          userSurname: true,
+          userMail: true,
+          userMobile: true,
+          color: true,
+          selectedCompany: true,
+          // userUuid NOT selected
+          // createdAt NOT selected
+        },
+
+        company: {
+          //id: true,
+          isActive: true,
+          name: true,
+          description: true,
+          // Ssn NOT selected
+          // createdAt NOT selected
+        },
+      },
     });
-    const resAll = res.map((userCompany) => {
-      return {
-        userId: userCompany.users.id,
-        userName: userCompany.users.userName,
-      };
+
+    return res;
+  }
+  async findAllUsersByCompany(companyId: string) {
+    const res = await this.userComapnyRepository.find({
+      where: {
+        company: { id: companyId },
+      },
+
+      relations: {
+        users: true,
+      },
+
+      select: {
+        users: {
+          id: true,
+          userName: true,
+        },
+      },
     });
-    return resAll;
+
+    return res.map((userCompany) => ({
+      userId: userCompany.users.id,
+      userName: userCompany.users.userName,
+    }));
+    return res;
   }
 }

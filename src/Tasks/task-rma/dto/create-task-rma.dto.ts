@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsInt, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsInt, IsString } from 'class-validator';
 
 export class CreateTaskRmaDto {
   @ApiProperty()
@@ -29,7 +29,4 @@ export class CreateTaskRmaDto {
   @ApiProperty()
   @IsString()
   rmaId: string;
-  @ApiProperty()
-  @IsString()
-  companyId: string;
 }

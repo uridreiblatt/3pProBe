@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsString } from 'class-validator';
 
 export class CreateCompanySettingDto {
   @ApiProperty()
@@ -24,9 +24,6 @@ export class CreateCompanySettingDto {
   @ApiProperty()
   @IsString()
   priorityRmaStatus: string;
-  @ApiProperty()
-  @IsString()
-  companyId: string;
   @ApiProperty()
   @IsString()
   priorityProductStatus: string;
@@ -54,9 +51,7 @@ export class CreateCompanySettingDto {
   @ApiProperty()
   @IsBoolean()
   isActive: boolean;
- @ApiProperty()
+  @ApiProperty()
   @IsString()
   priorityOrderLineStatus: string;
-
-  
 }
