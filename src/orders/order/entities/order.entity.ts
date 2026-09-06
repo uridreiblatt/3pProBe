@@ -114,9 +114,9 @@ export class Order {
   @OneToMany(() => OrderBasket, (orderBasket) => orderBasket.order)
   orderBasket: OrderBasket[];
   order: any;
-  @ManyToOne(() => Company, (comapny) => comapny.id)
+  @ManyToOne(() => Company, (company) => company.id)
   //@JoinColumn({ name: 'taskStatusId' })
-  comapny: Company;
+  company: Company;
   @Column({ nullable: true, default: '', length: 2000 })
   CustomerPO: string;
 }

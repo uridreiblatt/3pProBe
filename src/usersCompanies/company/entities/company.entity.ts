@@ -49,21 +49,27 @@ export class Company extends Tablestamp {
 
   @OneToMany(() => Boxsize, (boxsize) => boxsize)
   boxsizes: Boxsize[];
-  @OneToMany(() => ShipmentPriority, (shipmentPriority) => shipmentPriority)
+  @OneToMany(
+    () => ShipmentPriority,
+    (shipmentPriority) => shipmentPriority.company,
+  )
   shipmentPriority: ShipmentPriority[];
-  @OneToMany(() => Cylinder, (cylinder) => cylinder)
+  @OneToMany(() => Cylinder, (cylinder) => cylinder.company)
   cylinder: Cylinder[];
   @OneToMany(() => PartCqaunt, (partCqaunt) => partCqaunt)
   partCqaunt: PartCqaunt[];
   @OneToMany(() => DeliverySetting, (deliverySetting) => deliverySetting)
   deliverySetting: DeliverySetting[];
-  @OneToMany(() => Zone, (zone) => zone)
+  @OneToMany(() => Zone, (zone) => zone.company)
   zone: Zone[];
   @OneToMany(() => TaskUser, (taskUser) => taskUser)
   taskUser: TaskUser[];
   @OneToMany(() => AllRma, (allRma) => allRma)
   allRma: AllRma[];
-  @OneToMany(() => PriorityProducts, (priorityProducts) => priorityProducts)
+  @OneToMany(
+    () => PriorityProducts,
+    (priorityProducts) => priorityProducts.company,
+  )
   priorityProducts: PriorityProducts[];
   @OneToMany(() => Order, (Order) => Order)
   orders: Order[];

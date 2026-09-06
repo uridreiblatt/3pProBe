@@ -106,7 +106,7 @@ export class AllGrvService {
         urlEndPointPriority;
       // const url =
       //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-      //   this.comapny +
+      //   this.company +
       //   this.urlEndPoint;
       //const credentials = btoa(this.username + ":" + this.pwd);
 

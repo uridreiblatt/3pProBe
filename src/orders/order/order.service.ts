@@ -21,7 +21,7 @@ import { OrderBasketService } from 'src/orders/order-basket/order-basket.service
 import { TaskUserService } from 'src/Tasks/task-user/task-user.service';
 import { CreateDeliverySettingDto } from 'src/shipments/delivery-setting/dto/create-delivery-setting.dto';
 import { Company } from 'src/usersCompanies/company/entities/company.entity';
-import { comapny, role } from 'src/auth/dto/create-auth.dto';
+import { company, role } from 'src/auth/dto/create-auth.dto';
 import { EOrderUser, OrderStatusEnum } from './enums/enum';
 import { rolesEnum } from 'src/auth/entities/role.enum';
 import { CompanyService } from 'src/usersCompanies/company/company.service';
@@ -114,8 +114,8 @@ export class OrderService {
     orderFromDto.taskStatus = taskStatus;
     orderFromDto.user = user;
     orderFromDto.taskStatus = taskStatus;
-    orderFromDto.comapny = new Company();
-    orderFromDto.comapny.id = companyId;
+    orderFromDto.company = new Company();
+    orderFromDto.company.id = companyId;
     return orderFromDto;
   }
 
@@ -136,7 +136,7 @@ export class OrderService {
             ? OrderStatusEnum.Complete
             : Not(OrderStatusEnum.Complete),
         },
-        comapny: { id: companyId },
+        company: { id: companyId },
       },
       relations: {
         taskStatus: true,
@@ -244,7 +244,7 @@ export class OrderService {
         orderBoxes: {
           boxSize: true,
         },
-        comapny: true,
+        company: true,
         //orderBasket: true,
         role: true,
       },
@@ -268,7 +268,7 @@ export class OrderService {
     // );
 
     const partCount = await this.partCqauntRepository.find({
-      where: { company: { id: res.comapny.id } },
+      where: { company: { id: res.company.id } },
       select: { partName: true },
     });
 
@@ -366,7 +366,7 @@ export class OrderService {
         orderBoxes: { orderBoxesItems: true, boxSize: true },
         orderLines: true,
         taskStatus: true,
-        comapny: true,
+        company: true,
       },
       order: { orderBoxes: { createdAt: 'ASC' } },
     });
@@ -404,7 +404,7 @@ export class OrderService {
       }),
     );
     const partCount = await this.partCqauntRepository.find({
-      where: { company: { id: res.comapny.id } },
+      where: { company: { id: res.company.id } },
       select: { partName: true },
     });
     const filteredOrderLines = orderLines.filter((e) => {
@@ -451,7 +451,7 @@ export class OrderService {
         shipRushShipmentId: shipmentId,
       },
       relations: {
-        comapny: true,
+        company: true,
       },
     });
   }
@@ -459,7 +459,7 @@ export class OrderService {
   async updateData(id: string, upd: any, companyId: string): Promise<any> {
     const { companyId: _companyId, ...rest } = upd;
     return await this.orderRepository.update(
-      { id, comapny: { id: companyId } },
+      { id, company: { id: companyId } },
       rest,
     );
   }

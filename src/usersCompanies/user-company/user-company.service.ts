@@ -9,11 +9,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class UserCompanyService {
   constructor(
     @InjectRepository(UserCompany)
-    private userComapnyRepository: Repository<UserCompany>,
+    private userCompanyRepository: Repository<UserCompany>,
   ) {}
 
   async findAll(companyId: string) {
-    const res = await this.userComapnyRepository.find({
+    const res = await this.userCompanyRepository.find({
       where: {
         company: { id: companyId },
       },
@@ -51,7 +51,7 @@ export class UserCompanyService {
     return res;
   }
   async findAllUsersByCompany(companyId: string) {
-    const res = await this.userComapnyRepository.find({
+    const res = await this.userCompanyRepository.find({
       where: {
         company: { id: companyId },
       },

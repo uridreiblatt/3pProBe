@@ -28,7 +28,7 @@ export class AuthOtp {
   @ApiProperty()
   otp: string;
 }
-export class comapny {
+export class company {
   @ApiProperty()
   id: string;
   @ApiProperty()
@@ -51,9 +51,9 @@ export class JwtDetails {
   @ApiProperty()
   userRole: string;
   @ApiProperty()
-  userComapny: string;
+  userCompany: string;
   @ApiProperty()
-  companies: comapny[];
+  companies: company[];
   @ApiProperty()
   roles: role[];
   @ApiProperty()

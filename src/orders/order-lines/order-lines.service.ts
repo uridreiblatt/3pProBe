@@ -68,7 +68,7 @@ export class OrderLinesService {
   async findAll(companyId: string) {
     return await this.orderLinesRepository.find({
       where: {
-        order: { comapny: { id: companyId } },
+        order: { company: { id: companyId } },
       },
       relations: {
         taskStatus: true,
@@ -81,7 +81,7 @@ export class OrderLinesService {
     return await this.orderLinesRepository.findOne({
       where: {
         id: id,
-        order: { comapny: { id: companyId } },
+        order: { company: { id: companyId } },
       },
       relations: {
         taskStatus: true,
@@ -109,7 +109,7 @@ export class OrderLinesService {
     companyId: string,
   ) {
     return await this.orderLinesRepository.update(
-      { id, order: { comapny: { id: companyId } } },
+      { id, order: { company: { id: companyId } } },
       updateOrderLineDto,
     );
   }
@@ -123,7 +123,7 @@ export class OrderLinesService {
       pickingAid: true, // updateOrderLineDto.pickingAid,
     };
     await this.orderLinesRepository.update(
-      { id, order: { comapny: { id: companyId } } },
+      { id, order: { company: { id: companyId } } },
       upd,
     );
     const orderLine = await this.orderLinesRepository.findOne({
@@ -180,7 +180,7 @@ export class OrderLinesService {
     const orderLine = await this.orderLinesRepository.findOne({
       where: {
         id: id,
-        order: { comapny: { id: compamyId } },
+        order: { company: { id: compamyId } },
       },
       relations: {
         order: true,
@@ -254,12 +254,12 @@ export class OrderLinesService {
   async remove(id: string, companyId: string) {
     return await this.orderLinesRepository.delete({
       id,
-      order: { comapny: { id: companyId } },
+      order: { company: { id: companyId } },
     });
   }
   async removeByOrderId(id: string, companyId: string) {
     await this.orderLinesRepository.delete({
-      order: { id: id, comapny: { id: companyId } },
+      order: { id: id, company: { id: companyId } },
     });
   }
 }

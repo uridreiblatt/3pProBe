@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsBoolean, IsInt, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsInt, IsString } from 'class-validator';
 
 export class CreateZoneDto {
   @ApiProperty()
@@ -12,7 +12,4 @@ export class CreateZoneDto {
   @ApiProperty()
   @IsBoolean()
   priority: boolean;
-  @ApiProperty()  
-  @IsString()
-  companyId: string;
 }

@@ -23,9 +23,10 @@ export class PriorityProductsLocationsService {
     createPriorityProductsLocationDto: CreatePriorityProductsLocationDto,
     companyId: string,
   ) {
-    const part = this.priorityProductsRepository.findOne({
+    const part = await this.priorityProductsRepository.findOne({
       where: {
         id: createPriorityProductsLocationDto.productId,
+        company: { id: companyId },
       },
     });
     if (!part) {
@@ -109,7 +110,9 @@ export class PriorityProductsLocationsService {
         priorityProducts: true,
       },
     });
-
+    if (!res) {
+      throw new NotFoundException('Product location not found');
+    }
     const resAll = {
       id: res.id,
       zone: res.zone.zoneName,
@@ -137,9 +140,12 @@ export class PriorityProductsLocationsService {
     upt.location = updatePriorityProductsLocationDto.location;
     upt.quantity = updatePriorityProductsLocationDto.quantity;
     upt.remarks = updatePriorityProductsLocationDto.remarks;
-    upt.stockDate = upt.stockDate = new Date(
-      updatePriorityProductsLocationDto.stockDate,
-    );
+    if (updatePriorityProductsLocationDto.stockDate !== undefined) {
+      upt.stockDate =
+        updatePriorityProductsLocationDto.stockDate === null
+          ? null
+          : new Date(updatePriorityProductsLocationDto.stockDate);
+    }
     upt.priorityProducts = new PriorityProducts();
     upt.priorityProducts.id = updatePriorityProductsLocationDto.productId;
     upt.zone = new Zone();

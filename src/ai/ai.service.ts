@@ -256,7 +256,7 @@ ${JSON.stringify(dbSchemaForUi)}
       *
       FROM p3pro.order o
       JOIN p3pro.order_line ol ON ol.orderId = o.id
-      WHERE o.comapnyId = ?    
+      WHERE o.companyId = ?    
       LIMIT 10 
       
     `,
@@ -266,7 +266,7 @@ ${JSON.stringify(dbSchemaForUi)}
       //   SUM(ol.TBALANCE) AS total_sold
       // FROM p3pro.order o
       // JOIN p3pro.order_line ol ON ol.orderId = o.id
-      // WHERE o.comapnyId = ?
+      // WHERE o.companyId = ?
       // GROUP BY o.CUSTNAME, ol.PARTNAME
       // LIMIT 2
       params: [companyId],

@@ -14,7 +14,7 @@ import { User } from 'src/usersCompanies/users/entities/user.entity';
 import { UsersRoles } from 'src/usersCompanies/user-role/entities/user-role.entity';
 import { Role } from 'src/usersCompanies/role/entities/role.entity';
 import { Boxsize } from 'src/maintenence/boxes/entities/box.entity';
-import { comapny } from 'src/auth/dto/create-auth.dto';
+import { company } from 'src/auth/dto/create-auth.dto';
 import { randomUUID } from 'crypto';
 import { Cylinder } from 'src/maintenence/cylinder/entities/cylinder.entity';
 import { DeliverySetting } from 'src/shipments/delivery-setting/entities/delivery-setting.entity';
@@ -42,7 +42,7 @@ export class NewCompanyService {
   async create(createNewCompanyDto: CreateNewCompanyDto) {
     if (createNewCompanyDto.AdminPassword !== 'DannyCompulockyAdmin')
       throw UnauthorizedException;
-    const comapnyExits = await this.companyRepository.findOne({
+    const companyExits = await this.companyRepository.findOne({
       where: {
         companySetting: {
           priorityApiUrl: createNewCompanyDto.priorityApiUrl,
@@ -50,7 +50,7 @@ export class NewCompanyService {
         },
       },
     });
-    if (comapnyExits)
+    if (companyExits)
       throw new BadRequestException('Company already exists ', {
         cause: new Error(),
         description: 'Company already exists',

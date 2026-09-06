@@ -54,7 +54,7 @@ export class AuthController {
     else jwtDetails.userRole = minValueOfY.toString();
     jwtDetails.uuid = resUser.id;
     jwtDetails.uomWeight = resUserAll.uomWeight;
-    jwtDetails.userComapny =
+    jwtDetails.userCompany =
       resUser.selectedCompany === '0'
         ? resUser.userCompany[0].company.id
         : resUser.selectedCompany;
@@ -173,7 +173,7 @@ export class AuthController {
   //   jwtDetails.userRole = maxValueOfY.toString();
   //   jwtDetails.uuid = resUser.userUuid;
 
-  //   jwtDetails.userComapny = switchCompanyDto.companyId;
+  //   jwtDetails.userCompany = switchCompanyDto.companyId;
   //   const jwtToken = await this.authService.signAsyncCookie(jwtDetails);
   //   response.cookie('access_token', jwtToken.access_token, {
   //     httpOnly: true,

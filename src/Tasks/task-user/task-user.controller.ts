@@ -19,7 +19,7 @@ import {
   validateCompanies,
 } from 'src/util/validateCompany.util';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { comapny } from 'src/auth/dto/create-auth.dto';
+import { company } from 'src/auth/dto/create-auth.dto';
 import { CurrentCompanyId } from 'src/auth/entities/current-user.decorator';
 
 @ApiTags('task-user')

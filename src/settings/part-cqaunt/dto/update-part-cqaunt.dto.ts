@@ -1,4 +1,6 @@
 import { PartialType } from '@nestjs/swagger';
 import { CreatePartCqauntDto } from './create-part-cqaunt.dto';
 
-export class UpdatePartCqauntDto extends PartialType(CreatePartCqauntDto) {}
+export class UpdatePartCqauntDto extends PartialType(CreatePartCqauntDto, {
+  skipNullProperties: false,
+}) {}

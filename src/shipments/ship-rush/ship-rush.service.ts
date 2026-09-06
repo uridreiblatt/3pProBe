@@ -20,7 +20,7 @@ export class ShipRushService {
   private readonly logger = new Logger(ShipRushService.name);
   private readonly _orderService: OrderService;
   private readonly _CompanyService: CompanyService;
-  // comapny: string;
+  // company: string;
   // username: string;
   // pwd: string;
 
@@ -33,7 +33,7 @@ export class ShipRushService {
     private delivarySettingRepository: Repository<DeliverySetting>,
   ) {
     this._orderService = orderService;
-    // this.comapny = this.configService.get<string>('COMPANY') || '';
+    // this.company = this.configService.get<string>('COMPANY') || '';
     // this.username = this.configService.get<string>('PRIORITY_USER');
     // this.pwd = this.configService.get<string>('PRIORITY_PWD');
     this._CompanyService = CompanyService;
@@ -55,7 +55,7 @@ export class ShipRushService {
     //console.log('getOrderByShipmentIdFromShipRush', order);
 
     const resCompantSettings = await this._CompanyService.findOne(
-      order.comapny.id,
+      order.company.id,
     );
 
     try {
@@ -84,7 +84,7 @@ export class ShipRushService {
   ) {
     // const url =
     //   `https://win01.maclocks.com/odata/Priority/tabula.ini/` +
-    //   this.comapny +
+    //   this.company +
     //   `/DOCUMENTS_D`;
     // const credentials = btoa(this.username + ':' + this.pwd);
 

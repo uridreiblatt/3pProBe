@@ -57,12 +57,11 @@ export class BoxesService {
   }
 
   async findOneByBarcode(barcodeId: string): Promise<any> {
-    const sqlQuery =
-      " SELECT [PARTNAME] FROM [dbo].[v_priorityProducts] WHERE [BARCODE]='" +
-      barcodeId +
-      "'";
-    const res = await this.boxRepository.query(sqlQuery);
-    return res[0];
+    const rows = await this.boxRepository.query(
+      'SELECT [PARTNAME] FROM [dbo].[v_priorityProducts] WHERE [BARCODE] = @0',
+      [barcodeId],
+    );
+    return rows[0];
   }
 
   async update(id: string, updateBoxDto: UpdateBoxDto, companyId: string) {
@@ -70,7 +69,10 @@ export class BoxesService {
     ins.sizeDesc = updateBoxDto.sizeDesc;
     ins.company = new Company();
     ins.company.id = companyId;
-    return await this.boxRepository.update(id, ins);
+    return await this.boxRepository.update(
+      { id, company: { id: companyId } },
+      ins,
+    );
   }
 
   async remove(id: string, companyId: string) {

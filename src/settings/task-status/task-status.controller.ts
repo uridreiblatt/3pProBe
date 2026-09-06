@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { TaskStatusService } from './task-status.service';
 import { CreateTaskStatusDto } from './dto/create-task-status.dto';
@@ -29,7 +30,7 @@ export class TaskStatusController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.taskStatusService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.taskStatusService.findOne(id);
   }
 }

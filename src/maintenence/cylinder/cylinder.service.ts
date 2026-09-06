@@ -50,7 +50,10 @@ export class CylinderService {
     ins.partName = updateCylinderDto.partName;
     ins.company = new Company();
     ins.company.id = companyId;
-    return this.cylinderRepository.update(id, ins);
+    return this.cylinderRepository.update(
+      { id, company: { id: companyId } },
+      ins,
+    );
   }
   async create(createCylinderDto: CreateCylinderDto, companyId: string) {
     const ins = new Cylinder();

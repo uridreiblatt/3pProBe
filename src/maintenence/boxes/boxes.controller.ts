@@ -20,7 +20,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { SkipCookieMatch } from 'src/auth/entities/skip-cookie-match.decorator';
 import { validateCompany } from 'src/util/validateCompany.util';
 import { CurrentCompanyId } from 'src/auth/entities/current-user.decorator';
-@ApiTags('boxes-ok')
+@ApiTags('boxes')
 @Controller('boxes')
 @UseGuards(AuthGuard)
 export class BoxesController {

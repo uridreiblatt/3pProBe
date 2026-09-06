@@ -6,7 +6,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { XMLParser } from 'fast-xml-parser';
 import { CreateShipRushDto } from './dto/create-ship-rush.dto';
 import { SkipCookieMatch } from 'src/auth/entities/skip-cookie-match.decorator';
-import { comapny } from 'src/auth/dto/create-auth.dto';
+import { company } from 'src/auth/dto/create-auth.dto';
 @ApiTags('shiprush')
 @Controller('ship-rush')
 export class ShipRushController {
@@ -14,7 +14,7 @@ export class ShipRushController {
   constructor(private readonly shipRushService: ShipRushService) {}
   @SkipCookieMatch()
   @Post()
-  async handleXml(@Req() req: Request, comapnyId: string) {
+  async handleXml(@Req() req: Request, companyId: string) {
     //console.log('handleXml', req);
     const xml = await this.getRawBody(req); // read stream
 
@@ -28,7 +28,7 @@ export class ShipRushController {
       carrier: '',
     };
     //console.log("createShipRushDto", createShipRushDto);
-    await this.shipRushService.create(createShipRushDto, comapnyId);
+    await this.shipRushService.create(createShipRushDto, companyId);
     return;
   }
 

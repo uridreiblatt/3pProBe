@@ -17,7 +17,7 @@ export class priorityProductsService {
   private readonly logger = new Logger(priorityProductsService.name);
   // private readonly username: string;
   // private readonly pwd: string;
-  // private readonly comapny: string;
+  // private readonly company: string;
   private readonly _CompanyService: CompanyService;
   private readonly _ProductStatusService: ProductStatusService;
 
@@ -33,7 +33,7 @@ export class priorityProductsService {
   ) {
     // this.username = this.configService.get<string>('PRIORITY_USER');
     // this.pwd = this.configService.get<string>('PRIORITY_PWD');
-    // this.comapny = this.configService.get<string>('COMPANY') || '';
+    // this.company = this.configService.get<string>('COMPANY') || '';
     this._CompanyService = CompanyService;
     this._ProductStatusService = productStatusService;
   }
@@ -202,26 +202,29 @@ export class priorityProductsService {
   }
 
   async findAll(companyId: string) {
-    const sql = `SELECT productstatus FROM product_status where companyId ='${companyId}' and is_active = 0`;
-    const newProductStatus = await this.PartRepository.query(sql);
+    const sql =
+      'SELECT productstatus FROM product_status WHERE companyId = ? AND is_active = 0';
+    const newProductStatus = await this.PartRepository.query(sql, [companyId]);
     const newProductStatusArray: string[] = newProductStatus.map(
       (row: any) => row.productstatus,
     );
     console.log(newProductStatusArray);
-    const res = await this.PartRepository.find({
-      where: {
+    const res = await this.PartRepository.createQueryBuilder('part')
+      .leftJoinAndSelect(
+        'part.PriorityProductsHierarchy',
+        'hierarchy',
+        'hierarchy.companyId = :companyId',
+        { companyId },
+      )
+      .leftJoinAndSelect('part.PriorityProductsLocation', 'location')
+      .leftJoinAndSelect('location.zone', 'zone')
+      .where('part.companyId = :companyId', { companyId })
+      .andWhere({
         STATDES: Not(In(newProductStatusArray)),
-        company: { id: companyId },
-      },
-      //take:20,
+      })
+      .orderBy('part.PART', 'ASC')
+      .getMany();
 
-      relations: {
-        PriorityProductsHierarchy: true,
-        PriorityProductsLocation: { zone: true },
-      },
-
-      order: { PART: 'ASC' },
-    });
     return res;
   }
 
@@ -244,6 +247,7 @@ export class priorityProductsService {
     `,
       )
       .where('part.id = :id', { id })
+      .andWhere('part.companyId = :companyId', { companyId })
       .getOne();
   }
 

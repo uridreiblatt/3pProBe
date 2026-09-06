@@ -50,7 +50,7 @@ export class AuthService {
       //userEmail: data.userEmail,
       userUuid: data.uuid,
       role: data.userRole,
-      selectCompany: data.userComapny,
+      selectCompany: data.userCompany,
       roles: data.roles,
       companies: data.companies,
       //addtionalPickingInfo: data.addtionalPickingInfo,

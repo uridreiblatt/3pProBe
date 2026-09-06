@@ -33,7 +33,7 @@ import { CompanyService } from 'src/usersCompanies/company/company.service';
 export class TaskUserService {
   private readonly _orderService: OrderService;
   private isLocked = false;
-  //private comapny = "cb3007"; // add call from database settings;
+  //private company = "cb3007"; // add call from database settings;
   //private urlEndPoint = `/PORDERS?$filter=STATDES eq  'Sent' &$select=SUPNAME,CDES,ORDNAME,DETAILS`;
 
   private readonly logger = new Logger(TaskUserService.name);

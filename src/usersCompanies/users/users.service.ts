@@ -72,8 +72,8 @@ export class UsersService {
           .map((role) => {
             return role.role.role;
           }),
-        companies: user.userCompany.map((comapny) => {
-          return comapny.company.name;
+        companies: user.userCompany.map((company) => {
+          return company.company.name;
         }),
         isActive: user.isActive,
       };

@@ -48,7 +48,7 @@ export class ShipmentPriorityController {
     return res;
   }
 
-  @Get('findOneByStCode:id')
+  @Get('findOneByStCode/:id')
   async findOneByStCode(
     @CurrentCompanyId() companyId: string,
     @Param('id') id: string,
@@ -72,7 +72,6 @@ export class ShipmentPriorityController {
 
   @Delete(':id')
   async remove(@CurrentCompanyId() companyId: string, @Param('id') id: string) {
-    const res = await this.shipmentPriorityService.findOne(id, companyId);
     return this.shipmentPriorityService.remove(id, companyId);
   }
 }

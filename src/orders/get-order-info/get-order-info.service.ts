@@ -156,6 +156,7 @@ export class GetOrderInfoService {
         createOrderDto.shipmentOrder = false;
         const shp = await this._ShipmentPriorityService.findOneByStCode(
           createOrderDto.STCODE,
+          companyId,
         );
         createOrderDto.shipmentOrder = shp?.priority || false;
         createOrderDto.STDES = element.STDES || '';
@@ -476,6 +477,7 @@ export class GetOrderInfoService {
       }
       const shp = await this._ShipmentPriorityService.findOneByStCode(
         order.STCODE,
+        companyId,
       );
       if (shp === null || shp.shipRushCode === null) {
         throw new BadRequestException({
@@ -659,6 +661,7 @@ export class GetOrderInfoService {
       }
       const shp = await this._ShipmentPriorityService.findOneByStCode(
         order.STCODE,
+        companyId,
       );
       if (shp === null || shp.shipRushCode === null) {
         throw new BadRequestException('order ship Rush Code not found', {

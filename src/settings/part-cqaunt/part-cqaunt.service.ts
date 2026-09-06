@@ -36,7 +36,10 @@ export class PartCqauntService {
     ins.partName = updatePartCqauntDto.partName;
     ins.company = new Company();
     ins.company.id = companyId;
-    return await this.PartCQuantRepository.update(id, ins);
+    return await this.PartCQuantRepository.update(
+      { id, company: { id: companyId } },
+      ins,
+    );
   }
 
   async create(createPartCqauntDto: CreatePartCqauntDto, companyId: string) {

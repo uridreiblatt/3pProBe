@@ -3,7 +3,8 @@ import { CreateProductStatusDto } from './dto/create-product-status.dto';
 import { UpdateProductStatusDto } from './dto/update-product-status.dto';
 import { ProductStatus } from './entities/product-status.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
+import { Company } from 'src/usersCompanies/company/entities/company.entity';
 
 @Injectable()
 export class ProductStatusService {
@@ -13,17 +14,37 @@ export class ProductStatusService {
   ) {}
 
   async create(companyId: string) {
-    const sql = `SELECT distinct STATDES  FROM priorityproducts where companyId  ='${companyId}'`;
-    const newProductStatus = await this.productStatusRepository.query(sql);
-    newProductStatus.forEach((element) => {
+    const sql =
+      'SELECT DISTINCT STATDES FROM priorityProducts WHERE companyId = ?';
+
+    const newProductStatus = await this.productStatusRepository.query(sql, [
+      companyId,
+    ]);
+    // newProductStatus.forEach((element) => {
+    //   const productStatus = new ProductStatus();
+    //   productStatus.productStatus = element.STATDES;
+    //   productStatus.company = { id: companyId } as any;
+
+    //   this.productStatusRepository.save(productStatus).catch((err) => {
+    //     //Duplicate entry 'WSL-aaa-aaa-aaa' for key 'product-status.productStatus_UNIQUE'",
+    //   });
+    // });
+    for (const element of newProductStatus) {
       const productStatus = new ProductStatus();
       productStatus.productStatus = element.STATDES;
-      productStatus.company = { id: companyId } as any;
+      productStatus.company = { id: companyId } as Company;
 
-      this.productStatusRepository.save(productStatus).catch((err) => {
-        //Duplicate entry 'WSL-aaa-aaa-aaa' for key 'product-status.productStatus_UNIQUE'",
-      });
-    });
+      try {
+        await this.productStatusRepository.save(productStatus);
+      } catch (error) {
+        if (
+          !(error instanceof QueryFailedError) ||
+          error.driverError?.code !== 'ER_DUP_ENTRY'
+        ) {
+          throw error;
+        }
+      }
+    }
   }
 
   findAll(selectCompany: string) {

@@ -1,6 +1,6 @@
-import { PriorityProductsLocation } from "src/products/priority-products-locations/entities/priority-products-location.entity";
-import { PriorityProductsHierarchy } from "src/products/priorityProductsHierarchy/entities/priority-products-hierarchy.entity";
-import { Company } from "src/usersCompanies/company/entities/company.entity";
+import { PriorityProductsLocation } from 'src/products/priority-products-locations/entities/priority-products-location.entity';
+import { PriorityProductsHierarchy } from 'src/products/priorityProductsHierarchy/entities/priority-products-hierarchy.entity';
+import { Company } from 'src/usersCompanies/company/entities/company.entity';
 import {
   Column,
   Entity,
@@ -8,11 +8,11 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from 'typeorm';
 
-@Entity("priorityProducts")
+@Entity('priorityProducts')
 export class PriorityProducts {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string;
   @Column()
   PARTNAME: string;
@@ -27,12 +27,14 @@ export class PriorityProducts {
   @Column()
   STATDES: string;
 
+  @Column()
+  companyId: string;
 
   @ManyToOne(() => Company, (company) => company.priorityProducts, {
     nullable: false,
   })
+  @JoinColumn({ name: 'companyId' })
   company: Company;
-
 
   @OneToMany(
     () => PriorityProductsHierarchy,
@@ -45,6 +47,4 @@ export class PriorityProducts {
     (location) => location.priorityProducts,
   )
   PriorityProductsLocation: PriorityProductsLocation[];
-
-
 }

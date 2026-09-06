@@ -16,14 +16,19 @@ export class PriorityProductsHierarchyService {
   //   return 'This action adds a new partsHierarchy';
   // }
 
-  async findAll() {
-    return await this.priorityProductsHierarchy.find();
+  async findAll(companyId: string) {
+    return await this.priorityProductsHierarchy.find({
+      where: {
+        companyId: companyId,
+      },
+    });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, companyId: string) {
     return await this.priorityProductsHierarchy.findOne({
       where: {
         id: id,
+        companyId: companyId,
       },
     });
   }

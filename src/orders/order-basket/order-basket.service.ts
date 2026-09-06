@@ -18,7 +18,7 @@ export class OrderBasketService {
       where: {
         //order: { id: createOrderBasketDto.order.id },
         basketId: createOrderBasketDto.basketId,
-        order: { comapny: { id: companyId } },
+        order: { company: { id: companyId } },
       },
       relations: {
         order: true,
@@ -49,7 +49,7 @@ export class OrderBasketService {
   async getOrderBasket(orderId: string, companyId: string) {
     return await this.OrderBasketsRepository.find({
       where: {
-        order: { id: orderId, comapny: { id: companyId } },
+        order: { id: orderId, company: { id: companyId } },
       },
     });
   }
@@ -58,7 +58,7 @@ export class OrderBasketService {
     return await this.OrderBasketsRepository.findOne({
       where: {
         id: id,
-        order: { comapny: { id: companyId } },
+        order: { company: { id: companyId } },
       },
     });
   }
@@ -66,7 +66,7 @@ export class OrderBasketService {
   async findByOrder(orderId: string, companyId: string) {
     return await this.OrderBasketsRepository.find({
       where: {
-        order: { id: orderId, comapny: { id: companyId } },
+        order: { id: orderId, company: { id: companyId } },
       },
     });
   }
@@ -77,7 +77,7 @@ export class OrderBasketService {
     companyId: string,
   ) {
     return await this.OrderBasketsRepository.update(
-      { id, order: { comapny: { id: companyId } } },
+      { id, order: { company: { id: companyId } } },
       updateOrderBasketDto,
     );
   }
@@ -85,7 +85,7 @@ export class OrderBasketService {
   async remove(id: string, companyId: string) {
     return await this.OrderBasketsRepository.delete({
       id,
-      order: { comapny: { id: companyId } },
+      order: { company: { id: companyId } },
     });
   }
   async removeByOrderId(id: string) {

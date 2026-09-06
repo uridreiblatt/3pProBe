@@ -30,13 +30,6 @@ export class PriorityProductsLocation {
   @ManyToOne(() => Zone, (zone) => zone.PriorityProductsLocation)
   zone: Zone;
 
-
-  @OneToMany(
-    () => PriorityProductsLocation,
-    (location) => location.priorityProducts,
-  )
-  PriorityProductsLocation: PriorityProductsLocation[];
   @Column({ default: '', nullable: true })
   remarks: string;
-
 }

@@ -85,7 +85,7 @@ export class OrderBoxesService {
       where: {
         order: {
           id: id,
-          comapny: { id: companyId },
+          company: { id: companyId },
         },
       },
       relations: {
@@ -111,7 +111,7 @@ export class OrderBoxesService {
 
   async cloneBoxItems(id: string, companyId: string) {
     const existing = await this.OrderBoxesRepository.findOne({
-      where: { id, order: { comapny: { id: companyId } } },
+      where: { id, order: { company: { id: companyId } } },
       relations: {
         orderBoxesItems: true,
         order: true,
@@ -164,7 +164,7 @@ export class OrderBoxesService {
       itemsCount: itemsCount,
     };
     const res = await this.OrderBoxesRepository.update(
-      { id, order: { comapny: { id: companyId } } },
+      { id, order: { company: { id: companyId } } },
       data,
     );
 
@@ -193,7 +193,7 @@ export class OrderBoxesService {
   async remove(id: string, companyId: string) {
     const olbx = await this.OrderBoxesItemsRepository.find({
       where: {
-        orderBoxes: { id: id, order: { comapny: { id: companyId } } },
+        orderBoxes: { id: id, order: { company: { id: companyId } } },
       },
     });
     await Promise.all(

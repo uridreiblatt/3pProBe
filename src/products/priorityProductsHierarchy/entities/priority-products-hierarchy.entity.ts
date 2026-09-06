@@ -29,6 +29,9 @@ export class PriorityProductsHierarchy {
     (priorityProducts) => priorityProducts.PriorityProductsHierarchy,
     { nullable: false },
   )
-  @JoinColumn({ name: 'SON', referencedColumnName: 'PART' })
+  @JoinColumn([
+    { name: 'SON', referencedColumnName: 'PART' },
+    { name: 'companyId', referencedColumnName: 'companyId' },
+  ])
   sonPriorityProduct: PriorityProducts;
 }

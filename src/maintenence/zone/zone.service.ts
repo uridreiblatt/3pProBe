@@ -47,13 +47,16 @@ export class ZoneService {
     //ins.zoneId = updateZoneDto.zoneId;
     ins.company = new Company();
     ins.company.id = companyId;
-    return await this.zoneRepository.update(id, ins);
+    return await this.zoneRepository.update(
+      { id, company: { id: companyId } },
+      ins,
+    );
   }
 
   async remove(id: string, selectCompany: string) {
-    const res = await this.zoneRepository.findOne({
-      where: { id: id, company: { id: selectCompany } },
+    return await this.zoneRepository.delete({
+      id,
+      company: { id: selectCompany },
     });
-    if (res) return await this.zoneRepository.delete(id);
   }
 }

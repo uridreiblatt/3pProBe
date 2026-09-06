@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 
 import { ReportView } from './entities/report-view.entity';
 import { Repository } from 'typeorm';
@@ -33,18 +33,16 @@ export class ReportViewService {
       ' select ' +
       ' (select u.userName from user u where u.id = userId) as userName' +
       ' ,(select u.status from task_status u where u.id = taskStatusId) as status' +
-      " ,'rma' as task_type" +
+      " ,'grv' as task_type" +
       ' ,userId' +
       ' , count(*) as count' +
       ' ,userId ' +
       ' from `all_grv` ar' +
-      " where ar.companyId = '" +
-      companyId +
-      "' " +
+      ' where ar.companyId = ? ' +
       ' and ar.taskStatusId !=3 ' +
       'group by taskStatusId, userId; ';
     //console.log('queryGrv', queryGrv);
-    const dataTasksGrv = await this.reportViewRepository.query(queryGrv);
+    const dataTasksGrv = await this.reportViewRepository.query(queryGrv, [companyId]);
     const queryOrders =
       'SELECT  ' +
       ' (select u.userName from user u where u.id = userId) as userName ' +
@@ -55,15 +53,13 @@ export class ReportViewService {
       ' , count(*)  as count ' +
       ' ,userId ' +
       ' FROM `order` o ' +
-      " where o.comapnyId = '" +
-      companyId +
-      "' " +
+      ' where o.companyId = ? ' +
       //" and roleId = 1 " +
       //and userId in ('aaa-bbb-ccc','94cb0799-a7d0-4c84-9ab9-ca36ed161d32')
       ' and !(o.roleId = 4 and o.taskStatusId = 3) ' +
       ' group by taskStatusId, roleId, userId; ';
     console.log('queryOrders', queryOrders);
-    const dataOrders = await this.reportViewRepository.query(queryOrders);
+    const dataOrders = await this.reportViewRepository.query(queryOrders, [companyId]);
     const queryRma =
       ' select ' +
       ' (select u.userName from user u where u.id = userId) as userName' +
@@ -73,22 +69,20 @@ export class ReportViewService {
       ' , count(*) as count' +
       ' ,userId ' +
       ' from `all_rma` ar' +
-      " where ar.companyId = '" +
-      companyId +
-      "' " +
+      ' where ar.companyId = ? ' +
       ' and ar.taskStatusId != 3  group by taskStatusId, userId; ';
     console.log(queryRma);
-    const dataRma = await this.reportViewRepository.query(queryRma);
+    const dataRma = await this.reportViewRepository.query(queryRma, [companyId]);
 
     const queryOrderalert =
-      'SELECT count(*) as count FROM `order` p WHERE  taskStatusId = 4   OR (    p.created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )';
-    const orderalert = await this.reportViewRepository.query(queryOrderalert);
+      'SELECT count(*) as count FROM `order` p WHERE companyId = ? AND (taskStatusId = 4 OR (p.created_at < CURDATE() - INTERVAL 5 DAY AND taskStatusId != 3))';
+    const orderalert = await this.reportViewRepository.query(queryOrderalert, [companyId]);
     const queryRmaalert =
-      'SELECT count(*) as count FROM `all_rma` p WHERE  taskStatusId = 4   OR (    p.created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )';
-    const rmaAlert = await this.reportViewRepository.query(queryRmaalert);
+      'SELECT count(*) as count FROM `all_rma` p WHERE companyId = ? AND (taskStatusId = 4 OR (p.created_at < CURDATE() - INTERVAL 5 DAY AND taskStatusId != 3))';
+    const rmaAlert = await this.reportViewRepository.query(queryRmaalert, [companyId]);
     const queryTaskalert =
-      'SELECT count(*) as count FROM `task_user` p WHERE  taskStatusId = 4   OR (    p.created_at < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  )';
-    const taskAlert = await this.reportViewRepository.query(queryTaskalert);
+      'SELECT count(*) as count FROM `task_user` p WHERE companyId = ? AND (taskStatusId = 4 OR (p.created_at < CURDATE() - INTERVAL 5 DAY AND taskStatusId != 3))';
+    const taskAlert = await this.reportViewRepository.query(queryTaskalert, [companyId]);
     const allData = {
       tasks: dataTasksGrv,
       orders: dataOrders,
@@ -102,12 +96,12 @@ export class ReportViewService {
 
   async Notification(companyId: string, roleId: number, userId: string) {
     const queryOrderalert =
-      'SELECT * FROM `order` p WHERE  comapnyId = ? and (taskStatusId = 4   OR (    p.CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  ))';
+      'SELECT * FROM `order` p WHERE companyId = ? AND (taskStatusId = 4 OR (p.created_at < CURDATE() - INTERVAL 5 DAY AND taskStatusId != 3))';
     const orderalert = await this.reportViewRepository.query(queryOrderalert, [
       companyId,
     ]);
     const queryRmaalert =
-      'SELECT * FROM `all_rma` p WHERE  companyId = ? and (taskStatusId = 4   OR (    CURDATE < CURDATE() - INTERVAL 5 DAY    AND taskStatusId != 3  ))';
+      'SELECT * FROM `all_rma` p WHERE companyId = ? AND (taskStatusId = 4 OR (p.created_at < CURDATE() - INTERVAL 5 DAY AND taskStatusId != 3))';
     const rmaAlert = await this.reportViewRepository.query(queryRmaalert, [
       companyId,
     ]);
@@ -150,6 +144,22 @@ export class ReportViewService {
       where: { id: id },
     });
 
+    if (!rpt) {
+      throw new NotFoundException('Report not found');
+    }
+    if (!rpt.reportName || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(rpt.reportName)) {
+      throw new BadRequestException('Invalid report view name');
+    }
+    // Only registered reports backed by a view in this database may be queried.
+    const views = await this.reportViewRepository.query(
+      'SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?',
+      [rpt.reportName],
+    );
+    if (views.length === 0) {
+      throw new NotFoundException('Report view not found');
+    }
+    const reportIdentifier = this.reportViewRepository.manager.connection.driver.escape(rpt.reportName);
+
     const queryViewFields = `
   SELECT 
   COLUMN_NAME
@@ -161,13 +171,16 @@ ORDER BY ORDINAL_POSITION;`;
     const dtFields = await this.reportViewRepository.query(queryViewFields, [
       rpt.reportName,
     ]);
+    if (!dtFields.some(({ COLUMN_NAME }) => COLUMN_NAME === 'companyId')) {
+      throw new BadRequestException('Report view must include companyId');
+    }
     const cleanDtFields = dtFields.filter(
       ({ COLUMN_NAME }) =>
         COLUMN_NAME !== 'companyId' && COLUMN_NAME !== 'created_at',
     );
     const sql = `
   SELECT *
-  FROM ${rpt.reportName}
+  FROM ${reportIdentifier}
   WHERE companyId = ?`;
 
     const data = await this.reportViewRepository.query(sql, [companyId]);

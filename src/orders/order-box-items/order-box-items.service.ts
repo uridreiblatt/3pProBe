@@ -22,7 +22,7 @@ export class OrderBoxItemsService {
     const ord = this.orderRepository.findOne({
       where: {
         id: createOrderBoxItemDto.orderId,
-        comapny: { id: companyId },
+        company: { id: companyId },
       },
     });
     if (!ord) {
@@ -43,7 +43,7 @@ export class OrderBoxItemsService {
   async findAll(orderBoxId: string, companyId: string) {
     const res = await this.OrderBoxesItemsRepository.find({
       where: {
-        orderBoxes: { id: orderBoxId, order: { comapny: { id: companyId } } },
+        orderBoxes: { id: orderBoxId, order: { company: { id: companyId } } },
       },
     });
     const data = await Promise.all(
@@ -71,7 +71,7 @@ export class OrderBoxItemsService {
     const ord = this.orderRepository.findOne({
       where: {
         id: orderId,
-        comapny: { id: companyId },
+        company: { id: companyId },
       },
     });
     if (!ord) {
@@ -100,7 +100,7 @@ export class OrderBoxItemsService {
 
   async findOne(id: string, companyId: string) {
     return await this.OrderBoxesItemsRepository.findOne({
-      where: { id: id, orderBoxes: { order: { comapny: { id: companyId } } } },
+      where: { id: id, orderBoxes: { order: { company: { id: companyId } } } },
     });
   }
 
@@ -110,7 +110,7 @@ export class OrderBoxItemsService {
     companyId: string,
   ) {
     return await this.OrderBoxesItemsRepository.update(
-      { id, orderBoxes: { order: { comapny: { id: companyId } } } },
+      { id, orderBoxes: { order: { company: { id: companyId } } } },
       updateOrderBoxItemDto,
     );
   }
@@ -118,14 +118,14 @@ export class OrderBoxItemsService {
   async remove(id: string, companyId: string) {
     return await this.OrderBoxesItemsRepository.delete({
       id,
-      orderBoxes: { order: { comapny: { id: companyId } } },
+      orderBoxes: { order: { company: { id: companyId } } },
     });
   }
   async removeByOrderId(orderId: string, companyId: string) {
     const ord = this.orderRepository.findOne({
       where: {
         id: orderId,
-        comapny: { id: companyId },
+        company: { id: companyId },
       },
     });
     if (!ord) {

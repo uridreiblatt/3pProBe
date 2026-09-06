@@ -55,7 +55,6 @@ export class CylinderController {
 
   @Delete(':id')
   async remove(@CurrentCompanyId() companyId: string, @Param('id') id: string) {
-    const res = await this.cylinderService.findOne(id, companyId);
     return this.cylinderService.remove(id, companyId);
   }
 }
